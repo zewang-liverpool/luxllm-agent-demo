@@ -374,10 +374,13 @@ Public repository URL: ready
 
 ## 14. License
 
-The intended release license will be confirmed before public submission.
-Recommended options are MIT or Apache-2.0.
+This repository is released under the MIT License.
 
-For now, this package should be treated as a research prototype prepared for supervisor review and demo-paper development.
+See:
+
+LICENSE
+
+This package is a research prototype prepared for supervisor review, demo-paper development, and reproducible inspection of the LuxLLM-Agent system.
 
 ---
 
