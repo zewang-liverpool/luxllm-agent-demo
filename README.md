@@ -232,7 +232,7 @@ Repository:
 https://github.com/your-username/luxllm-agent-demo
 
 Demo video:
-https://your-video-url
+https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video
 ```
 
 Before submission, replace the placeholder URLs in `paper/main.tex` with the actual GitHub repository link and demo video link.
