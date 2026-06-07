@@ -3,7 +3,7 @@
 LuxLLM-Agent is an explainable LLM-assisted agent and replay viewer for **Lux AI Season 3**.
 This repository contains a clean demonstration package prepared for an EMNLP System Demonstrations paper draft.
 
-The project demonstrates how an LLM-assisted game agent can be made inspectable through structured decision logs, replay-frame generation, an S1-style isometric battle replay viewer, controlled evaluation summaries, and lightweight scalability evidence.
+The project demonstrates how an LLM-assisted game agent can be made inspectable through structured decision logs, replay-frame generation, an S1-style isometric battle replay viewer, controlled evaluation summaries, lightweight scalability evidence, and a minimal source-code package.
 
 ---
 
@@ -38,8 +38,25 @@ luxllm-agent-demo/
 │   └── scalability_closeout.md
 ├── docs/
 │   └── demo_artifact_index.md
-└── video/
-    └── README.md
+├── video/
+│   └── README.md
+└── src/
+    ├── README.md
+    ├── agent/
+    │   ├── main.py
+    │   ├── agent.py
+    │   ├── baseline_agent.py
+    │   ├── rule_policy.py
+    │   ├── llm_decider.py
+    │   ├── action_planner.py
+    │   ├── game_memory.py
+    │   └── config.py
+    ├── viewer_tools/
+    │   ├── state_summarizer.py
+    │   └── record_match_result_from_console.py
+    └── scripts/
+        ├── run_match_llm.bat
+        └── run_v09c_pipeline.bat
 ```
 
 ---
@@ -141,7 +158,32 @@ paper/figures/figure_s3_match_score_summary.png
 
 ---
 
-## 5. Evaluation Artifacts
+## 5. Source Code Package
+
+The `src/` directory contains the minimal source-code package for the demo:
+
+```text
+src/
+├── agent/
+├── viewer_tools/
+└── scripts/
+```
+
+The source package is intentionally smaller than the full development workspace. It includes the core files needed to understand the system implementation:
+
+* agent entry points;
+* rule-based fallback policy;
+* LLM decision layer;
+* action planning;
+* memory and state handling;
+* replay/evaluation support tools;
+* demo run scripts.
+
+The full development workspace contains additional experimental scripts, historical viewers, controlled-run logs, archive tools, and local debugging utilities. Those files are not included here in order to keep the demo package clean and reviewable.
+
+---
+
+## 6. Evaluation Artifacts
 
 The `reports/` directory contains the main evaluation and verification reports:
 
@@ -163,7 +205,7 @@ These reports document:
 
 ---
 
-## 6. Key Demonstration Evidence
+## 7. Key Demonstration Evidence
 
 The current replay package contains:
 
@@ -178,7 +220,7 @@ The viewer and paper figures are based on the verified replay package.
 
 ---
 
-## 7. Scalability Note
+## 8. Scalability Note
 
 The 1000-agent result is an **architecture-level lightweight-worker simulation**.
 
@@ -202,15 +244,22 @@ The system scales by reusing sparse LLM-generated strategy templates across many
 
 ---
 
-## 8. Demo Video
+## 9. Demo Video
 
-The demo screencast video is not stored directly in this Git repository.
+The demo screencast video is provided through the GitHub Release page:
 
-It will be provided through one of the following options before submission:
+```text
+https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video
+```
 
-* GitHub Release asset;
-* Google Drive or OneDrive public link;
-* unlisted YouTube video.
+The video demonstrates the S3 isometric battle replay viewer, including:
+
+* replay loading;
+* timeline playback;
+* S1-style isometric battle map;
+* presentation mode;
+* match score summary;
+* final result overlay.
 
 Target video:
 
@@ -219,37 +268,39 @@ Lux S3 Isometric Battle Replay demo
 Length: <= 2.5 minutes
 ```
 
-The final video URL should be inserted into the paper before submission.
-
 ---
 
-## 9. Availability Plan
+## 10. Availability
 
-The final paper should include public links for:
+Repository:
 
 ```text
-Repository:
-https://github.com/your-username/luxllm-agent-demo
+https://github.com/zewang-liverpool/luxllm-agent-demo
+```
 
 Demo video:
+
+```text
 https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video
 ```
 
-Before submission, replace the placeholder URLs in `paper/main.tex` with the actual GitHub repository link and demo video link.
+The paper source, compiled draft PDF, viewer, replay data, figures, reports, minimal source code, and video release link are included in this repository package.
 
 ---
 
-## 10. Reproducibility Notes
+## 11. Reproducibility Notes
 
 This repository is a clean demonstration package, not the full development workspace.
 
-The full development workspace contains additional intermediate scripts, logs, experimental viewers, paper-generation scripts, and local run artifacts. This package keeps only the final demonstration files needed for review and reproduction.
+The full development workspace contains additional intermediate scripts, logs, experimental viewers, paper-generation scripts, archive files, and local run artifacts. This package keeps only the demonstration files needed for review and reproduction.
 
 The viewer can be opened locally using Python's built-in HTTP server. No cloud LLM API is required to inspect the included replay.
 
+The included replay is already generated and can be inspected directly through the viewer. Re-running full Lux AI Season 3 matches may require the Lux AI Season 3 environment, local Python dependencies, and an optional local Ollama model backend.
+
 ---
 
-## 11. Recommended Reviewer Workflow
+## 12. Recommended Reviewer Workflow
 
 A reviewer or supervisor can inspect the package in this order:
 
@@ -277,21 +328,33 @@ http://127.0.0.1:8010/viewer/s3_isometric_battle_viewer.html
 data/isometric_replay_frames.json
 ```
 
-5. Review the evaluation and scalability reports:
+5. Review the minimal source-code package:
+
+```text
+src/
+```
+
+6. Review the evaluation and scalability reports:
 
 ```text
 reports/
 ```
 
-6. Review the artifact index:
+7. Review the artifact index:
 
 ```text
 docs/demo_artifact_index.md
 ```
 
+8. Watch the demo video:
+
+```text
+https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video
+```
+
 ---
 
-## 12. Project Status
+## 13. Project Status
 
 Current package status:
 
@@ -302,13 +365,14 @@ Paper figures: ready
 Paper draft PDF: ready
 Evaluation reports: ready
 Scalability reports: ready
-Demo video link: pending
-Public repository URL: pending
+Minimal source-code package: ready
+Demo video link: ready
+Public repository URL: ready
 ```
 
 ---
 
-## 13. License
+## 14. License
 
 The intended release license will be confirmed before public submission.
 Recommended options are MIT or Apache-2.0.
@@ -317,7 +381,7 @@ For now, this package should be treated as a research prototype prepared for sup
 
 ---
 
-## 14. Citation / Acknowledgement
+## 15. Citation / Acknowledgement
 
 This project is built around the Lux AI Season 3 competition environment and is intended for research and educational use in game AI, LLM-assisted agents, and explainable agent evaluation.
 
