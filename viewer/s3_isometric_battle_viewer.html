@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lux S3 Isometric Battle Replay</title>
+  <style>
+    :root {
+      --bg-top: #5dc7d4;
+      --bg-bottom: #44b9c9;
+      --panel: rgba(20, 77, 92, 0.92);
+      --panel-soft: rgba(24, 92, 108, 0.88);
+      --panel-line: rgba(255, 255, 255, 0.08);
+      --text: #effbff;
+      --muted: rgba(239, 251, 255, 0.78);
+      --accent: #ffffff;
+      --accent-blue: #4f82ff;
+      --accent-red: #ff5d6d;
+      --accent-gold: #ffd54a;
+      --accent-green: #63d56b;
+      --accent-gray: #cfd5dd;
+      --accent-purple: #7c4dff;
+      --control-bg: rgba(255, 255, 255, 0.90);
+      --shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+      --radius-xl: 18px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+      --font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font);
+      color: var(--text);
+      background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+    }
+
+    body {
+      position: relative;
+    }
+
+    .cloud {
+      position: absolute;
+      opacity: 0.86;
+      pointer-events: none;
+      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.12));
+    }
+
+    .cloud::before,
+    .cloud::after,
+    .cloud span {
+      content: "";
+      position: absolute;
+      display: block;
+      background: rgba(255, 255, 255, 0.88);
+      border-radius: 999px;
+    }
+
+    .cloud {
+      width: 56px;
+      height: 28px;
+    }
+
+    .cloud::before {
+      width: 22px;
+      height: 22px;
+      left: 2px;
+      top: 8px;
+    }
+
+    .cloud::after {
+      width: 26px;
+      height: 26px;
+      left: 16px;
+      top: 2px;
+    }
+
+    .cloud span {
+      width: 16px;
+      height: 16px;
+      left: 36px;
+      top: 10px;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .title-wrap {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .title-pill {
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 12px 18px;
+      box-shadow: var(--shadow);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+
+    .title-tag {
+      background: rgba(255, 255, 255, 0.92);
+      color: #26323c;
+      border-radius: 14px;
+      padding: 8px 14px;
+      box-shadow: var(--shadow);
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .side-panel {
+      position: absolute;
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+      z-index: 9;
+    }
+
+    #timelinePanel {
+      top: 82px;
+      left: 8px;
+      width: 235px;
+      min-height: 118px;
+      max-height: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #dataSourcePanel {
+      bottom: 18px;
+      left: 16px;
+      width: 230px;
+      padding: 14px 14px 16px 14px;
+    }
+
+    #statusPanel {
+      top: 16px;
+      right: 16px;
+      width: 252px;
+      height: calc(100vh - 32px);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+
+    .timeline-scroll {
+      overflow-y: auto;
+      padding: 12px 14px 12px 14px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .timeline-line {
+      padding: 7px 0;
+      border-bottom: 1px solid var(--panel-line);
+      word-break: break-word;
+    }
+
+    .timeline-line:last-child {
+      border-bottom: none;
+    }
+
+    .status-heading {
+      font-size: 14px;
+      font-weight: 900;
+      margin: 0 0 2px 0;
+    }
+
+    .status-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .team-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .badge-blue {
+      background: linear-gradient(180deg, #5b91ff, #3163f0);
+    }
+
+    .badge-red {
+      background: linear-gradient(180deg, #ff7b88, #ec3748);
+    }
+
+    .team-name {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .team-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .team-score {
+      font-size: 18px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .leader-box {
+      background: rgba(92, 121, 51, 0.40);
+      border: 1px solid rgba(255, 212, 74, 0.30);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+
+    .leader-label {
+      color: #ffe95d;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 5px;
+    }
+
+    .leader-main {
+      font-size: 14px;
+      font-weight: 900;
+      margin-bottom: 2px;
+    }
+
+    .leader-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mini-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 8px 10px;
+      min-height: 54px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .mini-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .mini-value {
+      font-size: 13px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .score-summary {
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      flex-direction: column;
+      min-height: auto;
+    }
+
+    .score-summary-title {
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffe95d;
+      margin-bottom: 8px;
+    }
+
+    .score-summary-list {
+      overflow-y: visible;
+      max-height: none;
+      font-size: 12px;
+      color: var(--muted);
+      padding-right: 0;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 36px 1fr 26px;
+      gap: 8px;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--panel-line);
+    }
+
+    .score-row:last-child {
+      border-bottom: none;
+    }
+
+    .score-match {
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .score-points {
+      font-weight: 900;
+      color: #ffffff;
+      text-align: right;
+    }
+
+    .score-winner {
+      font-size: 11px;
+      font-weight: 900;
+      text-align: right;
+      color: #ffffff;
+    }
+
+    .wins-row {
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid var(--panel-line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .legend {
+      margin-top: 2px;
+      padding-top: 10px;
+      border-top: 1px solid var(--panel-line);
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    #battleCanvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      z-index: 1;
+    }
+
+    .controls {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 16px;
+      min-width: 540px;
+      max-width: 720px;
+      background: var(--control-bg);
+      color: #23313a;
+      border-radius: 20px;
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .controls button,
+    .controls select,
+    .controls input[type="range"] {
+      font-family: inherit;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-neutral {
+      background: #eef2f5;
+      color: #22313b;
+    }
+
+    .btn-primary {
+      background: #3c6af1;
+      color: white;
+    }
+
+    .btn-active {
+      background: #22313b;
+      color: white;
+    }
+
+    .range-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .range-wrap input[type="range"] {
+      flex: 1;
+    }
+
+    .speed-select {
+      border: none;
+      background: #eef2f5;
+      color: #22313b;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-weight: 800;
+    }
+
+    .frame-counter {
+      font-size: 14px;
+      font-weight: 900;
+      color: #17232c;
+      min-width: 72px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .source-note {
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted);
+      margin-bottom: 12px;
+      word-break: break-word;
+    }
+
+    .source-label {
+      font-size: 13px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .file-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .file-name {
+      font-size: 12px;
+      color: var(--muted);
+      word-break: break-word;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .presentation #timelinePanel,
+    .presentation #dataSourcePanel {
+      display: none !important;
+    }
+
+    .presentation #statusPanel {
+      width: 210px;
+      height: auto;
+      top: 18px;
+      bottom: auto;
+      padding: 12px;
+      gap: 8px;
+    }
+
+    .presentation .score-summary,
+    .presentation .legend {
+      display: none !important;
+    }
+
+    .presentation .controls {
+      min-width: 500px;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 24, 31, 0.42);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+    }
+
+    .overlay.show {
+      display: flex;
+    }
+
+    .overlay-card {
+      width: min(760px, 90vw);
+      background: rgba(14, 57, 71, 0.96);
+      border-radius: 24px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.26);
+      padding: 26px 28px 24px 28px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .overlay-title {
+      font-size: 26px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .overlay-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .overlay-main {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .overlay-team {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .overlay-team-name {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .overlay-team-score {
+      font-size: 36px;
+      font-weight: 900;
+    }
+
+    .overlay-score-divider {
+      font-size: 28px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .overlay-winner {
+      background: rgba(255, 212, 74, 0.12);
+      border: 1px solid rgba(255, 212, 74, 0.25);
+      color: #ffe95d;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+
+    .overlay-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .overlay-box {
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .overlay-box-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 5px;
+      font-weight: 700;
+    }
+
+    .overlay-box-value {
+      font-size: 18px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .overlay-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      color: #ffffff;
+      overflow: hidden;
+      border-radius: 14px;
+    }
+
+    .overlay-table th,
+    .overlay-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .overlay-table th {
+      color: #ffe95d;
+      font-weight: 900;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .overlay-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .overlay-footer {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    input[type="range"] {
+      accent-color: #4d75ff;
+    }
+
+    @media (max-width: 1400px) {
+      #statusPanel {
+        width: 238px;
+      }
+
+      #timelinePanel {
+        width: 220px;
+      }
+
+      .controls {
+        min-width: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="cloud" style="left: 18px; top: 210px;"><span></span></div>
+    <div class="cloud" style="left: 132px; top: 300px; transform: scale(0.66);"><span></span></div>
+    <div class="cloud" style="left: 530px; top: 18px; transform: scale(0.62);"><span></span></div>
+    <div class="cloud" style="left: 790px; top: 20px; transform: scale(0.68);"><span></span></div>
+    <div class="cloud" style="left: 1030px; top: 18px; transform: scale(0.64);"><span></span></div>
+    <div class="cloud" style="left: 1680px; top: 18px; transform: scale(0.70);"><span></span></div>
+
+    <canvas id="battleCanvas"></canvas>
+
+    <div class="title-wrap">
+      <div class="title-pill">Lux S3 Isometric Battle Replay</div>
+      <div class="title-tag">match score summary</div>
+    </div>
+
+    <div id="timelinePanel" class="side-panel">
+      <div class="timeline-scroll" id="timelineList">
+        <div class="panel-title">Battle Timeline</div>
+        <div class="empty-state">Loading replay timeline...</div>
+      </div>
+    </div>
+
+    <div id="dataSourcePanel" class="side-panel">
+      <div class="source-label">Data Source</div>
+      <div class="source-note" id="sourceText">
+        Current source:<br />
+        <strong>../data/isometric_replay_frames.json</strong>
+      </div>
+      <div class="file-row">
+        <label class="btn btn-neutral" for="fileInput" style="padding: 8px 12px; font-size: 13px;">Choose File</label>
+        <input id="fileInput" class="file-input" type="file" accept=".json" />
+        <span id="fileName" class="file-name">No file selected</span>
+      </div>
+    </div>
+
+    <div id="statusPanel" class="side-panel">
+      <div class="status-heading">Match Status</div>
+
+      <div class="status-card">
+        <div class="team-badge badge-blue">P0</div>
+        <div>
+          <div class="team-name">player_0</div>
+          <div class="team-sub">LLM / replay side</div>
+        </div>
+        <div class="team-score" id="scoreP0">0</div>
+      </div>
+
+      <div class="status-card">
+        <div class="team-badge badge-red">P1</div>
+        <div>
+          <div class="team-name">player_1</div>
+          <div class="team-sub">Opponent / replay side</div>
+        </div>
+        <div class="team-score" id="scoreP1">0</div>
+      </div>
+
+      <div class="leader-box">
+        <div class="leader-label">CURRENT REPLAY STATE</div>
+        <div class="leader-main" id="leaderText">Leader: tied</div>
+        <div class="leader-sub" id="leaderSub">Match 0 / Step 0 / Frame 1</div>
+      </div>
+
+      <div class="mini-grid">
+        <div class="mini-card">
+          <div class="mini-label">Ships P0</div>
+          <div class="mini-value" id="shipsP0">0</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">Ships P1</div>
+          <div class="mini-value" id="shipsP1">0</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">Known relics</div>
+          <div class="mini-value" id="knownRelics">0</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">Risk changes</div>
+          <div class="mini-value" id="riskChanges">0</div>
+        </div>
+      </div>
+
+      <div class="score-summary" id="scoreSummaryPanel">
+        <div class="score-summary-title">MATCH SCORE SUMMARY</div>
+        <div id="scoreSummaryList" class="score-summary-list">
+          <div class="empty-state">No match summary yet.</div>
+        </div>
+        <div class="wins-row">
+          <span>Total wins</span>
+          <span id="totalWinsText">0 : 0</span>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#4f82ff;"></span>player_0 ship</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ff5d6d;"></span>player_1 ship</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ffd54a;"></span>relic / scoring area</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#63d56b;"></span>energy tile</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#cfd5dd;"></span>asteroid</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#7c4dff;"></span>nebula</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="restartBtn" class="btn btn-neutral">Restart</button>
+      <button id="playBtn" class="btn btn-primary">Play</button>
+      <button id="presentationBtn" class="btn btn-neutral">Presentation</button>
+      <button id="finalBtn" class="btn btn-neutral">Final</button>
+
+      <div class="range-wrap">
+        <input id="frameRange" type="range" min="0" max="0" value="0" />
+      </div>
+
+      <select id="speedSelect" class="speed-select">
+        <option value="0.5">0.5x</option>
+        <option value="1" selected>1x</option>
+        <option value="2">2x</option>
+        <option value="4">4x</option>
+      </select>
+
+      <div id="frameCounter" class="frame-counter">1 / 1</div>
+    </div>
+
+    <div id="finalOverlay" class="overlay">
+      <div class="overlay-card">
+        <div class="overlay-title">Final Match Result</div>
+        <div class="overlay-subtitle">Summary of the merged Lux S3 replay sequence</div>
+
+        <div class="overlay-main">
+          <div class="overlay-team">
+            <div class="overlay-team-name">player_0</div>
+            <div class="overlay-team-score" id="overlayScoreP0">0</div>
+          </div>
+          <div class="overlay-score-divider">:</div>
+          <div class="overlay-team">
+            <div class="overlay-team-name">player_1</div>
+            <div class="overlay-team-score" id="overlayScoreP1">0</div>
+          </div>
+        </div>
+
+        <div class="overlay-winner" id="overlayWinner">Winner: tied</div>
+
+        <div class="overlay-grid">
+          <div class="overlay-box">
+            <div class="overlay-box-label">Replay frames</div>
+            <div class="overlay-box-value" id="overlayFrames">0</div>
+          </div>
+          <div class="overlay-box">
+            <div class="overlay-box-label">Both-player frame rate</div>
+            <div class="overlay-box-value" id="overlayBothRate">0.00%</div>
+          </div>
+          <div class="overlay-box">
+            <div class="overlay-box-label">Risk changes</div>
+            <div class="overlay-box-value" id="overlayRiskChanges">0</div>
+          </div>
+          <div class="overlay-box">
+            <div class="overlay-box-label">Total match wins</div>
+            <div class="overlay-box-value" id="overlayMatchWins">0 : 0</div>
+          </div>
+          <div class="overlay-box">
+            <div class="overlay-box-label">Draws</div>
+            <div class="overlay-box-value" id="overlayDraws">0</div>
+          </div>
+          <div class="overlay-box">
+            <div class="overlay-box-label">Total match score</div>
+            <div class="overlay-box-value" id="overlayTotalScore">0 : 0</div>
+          </div>
+        </div>
+
+        <table class="overlay-table">
+          <thead>
+            <tr>
+              <th>Match</th>
+              <th>Score</th>
+              <th>Winner</th>
+            </tr>
+          </thead>
+          <tbody id="overlayTableBody"></tbody>
+        </table>
+
+        <div class="overlay-footer">
+          <button id="closeOverlayBtn" class="btn btn-primary">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_SOURCE_CANDIDATES = [
+      "../data/isometric_replay_frames.json",
+      "../data/isometric_replay_frames.json",
+      "../data/isometric_replay_frames.json",
+      "../data/isometric_replay_frames.json",
+      "./../data/isometric_replay_frames.json"
+    ];
+
+    const state = {
+      frames: [],
+      currentIndex: 0,
+      playing: false,
+      speed: 1,
+      playTimer: null,
+      presentation: false,
+      overlayShown: false,
+      sourcePath: DEFAULT_SOURCE_CANDIDATES[0],
+      sourceName: "No file selected",
+      summary: {
+        frame_count: 0,
+        both_player_frame_rate: 0,
+        total_risk_changes: 0
+      },
+      finalResult: {
+        final_score_team0: 0,
+        final_score_team1: 0,
+        winner: "tied"
+      },
+      matchSummary: {
+        match_count: 0,
+        p0_wins: 0,
+        p1_wins: 0,
+        draws: 0,
+        total_score_team0: 0,
+        total_score_team1: 0,
+        matches: []
+      }
+    };
+
+    const app = document.getElementById("app");
+    const canvas = document.getElementById("battleCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const timelineList = document.getElementById("timelineList");
+    const sourceText = document.getElementById("sourceText");
+    const fileInput = document.getElementById("fileInput");
+    const fileName = document.getElementById("fileName");
+
+    const scoreP0 = document.getElementById("scoreP0");
+    const scoreP1 = document.getElementById("scoreP1");
+    const leaderText = document.getElementById("leaderText");
+    const leaderSub = document.getElementById("leaderSub");
+    const shipsP0 = document.getElementById("shipsP0");
+    const shipsP1 = document.getElementById("shipsP1");
+    const knownRelics = document.getElementById("knownRelics");
+    const riskChanges = document.getElementById("riskChanges");
+    const scoreSummaryList = document.getElementById("scoreSummaryList");
+    const totalWinsText = document.getElementById("totalWinsText");
+
+    const restartBtn = document.getElementById("restartBtn");
+    const playBtn = document.getElementById("playBtn");
+    const presentationBtn = document.getElementById("presentationBtn");
+    const finalBtn = document.getElementById("finalBtn");
+    const frameRange = document.getElementById("frameRange");
+    const speedSelect = document.getElementById("speedSelect");
+    const frameCounter = document.getElementById("frameCounter");
+
+    const finalOverlay = document.getElementById("finalOverlay");
+    const closeOverlayBtn = document.getElementById("closeOverlayBtn");
+    const overlayScoreP0 = document.getElementById("overlayScoreP0");
+    const overlayScoreP1 = document.getElementById("overlayScoreP1");
+    const overlayWinner = document.getElementById("overlayWinner");
+    const overlayFrames = document.getElementById("overlayFrames");
+    const overlayBothRate = document.getElementById("overlayBothRate");
+    const overlayRiskChanges = document.getElementById("overlayRiskChanges");
+    const overlayMatchWins = document.getElementById("overlayMatchWins");
+    const overlayDraws = document.getElementById("overlayDraws");
+    const overlayTotalScore = document.getElementById("overlayTotalScore");
+    const overlayTableBody = document.getElementById("overlayTableBody");
+
+    function safeNumber(v, fallback = 0) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function toText(value) {
+      if (value === null || value === undefined) return "";
+      if (typeof value === "string") return value;
+      if (typeof value === "number" || typeof value === "boolean") return String(value);
+      try {
+        return JSON.stringify(value);
+      } catch {
+        return String(value);
+      }
+    }
+
+    function pctText(v) {
+      return `${(safeNumber(v, 0) * 100).toFixed(2)}%`;
+    }
+
+    function inferWinner(s0, s1) {
+      if (s0 > s1) return "p0";
+      if (s1 > s0) return "p1";
+      return "draw";
+    }
+
+    function normalizeUnits(list) {
+      if (!Array.isArray(list)) return [];
+      return list.map((u, idx) => {
+        const pos = Array.isArray(u?.pos) ? u.pos : Array.isArray(u?.position) ? u.position : [0, 0];
+        const target = Array.isArray(u?.target) ? u.target : Array.isArray(u?.target_pos) ? u.target_pos : null;
+        return {
+          id: safeNumber(u?.unit_id ?? u?.id ?? idx, idx),
+          x: safeNumber(pos[0], 0),
+          y: safeNumber(pos[1], 0),
+          energy: safeNumber(u?.energy, 0),
+          target: target ? [safeNumber(target[0], 0), safeNumber(target[1], 0)] : null,
+          intent: toText(u?.intent ?? ""),
+          action: toText(u?.action_name ?? u?.action ?? "")
+        };
+      });
+    }
+
+    function readFrameScore(frame, p0Units, p1Units) {
+      const score = frame?.score || {};
+      const team0 = safeNumber(frame?.team0_score ?? score.team0 ?? score.p0 ?? score.player0 ?? score.my_points ?? score[0], 0);
+      const team1 = safeNumber(frame?.team1_score ?? score.team1 ?? score.p1 ?? score.player1 ?? score.opp_points ?? score[1], 0);
+      const ships0 = safeNumber(frame?.ships_p0 ?? frame?.p0_ship_count ?? p0Units.length, p0Units.length);
+      const ships1 = safeNumber(frame?.ships_p1 ?? frame?.p1_ship_count ?? p1Units.length, p1Units.length);
+      return { team0, team1, ships0, ships1 };
+    }
+
+    function getOverlayList(frame, keyA, keyB, keyC) {
+      const overlay = frame?.overlay || {};
+      if (Array.isArray(overlay[keyA])) return overlay[keyA];
+      if (keyB && Array.isArray(overlay[keyB])) return overlay[keyB];
+      if (keyC && Array.isArray(overlay[keyC])) return overlay[keyC];
+      if (Array.isArray(frame?.[keyA])) return frame[keyA];
+      if (keyB && Array.isArray(frame?.[keyB])) return frame[keyB];
+      if (keyC && Array.isArray(frame?.[keyC])) return frame[keyC];
+      return [];
+    }
+
+    function normalizeFrame(frame, index) {
+      const unitsByPlayer = frame?.units_by_player || {};
+      const p0Raw =
+        unitsByPlayer.player_0 ??
+        frame?.player0_units ??
+        frame?.p0_units ??
+        frame?.player_0_units ??
+        frame?.units_p0 ??
+        frame?.units0 ??
+        frame?.players?.player_0?.units ??
+        [];
+
+      const p1Raw =
+        unitsByPlayer.player_1 ??
+        frame?.player1_units ??
+        frame?.p1_units ??
+        frame?.player_1_units ??
+        frame?.units_p1 ??
+        frame?.units1 ??
+        frame?.players?.player_1?.units ??
+        frame?.enemy_units ??
+        [];
+
+      const p0Units = normalizeUnits(p0Raw);
+      const p1Units = normalizeUnits(p1Raw);
+      const scoreInfo = readFrameScore(frame, p0Units, p1Units);
+
+      const relics = getOverlayList(frame, "known_relics", "relics", "relic_nodes");
+      const asteroids = getOverlayList(frame, "asteroid_tiles", "asteroids", "obstacles");
+      const energyTiles = getOverlayList(frame, "energy_tiles", "energy", "energy_nodes");
+      const trees = getOverlayList(frame, "trees", "tree_tiles", "decor_trees");
+
+      const riskCount =
+        safeNumber(
+          frame?.risk_changes ??
+          frame?.changed_targets ??
+          frame?.risk_filter?.changed_targets_total ??
+          frame?.risk_filter?.changed_targets ??
+          frame?.risk_filter?.changed_count ??
+          0,
+          0
+        );
+
+      return {
+        index,
+        match_idx: safeNumber(frame?.match_idx, 0),
+        step: safeNumber(frame?.step, index),
+        phase: toText(frame?.phase ?? "unknown"),
+        llm_mode: toText(frame?.llm_mode ?? frame?.mode ?? ""),
+        score0: scoreInfo.team0,
+        score1: scoreInfo.team1,
+        ships0: scoreInfo.ships0,
+        ships1: scoreInfo.ships1,
+        p0Units,
+        p1Units,
+        relics,
+        asteroids,
+        energyTiles,
+        trees,
+        riskChanges: riskCount
+      };
+    }
+
+    function buildMatchSummaryFromFrames(frames) {
+      const lastByMatch = new Map();
+
+      for (const frame of frames) {
+        const prev = lastByMatch.get(frame.match_idx);
+        if (!prev || frame.step >= prev.step) {
+          lastByMatch.set(frame.match_idx, frame);
+        }
+      }
+
+      const keys = [...lastByMatch.keys()].sort((a, b) => a - b);
+      const matches = [];
+      let p0Wins = 0;
+      let p1Wins = 0;
+      let draws = 0;
+      let total0 = 0;
+      let total1 = 0;
+
+      for (const key of keys) {
+        const frame = lastByMatch.get(key);
+        const win = inferWinner(frame.score0, frame.score1);
+        if (win === "p0") p0Wins += 1;
+        else if (win === "p1") p1Wins += 1;
+        else draws += 1;
+
+        total0 += frame.score0;
+        total1 += frame.score1;
+
+        matches.push({
+          match_idx: key,
+          score_team0: frame.score0,
+          score_team1: frame.score1,
+          winner: win
+        });
+      }
+
+      return {
+        match_count: matches.length,
+        p0_wins: p0Wins,
+        p1_wins: p1Wins,
+        draws,
+        total_score_team0: total0,
+        total_score_team1: total1,
+        matches
+      };
+    }
+
+    function normalizeMatchSummary(raw, frames) {
+      if (raw && Array.isArray(raw.matches) && raw.matches.length > 0) {
+        return {
+          match_count: safeNumber(raw.match_count, raw.matches.length),
+          p0_wins: safeNumber(raw.p0_wins, 0),
+          p1_wins: safeNumber(raw.p1_wins, 0),
+          draws: safeNumber(raw.draws, 0),
+          total_score_team0: safeNumber(raw.total_score_team0, 0),
+          total_score_team1: safeNumber(raw.total_score_team1, 0),
+          matches: raw.matches.map(m => ({
+            match_idx: safeNumber(m.match_idx, 0),
+            score_team0: safeNumber(m.score_team0 ?? m.team0 ?? 0, 0),
+            score_team1: safeNumber(m.score_team1 ?? m.team1 ?? 0, 0),
+            winner: toText(m.winner ?? inferWinner(safeNumber(m.score_team0, 0), safeNumber(m.score_team1, 0)))
+          }))
+        };
+      }
+
+      return buildMatchSummaryFromFrames(frames);
+    }
+
+    function normalizeReplay(raw) {
+      const rawFrames = Array.isArray(raw?.frames)
+        ? raw.frames
+        : Array.isArray(raw?.merged_frames)
+        ? raw.merged_frames
+        : Array.isArray(raw?.replay_frames)
+        ? raw.replay_frames
+        : Array.isArray(raw?.data)
+        ? raw.data
+        : [];
+
+      const frames = rawFrames.map((frame, index) => normalizeFrame(frame, index));
+
+      const summaryRaw = raw?.summary || raw?.replay_summary || {};
+      const matchSummaryRaw = raw?.match_summary || raw?.matches_summary || raw?.match_results || {};
+      const matchSummary = normalizeMatchSummary(matchSummaryRaw, frames);
+
+      const last = frames.length > 0 ? frames[frames.length - 1] : null;
+      const finalResult = {
+        final_score_team0: last ? last.score0 : safeNumber(raw?.final_result?.final_score_team0, 0),
+        final_score_team1: last ? last.score1 : safeNumber(raw?.final_result?.final_score_team1, 0),
+        winner: last
+          ? (last.score0 > last.score1 ? "player_0" : last.score1 > last.score0 ? "player_1" : "tied")
+          : toText(raw?.final_result?.winner ?? "tied")
+      };
+
+      const bothRate = safeNumber(
+        summaryRaw?.both_player_frame_rate ??
+        raw?.both_player_frame_rate ??
+        (safeNumber(summaryRaw?.frames_with_both_players, 0) / Math.max(safeNumber(summaryRaw?.frame_count, frames.length), 1)),
+        0
+      );
+
+      const totalRiskChanges = safeNumber(
+        summaryRaw?.total_changed_targets ??
+        summaryRaw?.total_risk_changes ??
+        raw?.total_risk_changes ??
+        frames.reduce((sum, f) => sum + safeNumber(f.riskChanges, 0), 0),
+        0
+      );
+
+      return {
+        frames,
+        summary: {
+          frame_count: safeNumber(summaryRaw?.frame_count, frames.length),
+          both_player_frame_rate: bothRate,
+          total_risk_changes: totalRiskChanges
+        },
+        finalResult,
+        matchSummary
+      };
+    }
+
+    async function tryLoadDefaultSource() {
+      for (const path of DEFAULT_SOURCE_CANDIDATES) {
+        try {
+          const response = await fetch(path, { cache: "no-store" });
+          if (!response.ok) continue;
+          const raw = await response.json();
+          applyReplay(raw, path);
+          return;
+        } catch (err) {
+          // Try the next path.
+        }
+      }
+      timelineList.innerHTML = `
+        <div class="panel-title">Battle Timeline</div>
+        <div class="empty-state">Default loading failed. Please manually select the replay JSON file.</div>
+      `;
+      sourceText.innerHTML = `
+        Current source:<br />
+        <strong>Default loading failed.</strong><br />
+        Please manually select the replay JSON file.
+      `;
+      draw();
+    }
+
+    function applyReplay(raw, sourcePath) {
+      const normalized = normalizeReplay(raw);
+      state.frames = normalized.frames;
+      state.summary = normalized.summary;
+      state.finalResult = normalized.finalResult;
+      state.matchSummary = normalized.matchSummary;
+      state.currentIndex = 0;
+      state.sourcePath = sourcePath || state.sourcePath;
+
+      frameRange.min = 0;
+      frameRange.max = Math.max(state.frames.length - 1, 0);
+      frameRange.value = 0;
+
+      sourceText.innerHTML = `
+        Current source:<br />
+        <strong>${sourcePath}</strong>
+      `;
+
+      updateUI();
+      draw();
+    }
+
+    function updateUI() {
+      const total = Math.max(state.frames.length, 1);
+      const frame = state.frames[state.currentIndex] || null;
+      frameCounter.textContent = `${Math.min(state.currentIndex + 1, total)} / ${total}`;
+      frameRange.value = state.currentIndex;
+
+      if (!frame) {
+        scoreP0.textContent = "0";
+        scoreP1.textContent = "0";
+        leaderText.textContent = "Leader: tied";
+        leaderSub.textContent = "Match 0 / Step 0 / Frame 1";
+        shipsP0.textContent = "0";
+        shipsP1.textContent = "0";
+        knownRelics.textContent = "0";
+        riskChanges.textContent = "0";
+        renderTimeline([]);
+        renderScoreSummary();
+        return;
+      }
+
+      scoreP0.textContent = frame.score0;
+      scoreP1.textContent = frame.score1;
+      shipsP0.textContent = frame.ships0;
+      shipsP1.textContent = frame.ships1;
+      knownRelics.textContent = frame.relics.length;
+      riskChanges.textContent = frame.riskChanges;
+
+      let leader = "tied";
+      if (frame.score0 > frame.score1) leader = "player_0";
+      if (frame.score1 > frame.score0) leader = "player_1";
+
+      leaderText.textContent = `Leader: ${leader}`;
+      leaderSub.textContent = `Match ${frame.match_idx} / Step ${frame.step} / Frame ${frame.index + 1}`;
+
+      renderTimeline(buildTimeline(frame));
+      renderScoreSummary();
+      renderOverlay();
+    }
+
+    function buildTimeline(frame) {
+      const lines = [];
+      lines.push(`Match ${frame.match_idx} step=${frame.step} phase=${frame.phase}`);
+      lines.push(`score ${frame.score0}:${frame.score1} ships ${frame.ships0}:${frame.ships1}`);
+
+      const llmText = frame.llm_mode ? frame.llm_mode : "none";
+      lines.push(`llm mode=${llmText}`);
+
+      const p0Preview = frame.p0Units.slice(0, 4);
+      const p1Preview = frame.p1Units.slice(0, 4);
+
+      for (const u of p0Preview) {
+        const targetText = u.target ? `[${u.target[0]},${u.target[1]}]` : "-";
+        lines.push(`P0 unit ${u.id}: ${u.intent || "NO_INTENT"} -> ${u.action || "-"} target=${targetText}`);
+      }
+
+      for (const u of p1Preview) {
+        const targetText = u.target ? `[${u.target[0]},${u.target[1]}]` : "-";
+        lines.push(`P1 unit ${u.id}: ${u.intent || "NO_INTENT"} -> ${u.action || "-"} target=${targetText}`);
+      }
+
+      if (frame.riskChanges > 0) {
+        lines.push(`risk filter changed targets=${frame.riskChanges}`);
+      }
+
+      return lines;
+    }
+
+    function renderTimeline(lines) {
+      let html = `<div class="panel-title">Battle Timeline</div>`;
+      if (!lines || lines.length === 0) {
+        html += `<div class="empty-state">No timeline data available.</div>`;
+      } else {
+        html += lines.map(line => `<div class="timeline-line">${escapeHtml(line)}</div>`).join("");
+      }
+      timelineList.innerHTML = html;
+    }
+
+    function renderScoreSummary() {
+      const summary = state.matchSummary;
+      if (!summary.matches || summary.matches.length === 0) {
+        scoreSummaryList.innerHTML = `<div class="empty-state">No match summary yet.</div>`;
+        totalWinsText.textContent = "0 : 0";
+        return;
+      }
+
+      scoreSummaryList.innerHTML = summary.matches.map(m => {
+        const winner =
+          m.winner === "p0" || m.winner === "player_0" ? "P0" :
+          m.winner === "p1" || m.winner === "player_1" ? "P1" : "D";
+        return `
+          <div class="score-row">
+            <div class="score-match">M${m.match_idx}</div>
+            <div class="score-points">${m.score_team0} : ${m.score_team1}</div>
+            <div class="score-winner">${winner}</div>
+          </div>
+        `;
+      }).join("");
+
+      totalWinsText.textContent = `${summary.p0_wins} : ${summary.p1_wins}`;
+    }
+
+    function renderOverlay() {
+      overlayScoreP0.textContent = state.finalResult.final_score_team0;
+      overlayScoreP1.textContent = state.finalResult.final_score_team1;
+      overlayWinner.textContent = `Winner: ${state.finalResult.winner}`;
+      overlayFrames.textContent = `${state.summary.frame_count}`;
+      overlayBothRate.textContent = pctText(state.summary.both_player_frame_rate);
+      overlayRiskChanges.textContent = `${state.summary.total_risk_changes}`;
+      overlayMatchWins.textContent = `${state.matchSummary.p0_wins} : ${state.matchSummary.p1_wins}`;
+      overlayDraws.textContent = `${state.matchSummary.draws}`;
+      overlayTotalScore.textContent = `${state.matchSummary.total_score_team0} : ${state.matchSummary.total_score_team1}`;
+
+      overlayTableBody.innerHTML = (state.matchSummary.matches || []).map(m => {
+        const winner =
+          m.winner === "p0" || m.winner === "player_0" ? "player_0" :
+          m.winner === "p1" || m.winner === "player_1" ? "player_1" : "draw";
+        return `
+          <tr>
+            <td>M${m.match_idx}</td>
+            <td>${m.score_team0} : ${m.score_team1}</td>
+            <td>${winner}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    }
+
+    function isoProject(x, y, tileW, tileH, originX, originY) {
+      return {
+        x: originX + (x - y) * (tileW / 2),
+        y: originY + (x + y) * (tileH / 2)
+      };
+    }
+
+    function drawRoundedDiamond(x, y, size, color) {
+      ctx.beginPath();
+      ctx.moveTo(x, y - size);
+      ctx.lineTo(x + size, y);
+      ctx.lineTo(x, y + size);
+      ctx.lineTo(x - size, y);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+
+    function drawCliff(topCorners, depth) {
+      const [top, right, bottom, left] = topCorners;
+
+      ctx.fillStyle = "#d8bf73";
+      ctx.beginPath();
+      ctx.moveTo(left.x, left.y);
+      ctx.lineTo(bottom.x, bottom.y);
+      ctx.lineTo(bottom.x, bottom.y + depth * 0.96);
+      ctx.bezierCurveTo(
+        bottom.x - 60, bottom.y + depth * 0.80,
+        left.x + 40, left.y + depth * 0.90,
+        left.x, left.y + depth * 0.78
+      );
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#c9b05f";
+      ctx.beginPath();
+      ctx.moveTo(bottom.x, bottom.y);
+      ctx.lineTo(right.x, right.y);
+      ctx.lineTo(right.x, right.y + depth * 0.70);
+      ctx.bezierCurveTo(
+        right.x - 70, right.y + depth * 0.88,
+        bottom.x + 80, bottom.y + depth * 0.94,
+        bottom.x, bottom.y + depth * 0.96
+      );
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#b99f4b";
+      ctx.beginPath();
+      ctx.moveTo(left.x, left.y);
+      ctx.lineTo(top.x, top.y);
+      ctx.lineTo(right.x, right.y);
+      ctx.lineTo(right.x, right.y + depth * 0.70);
+      ctx.lineTo(bottom.x, bottom.y + depth * 0.96);
+      ctx.bezierCurveTo(
+        bottom.x - 80, bottom.y + depth * 0.85,
+        left.x + 40, left.y + depth * 0.92,
+        left.x, left.y + depth * 0.78
+      );
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      ctx.lineWidth = 1;
+      const verticalSteps = 6;
+      for (let i = 1; i < verticalSteps; i++) {
+        const t = i / verticalSteps;
+
+        const lx = left.x + (bottom.x - left.x) * t;
+        const ly = left.y + (bottom.y - left.y) * t;
+
+        ctx.beginPath();
+        ctx.moveTo(lx, ly);
+        ctx.lineTo(lx + 8 * Math.sin(t * 3.1), ly + depth * (0.82 + 0.1 * Math.sin(t * 4.4)));
+        ctx.stroke();
+
+        const rx = bottom.x + (right.x - bottom.x) * t;
+        const ry = bottom.y + (right.y - bottom.y) * t;
+
+        ctx.beginPath();
+        ctx.moveTo(rx, ry);
+        ctx.lineTo(rx + 6 * Math.sin(t * 5.3), ry + depth * (0.72 + 0.12 * Math.cos(t * 4.2)));
+        ctx.stroke();
+      }
+    }
+
+    function drawTree(px, py, scale) {
+      ctx.save();
+      ctx.translate(px, py);
+
+      ctx.fillStyle = "#6b5b2b";
+      ctx.fillRect(-1.5 * scale, 3 * scale, 3 * scale, 10 * scale);
+
+      ctx.fillStyle = "#7ac357";
+      ctx.beginPath();
+      ctx.moveTo(0, -16 * scale);
+      ctx.lineTo(10 * scale, 6 * scale);
+      ctx.lineTo(-10 * scale, 6 * scale);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(0, -7 * scale);
+      ctx.lineTo(8 * scale, 10 * scale);
+      ctx.lineTo(-8 * scale, 10 * scale);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawAsteroid(px, py, scale) {
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.fillStyle = "#d7dde6";
+      ctx.strokeStyle = "#8f99a7";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-8 * scale, -2 * scale);
+      ctx.lineTo(-3 * scale, -8 * scale);
+      ctx.lineTo(5 * scale, -7 * scale);
+      ctx.lineTo(9 * scale, -1 * scale);
+      ctx.lineTo(7 * scale, 6 * scale);
+      ctx.lineTo(-2 * scale, 8 * scale);
+      ctx.lineTo(-8 * scale, 4 * scale);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawRelic(px, py, scale) {
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.fillStyle = "#ffd54a";
+      ctx.strokeStyle = "#d7a900";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, -16 * scale);
+      ctx.lineTo(8 * scale, 0);
+      ctx.lineTo(0, 16 * scale);
+      ctx.lineTo(-8 * scale, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawEnergyTile(px, py, scale) {
+      ctx.save();
+      ctx.translate(px, py);
+      drawRoundedDiamond(0, 0, 6 * scale, "#63d56b");
+      ctx.restore();
+    }
+
+    function drawShip(unit, team, tileW, tileH, originX, originY) {
+      const pos = isoProject(unit.x + 0.5, unit.y + 0.5, tileW, tileH, originX, originY);
+      const bodyColor = team === "p0" ? "#4f82ff" : "#ff5d6d";
+      const bodyShade = team === "p0" ? "#2d63f2" : "#ec3748";
+
+      if (unit.target) {
+        const target = isoProject(unit.target[0] + 0.5, unit.target[1] + 0.5, tileW, tileH, originX, originY);
+        ctx.save();
+        ctx.strokeStyle = team === "p0" ? "rgba(79,130,255,0.45)" : "rgba(255,93,109,0.42)";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y - 8);
+        ctx.lineTo(target.x, target.y - 8);
+        ctx.stroke();
+        ctx.fillStyle = team === "p0" ? "#4f82ff" : "#ff5d6d";
+        ctx.beginPath();
+        ctx.arc(target.x, target.y - 8, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      ctx.save();
+      ctx.translate(pos.x, pos.y - 8);
+
+      ctx.fillStyle = "rgba(0,0,0,0.30)";
+      ctx.beginPath();
+      ctx.ellipse(0, 16, 10, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = bodyColor;
+      ctx.strokeStyle = bodyShade;
+      ctx.lineWidth = 1.2;
+
+      ctx.beginPath();
+      ctx.moveTo(0, -18);
+      ctx.lineTo(8, -4);
+      ctx.lineTo(8, 12);
+      ctx.lineTo(-8, 12);
+      ctx.lineTo(-8, -4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#f7fbff";
+      ctx.fillRect(-4.2, -5, 8.4, 12);
+
+      ctx.fillStyle = "#c2dcff";
+      ctx.beginPath();
+      ctx.moveTo(0, -24);
+      ctx.lineTo(4, -17);
+      ctx.lineTo(-4, -17);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#21303a";
+      ctx.font = "bold 10px Segoe UI";
+      ctx.textAlign = "center";
+      ctx.fillText(String(unit.id), 0, -28);
+
+      ctx.restore();
+    }
+
+    function draw() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const gridSize = 24;
+      const tileW = Math.max(34, Math.min(42, w / 44));
+      const tileH = tileW * 0.48;
+      const islandScale = 1.0;
+
+      const originX = w * 0.50;
+      const originY = h * 0.14;
+
+      const top = isoProject(0, 0, tileW, tileH, originX, originY);
+      const right = isoProject(gridSize, 0, tileW, tileH, originX, originY);
+      const bottom = isoProject(gridSize, gridSize, tileW, tileH, originX, originY);
+      const left = isoProject(0, gridSize, tileW, tileH, originX, originY);
+
+      ctx.fillStyle = "rgba(0, 0, 0, 0.18)";
+      ctx.beginPath();
+      ctx.ellipse((left.x + right.x) / 2, bottom.y + 78, 420, 108, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      drawCliff([top, right, bottom, left], 160 * islandScale);
+
+      ctx.beginPath();
+      ctx.moveTo(top.x, top.y);
+      ctx.lineTo(right.x, right.y);
+      ctx.lineTo(bottom.x, bottom.y);
+      ctx.lineTo(left.x, left.y);
+      ctx.closePath();
+      ctx.fillStyle = "#c9bd52";
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(124, 110, 40, 0.45)";
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x <= gridSize; x++) {
+        const a = isoProject(x, 0, tileW, tileH, originX, originY);
+        const b = isoProject(x, gridSize, tileW, tileH, originX, originY);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+
+      for (let y = 0; y <= gridSize; y++) {
+        const a = isoProject(0, y, tileW, tileH, originX, originY);
+        const b = isoProject(gridSize, y, tileW, tileH, originX, originY);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+
+      const frame = state.frames[state.currentIndex];
+      if (!frame) return;
+
+      const defaultTrees = [
+        [4, 6], [8, 11], [10, 3], [13, 15], [16, 5], [19, 10], [20, 2], [18, 13], [6, 2]
+      ];
+      const defaultAsteroids = [
+        [5, 3], [3, 12], [15, 12], [19, 8], [11, 17], [6, 16]
+      ];
+      const defaultRelics = [
+        [10, 10], [12, 14]
+      ];
+
+      const treeSource = frame.trees.length > 0 ? frame.trees : defaultTrees.map(([x, y]) => ({ pos: [x, y] }));
+      const asteroidSource = frame.asteroids.length > 0 ? frame.asteroids : defaultAsteroids.map(([x, y]) => ({ pos: [x, y] }));
+      const relicSource = frame.relics.length > 0 ? frame.relics : defaultRelics.map(([x, y]) => ({ pos: [x, y] }));
+
+      for (const item of treeSource) {
+        const pos = Array.isArray(item?.pos) ? item.pos : item;
+        const p = isoProject(safeNumber(pos[0], 0) + 0.5, safeNumber(pos[1], 0) + 0.5, tileW, tileH, originX, originY);
+        drawTree(p.x, p.y - 6, 0.95);
+      }
+
+      for (const item of asteroidSource) {
+        const pos = Array.isArray(item?.pos) ? item.pos : item;
+        const p = isoProject(safeNumber(pos[0], 0) + 0.5, safeNumber(pos[1], 0) + 0.5, tileW, tileH, originX, originY);
+        drawAsteroid(p.x, p.y, 1);
+      }
+
+      for (const item of frame.energyTiles || []) {
+        const pos = Array.isArray(item?.pos) ? item.pos : item;
+        const p = isoProject(safeNumber(pos[0], 0) + 0.5, safeNumber(pos[1], 0) + 0.5, tileW, tileH, originX, originY);
+        drawEnergyTile(p.x, p.y, 1);
+      }
+
+      for (const item of relicSource) {
+        const pos = Array.isArray(item?.pos) ? item.pos : item;
+        const p = isoProject(safeNumber(pos[0], 0) + 0.5, safeNumber(pos[1], 0) + 0.5, tileW, tileH, originX, originY);
+        drawRelic(p.x, p.y - 2, 1);
+      }
+
+      for (const unit of frame.p0Units) {
+        drawShip(unit, "p0", tileW, tileH, originX, originY);
+      }
+
+      for (const unit of frame.p1Units) {
+        drawShip(unit, "p1", tileW, tileH, originX, originY);
+      }
+    }
+
+    function stopPlayback() {
+      state.playing = false;
+      if (state.playTimer) {
+        clearInterval(state.playTimer);
+        state.playTimer = null;
+      }
+      playBtn.textContent = "Play";
+      playBtn.classList.remove("btn-active");
+      playBtn.classList.add("btn-primary");
+    }
+
+    function startPlayback() {
+      if (!state.frames.length) return;
+      stopPlayback();
+      state.playing = true;
+      playBtn.textContent = "Pause";
+      playBtn.classList.remove("btn-primary");
+      playBtn.classList.add("btn-active");
+      state.playTimer = setInterval(() => {
+        if (state.currentIndex >= state.frames.length - 1) {
+          stopPlayback();
+          return;
+        }
+        state.currentIndex += 1;
+        updateUI();
+        draw();
+      }, Math.max(120, 520 / state.speed));
+    }
+
+    function togglePlayback() {
+      if (state.playing) stopPlayback();
+      else startPlayback();
+    }
+
+    function setPresentationMode(enabled) {
+      state.presentation = enabled;
+      app.classList.toggle("presentation", enabled);
+      presentationBtn.classList.toggle("btn-active", enabled);
+      presentationBtn.classList.toggle("btn-neutral", !enabled);
+      draw();
+    }
+
+    function showFinalOverlay(show) {
+      state.overlayShown = show;
+      finalOverlay.classList.toggle("show", show);
+      finalBtn.classList.toggle("btn-active", show);
+      finalBtn.classList.toggle("btn-neutral", !show);
+    }
+
+    restartBtn.addEventListener("click", () => {
+      stopPlayback();
+      state.currentIndex = 0;
+      updateUI();
+      draw();
+      showFinalOverlay(false);
+    });
+
+    playBtn.addEventListener("click", () => {
+      showFinalOverlay(false);
+      togglePlayback();
+    });
+
+    presentationBtn.addEventListener("click", () => {
+      setPresentationMode(!state.presentation);
+    });
+
+    finalBtn.addEventListener("click", () => {
+      renderOverlay();
+      showFinalOverlay(!state.overlayShown);
+    });
+
+    closeOverlayBtn.addEventListener("click", () => {
+      showFinalOverlay(false);
+    });
+
+    frameRange.addEventListener("input", (e) => {
+      stopPlayback();
+      state.currentIndex = safeNumber(e.target.value, 0);
+      updateUI();
+      draw();
+    });
+
+    speedSelect.addEventListener("change", (e) => {
+      state.speed = safeNumber(e.target.value, 1);
+      if (state.playing) {
+        startPlayback();
+      }
+    });
+
+    fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      fileName.textContent = file.name;
+
+      try {
+        const text = await file.text();
+        const raw = JSON.parse(text);
+        applyReplay(raw, file.name);
+        showFinalOverlay(false);
+      } catch (err) {
+        alert("Failed to load JSON file. Please check the file format.");
+      }
+    });
+
+    window.addEventListener("resize", resizeCanvas);
+
+    resizeCanvas();
+    tryLoadDefaultSource();
+  </script>
+</body>
+</html>
