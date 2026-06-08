@@ -1,6 +1,6 @@
 # LuxLLM-Agent Demo Package
 
-LuxLLM-Agent is an explainable LLM-assisted agent and replay viewer for **Lux AI Season 3**.
+LuxLLM-Agent is an LLM-assisted agent and replay viewer for **Lux AI Season 3**, designed around system-level, replay-grounded traceability.
 This repository contains a clean demonstration package prepared for an EMNLP System Demonstrations paper draft.
 
 The project demonstrates how an LLM-assisted game agent can be made inspectable through structured decision logs, replay-frame generation, an S1-style isometric battle replay viewer, controlled evaluation summaries, lightweight scalability evidence, and a minimal source-code package.
