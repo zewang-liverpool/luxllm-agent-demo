@@ -63,6 +63,12 @@ luxllm-agent-demo/
 
 ## 2. Main Demo
 
+## Demo Preview
+
+The following GIF shows a short preview of the S3 isometric replay viewer, including timeline playback and replay-state visualisation.
+
+![LuxLLM-Agent replay preview](assets/lux_s3_replay_preview.gif)
+
 The main demo artifact is the S3-style isometric battle replay viewer:
 
 ```text
