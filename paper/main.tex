@@ -24,12 +24,16 @@
 \title{LuxLLM-Agent: An Inspectable LLM-Assisted Agent and Replay Viewer for Lux AI Season 3}
 
 \author{
-  Ze Wang \\
-  University of Liverpool \\
-  \texttt{wze347805@gmail.com}
+  First Author \\
+  Affiliation / Address line 1 \\
+  Affiliation / Address line 2 \\
+  Affiliation / Address line 3 \\
+  \texttt{email@domain} \\
   \And
   Second Author \\
   Affiliation / Address line 1 \\
+  Affiliation / Address line 2 \\
+  Affiliation / Address line 3 \\
   \texttt{email@domain}
 }
 
@@ -37,7 +41,7 @@
 \maketitle
 
 \begin{abstract}
-We present LuxLLM-Agent, an inspectable LLM-assisted agent system for Lux AI Season 3. The system combines a local game-playing agent, rule-based fallback policies, structured decision logs, and an isometric battle replay viewer for analysing agent behaviour. Unlike a standard replay viewer, our interface connects game states with decision traces, cached LLM decisions, fallback events, match-level scores, and final result summaries. We evaluate the system through controlled \texttt{qwen3:32b} matches on Barkla2, where a target-aware strategic planner improves the LLM-assisted player's descriptive win rate from 56\% to 70\% over a previous basic qwen3 planner while maintaining zero LLM errors. The system also includes a lightweight scalability simulation with up to 1000 worker agents. The demo package includes a replay viewer, screenshots, replay JSON, evaluation reports, and a screencast video; the final public links will be added at submission time.
+We present LuxLLM-Agent, an inspectable LLM-assisted agent system for Lux AI Season 3. The system combines a local game-playing agent, rule-based fallback policies, structured decision logs, and an isometric battle replay viewer for analysing agent behaviour. Unlike a standard replay viewer, our interface connects game states with decision traces, cached LLM decisions, fallback events, match-level scores, and final result summaries. We evaluate the system through controlled \texttt{qwen3:32b} matches on Barkla2, where a target-aware strategic planner improves the LLM-assisted player's descriptive win rate from 56\% to 70\% over a previous basic qwen3 planner while maintaining zero LLM errors. The system also includes a lightweight scalability simulation with up to 1000 worker agents. The demo package includes a replay viewer, screenshots, replay JSON, evaluation reports, and screencast material for research and educational use.
 \end{abstract}
 
 \section{Introduction}
@@ -206,7 +210,7 @@ The system is also different from post-hoc explanation interfaces. A post-hoc ex
 
 \section{Licensing and Availability}
 
-The demo package is intended to be released with source code, replay artefacts, screenshots, evaluation summaries, and a short screencast video. The final public repository and video links will be added before submission. The system uses the Lux AI Season 3 environment and local model inference through Ollama. The code and artefacts will be distributed for research and educational use, subject to the licences of the underlying environment and dependencies.
+The demo package is intended to be released with source code, replay artefacts, screenshots, evaluation summaries, and screencast material. The system uses the Lux AI Season 3 environment and local model inference through Ollama. The code and artefacts will be distributed for research and educational use, subject to the licences of the underlying environment and dependencies.
 
 \section{Conclusion}
 
@@ -232,7 +236,7 @@ The author thanks the project supervisor and the Lux AI Challenge community for 
 \section{Additional Details}
 \label{sec:appendix}
 
-The local development artefacts include replay JSON, Markdown reports, screenshots, demo video material, and LaTeX integration files. The final replay viewer was verified with 505 replay frames, 96.83% both-player frame coverage, 662 risk-filter changes, and a compiled paper artefact. The scalability simulation was verified up to 1000 lightweight worker agents and 100000 synthetic decisions.
+The local development artefacts include replay JSON, Markdown reports, screenshots, demo video material, and LaTeX integration files. The final replay viewer was verified with replay-frame artefacts and result-overlay screenshots. The scalability simulation was verified up to 1000 lightweight worker agents and 100000 synthetic decisions.
 
 Figure~\ref{fig:final-overlay} shows the final result overlay used in the replay viewer.
 
