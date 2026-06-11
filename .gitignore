@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# LaTeX build files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.log
+
+# Archives
+*.zip
+*.tar
+*.gz
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Large generated experiment outputs
+docs/hpc_qwen3_gpu_e4_50run/
+docs/hpc_qwen3_gpu_e52_50run/
+docs/hpc_qwen3_32b_multirun/
+replays/
