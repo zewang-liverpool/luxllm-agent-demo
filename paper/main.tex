@@ -1,379 +1,246 @@
-% =====================================================================
-%  EMNLP 2026 — System Demonstrations Track
-%  Submission template (single-blind review: show author names)
-%
-%  Paper limit: 6 pages of content (hard limit; longer => desk reject)
-%               + unlimited references
-%               + unlimited optional ethics / broader-impact statement
-%               + appendix limited to 2 pages
-%  Accepted papers receive 1 extra content page for the camera-ready.
-%
-%  REQUIRED this year (else desk reject):
-%    - Some form of evaluation (see Section "Evaluation")
-%    - A link to a live demo OR a downloadable installable package
-%    - A <= 2.5 min screencast video (submitted with the paper)
-% =====================================================================
+% EMNLP 2026 -- System Demonstrations Track
+% Main paper file for Overleaf / ACL style compilation.
 
 \documentclass[11pt]{article}
 
-% Reviewing for EMNLP 2026 demos is SINGLE-BLIND: keep your real names and
-% affiliations visible. Do NOT use the "review" option because it anonymises.
-%   \usepackage{acl}            % non-anonymous, no page/line numbers
-%   \usepackage[preprint]{acl}  % non-anonymous + page numbers
-%   \usepackage[final]{acl}     % camera-ready
+% Use ACL style. For final camera-ready, remove [preprint] if required by the venue.
 \usepackage[preprint]{acl}
 
-% Standard package includes.
+% Standard packages.
 \usepackage{times}
 \usepackage{latexsym}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{microtype}
-\usepackage{inconsolata}
 \usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{multirow}
-\usepackage{amsmath}
 \usepackage{url}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{array}
 
-% British English throughout.
-\usepackage[british]{babel}
+% ACL template setting.
+\renewcommand{\UrlFont}{\ttfamily\small}
 
-% Safe figure helper: if a figure is not uploaded yet, the paper still compiles.
-\newcommand{\safefigure}[2]{%
-\IfFileExists{#1}{%
-\includegraphics[width=#2]{#1}%
-}{%
-\fbox{\rule{0pt}{3.2cm}\rule{0.92\linewidth}{0pt}}%
-}%
-}
+% Single-blind demo review allows author names to remain visible.
+% Keep the simple ACL/EMNLP author-block style.
+\title{LuxLLM-Agent: An Inspectable LLM-Assisted Agent and Replay Viewer for Lux AI Season 3}
 
-\title{LuxLLM-Agent: An Explainable LLM-Assisted Agent and Replay Viewer for Lux AI Season 3}
-
-% --- Single-blind: keep this placeholder block until the final author list is confirmed. ---
 \author{
-First Author \\
-Affiliation / Address line 1 \\
-\texttt{email@domain} \\
-\And
-Second Author \\
-Affiliation / Address line 1 \\
-\texttt{email@domain} \\
+  Ze Wang \\
+  University of Liverpool \\
+  \texttt{wze347805@gmail.com}
+  \And
+  Second Author \\
+  Affiliation / Address line 1 \\
+  \texttt{email@domain}
 }
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We present LuxLLM-Agent, an LLM-assisted agent and replay viewer for Lux AI Season 3, designed around system-level, replay-grounded explainability. The system combines a local game-playing agent, rule-based fallback policies, structured decision traces, and an S1-style isometric battle replay viewer for inspecting agent behaviour. Rather than claiming to explain the internal neural computation of the LLM, the system exposes decision sources, fallback status, risk-filter changes, unit actions, match-score context, and replay-frame alignment. We evaluate the system through controlled matches against a rule-based baseline, trace-based replay inspection, replay-frame verification, and a lightweight scalability simulation. The controlled match results are treated as preliminary descriptive evidence rather than statistically conclusive model rankings, and the artifact package includes the viewer, replay data, paper figures, reports, source code, and demo media.
+We present LuxLLM-Agent, an inspectable LLM-assisted agent system for Lux AI Season 3. The system combines a local game-playing agent, rule-based fallback policies, structured decision logs, and an isometric battle replay viewer for analysing agent behaviour. Unlike a standard replay viewer, our interface connects game states with decision traces, cached LLM decisions, fallback events, match-level scores, and final result summaries. We evaluate the system through controlled \texttt{qwen3:32b} matches on Barkla2, where a target-aware strategic planner improves the LLM-assisted player's descriptive win rate from 56\% to 70\% over a previous basic qwen3 planner while maintaining zero LLM errors. The system also includes a lightweight scalability simulation with up to 1000 worker agents. The demo package includes a replay viewer, screenshots, replay JSON, evaluation reports, and a screencast video; the final public links will be added at submission time.
 \end{abstract}
 
-% =====================================================================
 \section{Introduction}
-\label{sec:intro}
 
-Game AI competitions provide a useful testbed for studying decision making, planning, and multi-agent behaviour under partial observability and limited runtime. The Lux AI Challenge provides a competitive game-AI environment for studying multi-variable optimisation, resource gathering, allocation, and opponent-aware policy design~\citep{luxai_challenge,luxai_s3_design}. Lux AI Season 3 further frames this setting as a two-player competition with repeated match sequences and resource-oriented decision making~\citep{luxai_s3_kaggle}. Lux AI Season 3 is especially challenging because an agent must explore an initially uncertain map, reason about relics and energy, control multiple units, and react to an opponent over many steps.
+Large language models (LLMs) have become increasingly attractive for building agents that can reason over complex environments, generate high-level plans, and expose intermediate reasoning traces. However, game-agent settings expose several practical challenges that are easy to overlook in isolated prompting examples. The environment is dynamic, action legality matters, repeated model calls are expensive, and final match outcomes alone do not explain why an agent behaved in a particular way. These challenges are especially visible in long-horizon games where performance emerges from many small tactical decisions rather than from a single model response.
 
-Large language models (LLMs) can provide flexible high-level reasoning, and recent LLM-agent systems have explored reasoning-and-acting loops, verbal self-feedback, open-ended embodied agents, and generative interactive agents~\citep{yao2023react,shinn2023reflexion,wang2023voyager,park2023generative_agents}. However, directly using LLMs inside a real-time game loop introduces latency, instability, and reproducibility concerns.
+This paper presents LuxLLM-Agent, a system demonstration focused on making LLM-assisted game agents inspectable and reproducible. The system targets Lux AI Season 3, a competitive two-player game environment involving exploration, hidden map information, unit movement, scoring opportunities, energy-related constraints, and long-horizon tactical decisions. Rather than presenting the agent as a competition-winning policy, we use the environment as a compact testbed for studying how LLM-generated strategies can be connected to fallback-safe execution and replay-grounded analysis.
 
-This paper presents LuxLLM-Agent, a system demonstration that focuses on making LLM-assisted game agents inspectable, traceable, and reproducible. The system uses an LLM-assisted strategy layer with rule-based fallback, records structured decision traces, and provides a replay viewer that visualises both the battle state and the logged decision evidence. The target users are researchers and students interested in LLM agents, game AI, agent evaluation, and replay-grounded analysis of agent behaviour.
+The central idea is to treat the LLM as a high-level strategy component rather than as a direct controller for every individual unit action. The agent records structured decision traces, reuses cached strategy decisions between fresh LLM calls, and falls back to deterministic rules when the LLM is unavailable, too slow, or unsuitable for direct execution. The replay viewer then makes these decisions visible alongside the game state, helping users inspect how the agent combines LLM strategy, cached decisions, rule fallback, and match outcomes.
 
-In this paper, we use explainability in a system-level and replay-grounded sense. The system does not attempt to explain the internal neural computation of the LLM. Instead, it exposes the decision pathway used by the agent system: the decision source, active strategy, fallback status, risk-filter changes, unit-level actions, match-score context, and replay-frame alignment. This allows users to inspect how the agent behaved over time and to connect observed replay events with the logged decision evidence.
-The central motivation is that the outcome of a game match is not enough to understand whether an LLM-assisted agent is behaving reliably. A final score does not show whether an LLM decision was fresh or stale, whether a rule fallback was used, whether a target was changed by a risk filter, or whether the agent followed a coherent strategy over time. For this reason, LuxLLM-Agent treats replay visualisation as part of the agent evaluation pipeline rather than as a separate cosmetic interface. The viewer is designed to make the agent's logged decision pathway inspectable alongside the replay, so that users can connect state changes, score changes, and fallback events with the corresponding match context.
+This setting raises a different research question from simply maximising leaderboard performance: how can an LLM-assisted game agent be made observable enough for users to inspect its decisions after a match? In many agent demonstrations, the LLM component is only visible through a final action or through a natural-language explanation generated after the fact. LuxLLM-Agent instead records decision-source metadata during execution and binds these records to replay frames. This makes it possible to distinguish between fresh LLM decisions, cached LLM decisions, deterministic fallback actions, and rule-controlled opponent actions.
 
-Our contributions are:
-\begin{itemize}
-\item an LLM-assisted Lux AI Season 3 agent with cached strategy decisions and rule-based fallback for runtime stability;
-\item a trace-based logging pipeline that records agent strategies, decision sources, fallback events, risk-filter changes, unit actions, and match-level outcomes;
-\item an S1-style isometric battle replay viewer that turns Lux S3 logs into a replay-grounded inspection interface for demonstration, debugging, and paper figures;
-\item a controlled evaluation, trace-availability analysis, and lightweight scalability simulation, with the current match results reported as preliminary descriptive evidence rather than statistically conclusive model rankings.
-\end{itemize}
+The contribution of this demo is system-oriented. First, it provides a fallback-safe LLM-agent runtime for Lux AI Season 3, where high-level LLM strategy generation is separated from low-level action validation. Second, it introduces replay-grounded decision traceability, allowing users to inspect how decisions were produced during the match rather than relying only on final scores. Third, it reports controlled \texttt{qwen3:32b} evaluation results together with trace coverage, fallback behaviour, latency, and cached-decision statistics. Finally, it includes a lightweight scalability simulation showing how sparse LLM-generated policy templates can be reused by many cheaper worker agents.
 
-% =====================================================================
 \section{System Overview}
-\label{sec:system}
 
-LuxLLM-Agent consists of four main components: an LLM-assisted agent, a rule-based fallback policy, a structured trace logging and evaluation pipeline, and a replay-driven visualisation interface. During a match, the agent observes the current game state and converts it into a compact decision context. When the LLM is available within the runtime budget, it produces a high-level strategy such as exploration, energy collection, relic movement, or scoring. If the LLM call is unavailable, stale, or unsafe, the system falls back to deterministic rule policies. This design treats the LLM as a sparse strategic planner rather than as a controller for every unit-level action.
-
-The system is designed around system-level explainability through traceability. Each important decision is logged with the current strategy, decision source, fallback status, unit action, and risk-filter information. These traces do not claim to expose the internal neural reasoning process of the LLM. Instead, they expose the decision pathway used by the implemented agent system. The logs are later converted into replay frames and evaluation summaries. The replay viewer then reconstructs a visual battle timeline from these frames, allowing users to inspect how the agent behaved over time rather than only seeing the final score.
-
-The end-to-end data flow is intentionally simple and reproducible. A local Lux AI Season 3 match produces console logs and structured frame logs. A replay-frame builder merges the relevant per-step evidence into a compact JSON representation. The viewer loads this JSON file and renders the game state as a floating-island battle map. Finally, screenshots, verification reports, and artifact indices are generated from the same replay package so that the paper, demo video, and repository all refer to the same evidence source. This shared evidence source reduces the risk that the paper figures, video demonstration, and downloadable artifact describe different versions of the system.
+LuxLLM-Agent consists of a local Lux AI Season 3 agent, an LLM-assisted decision layer, a fallback-safe execution layer, a trace logger, an evaluator, and a replay-grounded viewer. Figure~\ref{fig:replay-viewer} shows the replay interface used in the demonstration.
 
 \begin{figure}[t]
 \centering
-\safefigure{figures/figure_s3_replay_viewer.png}{\linewidth}
-\caption{S1-style isometric battle replay viewer for Lux AI Season 3. The viewer loads merged replay frames and shows both players, unit positions, score, match state, timeline, and per-match score summary.}
-\label{fig:s3-isometric-replay-midgame}
+\includegraphics[width=\linewidth]{figures/figure_s3_replay_viewer.png}
+\caption{Replay viewer for inspecting Lux AI Season 3 matches. The viewer shows the game map, unit positions, score progression, final result information, and decision-related metadata.}
+\label{fig:replay-viewer}
 \end{figure}
 
-\subsection{Implementation}
+\subsection{Runtime Components}
 
-The prototype is implemented in Python and JavaScript. The Lux AI Season 3 agent runs locally through the competition environment, while LLM decisions are produced through a local Ollama backend using Qwen2.5 models~\citep{qwen25}. The implementation records console logs, structured JSONL frame logs, evaluation JSON files, replay frames, screenshots, and Markdown summaries. The viewer is implemented as a standalone HTML interface that can be opened through a local HTTP server and used for live demonstration or video recording.
+The system separates strategy generation, safe execution, trace logging, replay inspection, and evaluation. The agent runtime executes Lux AI Season 3 matches and converts validated decisions into game actions. The LLM layer generates sparse high-level strategies from compact state summaries. A cache layer reuses previous LLM decisions across turns to reduce repeated model calls. A deterministic fallback policy maintains safe execution when the LLM is unavailable, too slow, or unsuitable for direct execution. A trace logger records frame-level decision provenance and match metadata, while the evaluator produces match summaries, controlled metrics, and evidence reports. Finally, the replay viewer visualises match state, score progression, and decision evidence.
 
-The current demonstration package includes a stable S3 isometric battle replay viewer, merged replay JSON, four paper-ready screenshots, a demo video, controlled evaluation summaries, minimal source code, and scalability reports. The system does not require cloud LLM APIs for the local demonstration. This makes the artifact suitable for reviewer inspection because the replay viewer can be launched locally without rerunning the full game environment or making external model calls.
+This component separation is important for inspectable LLM-agent systems. If the LLM, action executor, logger, and viewer are tightly coupled, it becomes difficult to identify whether an observed behaviour came from model reasoning, cached strategy reuse, deterministic rules, or replay post-processing. LuxLLM-Agent therefore treats the agent runtime and the replay viewer as connected but separate components: the runtime produces structured evidence, and the viewer renders that evidence for inspection.
 
-\subsection{Design Choices}
+\subsection{Agent Runtime}
 
-The system separates high-level strategy generation from low-level action execution. This choice is important because a full Lux AI Season 3 match requires many small unit-level decisions, while the LLM is better suited to sparse strategic reasoning. The rule-based fallback layer ensures that the agent can continue acting even when the LLM is unavailable, slow, or produces an unusable response. This makes the system more robust than a design that depends on an LLM for every action.
+The game-playing agent runs inside the Lux AI Season 3 environment. At each decision point, the runtime extracts compact state features from the current observation, including unit locations, visible map information, energy-related signals, known scoring opportunities, and recent match context. These features are converted into a compact decision summary for the LLM-assisted layer.
 
-The viewer is designed in the style of the Season 1 floating-island replay interface so that the Season 3 demonstration remains visually consistent with earlier Lux-style visualisations. At the same time, the interface adds Season 3-specific evidence such as match score summaries, final result overlays, known relic counts, risk-change counts, and replay-frame coverage. The interface is also motivated by human-AI interaction principles: users should be able to understand system status, inspect behaviour, and recover context when automated decisions are uncertain or difficult to interpret~\citep{amershi2019guidelines}. The result is a viewer that is both presentation-friendly and useful for debugging agent behaviour.
+The system does not ask the LLM to directly output arbitrary low-level commands for every unit. Instead, the LLM produces structured strategic decisions, such as whether to explore, move towards candidate scoring tiles, preserve units, or follow a previously selected plan. Low-level action conversion remains rule-checked so that the executed actions stay compatible with the environment.
 
+\subsection{Data Flow and Decision Sources}
 
-% =====================================================================
+The system follows a frame-level data flow. For each game frame, the runtime receives an observation from the Lux AI environment and extracts a compact state representation. This representation includes visible unit positions, local map evidence, known or suspected scoring opportunities, energy-related information, and recent strategy context. The summarised state is then passed either to the LLM-assisted strategy layer or to the deterministic fallback layer, depending on the current decision schedule and runtime conditions.
+
+Each executed action is annotated with a decision source. We use four decision-source categories. A \emph{fresh LLM decision} indicates that the current action was derived from a newly generated model response. A \emph{cached LLM decision} indicates that the agent reused a previously generated strategy without making a new model call. A \emph{fallback decision} indicates that the system used deterministic rules because the LLM was unavailable, too slow, or unsuitable for direct execution. A \emph{rule-player decision} corresponds to the non-LLM baseline opponent in controlled evaluation. These categories are stored in the replay trace so that decision provenance can be inspected after the match.
+
+This separation is important because LLM-based agents can otherwise be difficult to evaluate. A match outcome alone does not show whether the LLM contributed useful strategic information, whether the system relied mostly on fallback rules, or whether the agent repeatedly reused an old decision. By recording decision sources at runtime, LuxLLM-Agent exposes the operational structure of the agent and supports more precise analysis than final win rate alone.
+
+\subsection{LLM-Assisted Strategy Layer}
+
+The current controlled experiments use a local Ollama backend with \texttt{qwen3:32b} served on Barkla2 GPU resources. The LLM is queried sparsely rather than on every frame. Fresh LLM decisions are recorded as structured JSON-like decisions, while cached LLM decisions are reused across later turns when appropriate. This design reduces repeated model calls and makes it possible to compare fresh model decisions, cached decisions, and fallback events in the same replay trace.
+
+The strategy layer is deliberately constrained. It receives a compact state summary rather than the full raw game state, and it returns a bounded decision object rather than free-form executable code. This reduces parsing ambiguity and allows the downstream runtime to validate decisions before execution. The design also makes the decision trace easier to inspect because the output categories are stable across matches.
+
+The system records LLM latency, parsing results, decision source, selected strategy, and fallback status. These logs are used both for quantitative evaluation and for visual inspection in the replay viewer.
+
+\subsection{Fallback-Safe Execution}
+
+The runtime includes deterministic fallback policies that are used when the LLM call times out, returns unusable content, or when rule-level action safety is required. The fallback policy also controls the non-LLM opponent in the controlled evaluation. This fallback design is important for long-horizon game-agent demos because a single failed model call should not terminate the whole match or invalidate the replay.
+
+Fallback is not treated as a failure of the system. Instead, it is part of the execution architecture. In a practical LLM-agent runtime, model latency, parsing errors, and environment constraints are expected operational conditions. The goal is therefore not to remove all fallback behaviour, but to make fallback explicit, measurable, and inspectable.
+
+\subsection{Replay-Grounded Viewer}
+
+The replay viewer links match frames with decision traces. Users can inspect not only the final score but also which decision source was active at a given stage: fresh LLM decision, cached LLM decision, rule fallback, or rule-controlled opponent action. This makes the system more useful as a teaching and research demo than a simple final-score replay.
+
+The viewer is designed around replay-grounded decision traceability. It does not claim to provide a complete causal explanation for every action. Instead, it exposes recorded evidence: the state summary used by the system, the selected decision source, the cached or fresh strategy status, fallback indicators, and match-level outcome summaries. This gives users a concrete basis for analysing agent behaviour.
+
 \section{Demonstration Walkthrough}
-\label{sec:demo}
 
-A typical demonstration begins by opening the S3 isometric battle replay viewer. The viewer loads the prepared replay-frame JSON and renders the match as an S1-style floating-island battle map. The user can scrub through the match timeline, observe both \texttt{player\_0} and \texttt{player\_1} units, inspect the current score, and view the per-match score summary. The left panel presents a compact battle timeline, while the right panel shows match status, ship counts, known relics, risk changes, and match-level scores.
+The demo begins with a completed Lux AI Season 3 match replay. The user opens the local HTML viewer and sees the map, units, score progression, final result overlay, and decision-related panels. The viewer can be used in a live demo or recorded screencast.
 
-The demonstration is organised around a short reviewer-facing workflow. First, the viewer loads the replay JSON and reconstructs the initial battle state. Second, the user plays or scrubs through the timeline to observe how both players move across the map. Third, the user inspects replay-aligned evidence such as score changes, known relics, ship counts, and risk-filter changes. Fourth, the user switches to Presentation Mode, which reduces auxiliary panels and makes the map easier to record in a short screencast. Finally, the user opens the final result overlay to view the winner, final score, replay coverage, risk-filter statistics, total match wins, and total score.
+The first part of the walkthrough introduces the match-level view: the current turn, both players' scores, unit locations, visible tiles, and final result summary. This allows users to understand the game context before inspecting the agent's decisions.
 
-\begin{figure}[t]
-\centering
-\safefigure{figures/figure_s3_presentation_mode.png}{\linewidth}
-\caption{Recording-friendly Presentation Mode of the S3 battle replay viewer. Auxiliary panels are reduced so that the central floating-island battle map becomes the visual focus for demo-video recording.}
-\label{fig:s3-isometric-presentation-mode}
-\end{figure}
+The second part focuses on the decision trace. The presenter shows how the viewer distinguishes between fresh LLM decisions, cached LLM decisions, fallback actions, and rule-player actions. This is the key difference between LuxLLM-Agent and a normal replay viewer: the system connects what happened in the match with why the agent selected a strategy at that moment.
 
-The walkthrough is intended to support replay-grounded inspection rather than only visual playback. A standard replay can show where units moved, but it does not expose whether a decision came from an LLM strategy, a deterministic fallback, or a risk-filtered target adjustment. LuxLLM-Agent addresses this by aligning the visual replay with structured trace evidence. This makes it possible to inspect not only what happened in the match, but also which logged decision pathway was active when the behaviour occurred.
+The third part demonstrates evaluation artefacts. The system produces Markdown summaries, JSON evaluation files, structured logs, replay frames, and screenshots. These artefacts allow a user to reproduce the paper's reported results, inspect a specific match, or compare design variants.
 
-This workflow is designed for both research inspection and demonstration. A researcher can use the viewer to locate suspicious behaviour, fallback-heavy intervals, sudden score changes, or risk-filter events. A supervisor or reviewer can use the same viewer to understand the system without reading raw logs. The paper screenshots and screencast are generated from this interface, so the visual evidence in the paper is directly connected to the downloadable artifact.
+During the live demonstration, the presenter can pause on selected replay frames and explain the associated decision source. For example, a frame may show that the agent is following a cached strategy rather than querying the LLM again, or that a fallback rule was used to preserve execution safety. The viewer also supports comparison between local map evidence and match-level outcome summaries. This interaction is useful for debugging because it allows users to identify whether a poor outcome was caused by strategic selection, stale cached decisions, fallback behaviour, or local movement constraints.
+
+The intended takeaway is not that every individual action is accompanied by a perfect natural-language explanation. Instead, the demo shows a practical inspection workflow for LLM-assisted agents: run a controlled match, collect structured traces, replay the match, inspect decision provenance, and compare summary metrics across configurations. This workflow is especially relevant for game-agent research because long-horizon behaviour often emerges from many small decisions rather than from a single model output.
+
+Figure~\ref{fig:presentation-mode} shows the presentation-oriented interface used for demonstration recording.
 
 \begin{figure}[t]
 \centering
-\safefigure{figures/figure_s3_final_result_overlay.png}{\linewidth}
-\caption{Final result overlay in the S3 replay viewer. The overlay summarises the final winner, final score, replay-frame coverage, total risk-filter changes, total match wins, and total score.}
-\label{fig:s3-final-result-overlay}
+\includegraphics[width=\linewidth]{figures/figure_s3_presentation_mode.png}
+\caption{Presentation-oriented replay view. The interface is designed to show both game progress and decision evidence during a short demo video.}
+\label{fig:presentation-mode}
 \end{figure}
 
-This workflow is designed for both research inspection and demonstration. A researcher can use the viewer to locate suspicious behaviour, fallback-heavy intervals, or sudden score changes. A supervisor or reviewer can use the same viewer to understand the system without reading raw logs. The paper screenshots and screencast are generated from this interface, so the visual evidence in the paper is directly connected to the downloadable artifact.
+\section{Implementation}
 
-\begin{figure}[t]
-\centering
-\safefigure{figures/figure_s3_final_result_overlay.png}{\linewidth}
-\caption{Final result overlay in the S3 replay viewer. The overlay summarises the final winner, final score, replay-frame coverage, total risk-filter changes, total match wins, and total score.}
-\label{fig:s3-final-result-overlay}
-\end{figure}
+The prototype is implemented in Python and JavaScript. The Lux AI Season 3 agent runs locally through the competition environment, while LLM inference is served by a local Ollama backend. Controlled experiments use \texttt{qwen3:32b} on Barkla2 GPU resources. The implementation records console logs, structured JSONL frame logs, LLM decision traces, evaluation JSON files, replay frames, screenshots, and Markdown summaries.
 
-% =====================================================================
+The viewer is implemented as a standalone HTML interface that can be opened through a local HTTP server. It is intended for both live demonstration and video recording. The system keeps the replay artefacts separate from the agent runtime so that recorded matches can be inspected after execution without rerunning the game.
+
+The implementation follows three design principles. First, LLM decisions should be structured enough to analyse automatically. Second, rule fallback should keep the game executable even when model calls fail or become too slow. Third, replay artefacts should remain human-readable so that students and researchers can inspect the agent without needing to understand every implementation detail.
+
+The runtime also separates evidence generation from presentation. Match execution produces raw logs and JSONL traces, while post-processing scripts summarise these traces into evaluation reports and viewer-ready replay data. This separation is useful because the same match can be inspected at multiple levels: raw console output for debugging, structured traces for quantitative analysis, and the visual replay for demonstration.
+
 \section{Evaluation}
-\label{sec:eval}
 
-We evaluate the system from four perspectives: controlled match outcome, trace-based explainability support, replay evidence quality, and architecture-level scalability. The goal of the evaluation is not to claim that the system has solved Lux AI Season 3, nor to claim that the internal reasoning of the LLM is fully explained. Instead, the evaluation checks whether the system can run controlled matches, record useful decision traces, align those traces with replay frames, and provide a downloadable artifact that supports post-hoc inspection.
+We evaluate LuxLLM-Agent from three perspectives: controlled match outcome, replay-grounded decision traceability, and architecture-level scalability. The purpose of this evaluation is not to claim state-of-the-art Lux AI performance, but to validate the stability and inspectability of the proposed LLM-assisted agent pipeline. We therefore report match outcomes together with decision-source statistics, fallback behaviour, cached-decision reuse, LLM latency, and trace coverage.
 
-\subsection{Controlled Match Results}
+\subsection{Controlled Match Evaluation}
 
-In the controlled match setting, 57 matches were run across three configurations: rule-based baseline versus rule-based baseline, Qwen2.5 1.5B versus rule baseline, and Qwen2.5 7B versus rule baseline. The results are reported as descriptive statistics from limited controlled runs. They should not be interpreted as a definitive ranking of model capability.
+All controlled matches use the same local agent interface, the same replay logging pipeline, and the same post-processing scripts. The LLM-assisted player is evaluated against a deterministic rule-controlled opponent. This design does not aim to benchmark against the full Lux AI competition leaderboard; instead, it isolates whether the LLM-assisted runtime can execute complete matches, produce inspectable traces, and remain stable across repeated runs. We report win counts as a coarse behavioural outcome, while trace coverage, LLM error count, latency, fallback count, and decision-source statistics are used to evaluate system reliability.
 
-\begin{table}[t]
-  \centering
-  \small
-  \begin{tabular}{lrrr}
-    \toprule
-    Configuration & Matches & Wins & Win Rate \\
-    \midrule
-    Rule vs Rule & 19 & 9 & 47.37\% \\
-    Qwen2.5 1.5B vs Rule & 19 & 14 & \textbf{73.68\%} \\
-    Qwen2.5 7B vs Rule & 19 & 13 & 68.42\% \\
-    \bottomrule
-  \end{tabular}
-  \caption{Controlled win-rate comparison across rule and LLM-assisted configurations. The results are descriptive statistics from a limited controlled setting.}
-  \label{tab:win-rate}
-\end{table}
+The win count measures how often the LLM-assisted player obtains the better final match result under the controlled setting. The LLM error count measures failed or unusable model interactions after parsing and runtime checks. Trace steps measure how many frame-level records are available for replay-grounded inspection. Fresh LLM decisions count newly generated model responses, while cached LLM decisions count turns where the system reuses a previous strategy. These metrics are important for a system demonstration because they show whether the agent is merely producing occasional successful matches or whether it consistently generates complete, inspectable execution records.
 
-In this limited setting, the Qwen2.5 1.5B configuration shows a slightly higher observed win rate than the 7B configuration. However, the difference is only one additional win over 19 matches and should not be interpreted as statistically conclusive. We therefore treat this result as preliminary evidence that smaller local models may provide a favourable runtime--performance trade-off under the current system constraints, rather than as proof that Qwen2.5 1.5B is generally stronger than Qwen2.5 7B.
+The previous basic \texttt{qwen3:32b} planner uses compact structured JSON decisions and deterministic fallback. In a 50-match controlled evaluation, the LLM-assisted player won 28 matches against 22 wins for the rule-controlled opponent. This run achieved a strategy-use rate of 92.7\%, a fallback rate of 7.3\%, and zero LLM errors.
 
-Given the small sample size, these results should be interpreted cautiously. A larger evaluation with more random seeds, matched match conditions, formal significance testing, and component-level ablations is required before making stronger claims about model-size effects. In particular, future experiments should compare model configurations under the same random seeds and report not only win rate, but also average score, runtime, fallback count, LLM-call count, stale-decision count, and risk-filter changes.
+The current target-aware \texttt{qwen3:32b} strategic planner extends the basic interface with target coordinates, priority scores, risk labels, expected-value estimates, and lightweight rule-based arbitration. In a separate 50-match controlled evaluation, the LLM-assisted player won 35 matches against 15 wins for the rule-controlled opponent. This corresponds to a descriptive win rate of 70\%, with a strategy-use rate of 96.0\%, a fallback rate of 4.0\%, and zero LLM errors.
 
-\subsection{Trace-Based Explainability Evaluation}
+Earlier strategy-diverse prompting and candidate-exploitation configurations are retained as development evidence and ablation context. They show that the same evaluation pipeline can compare design variants, but they are no longer treated as the final main result.
 
-We evaluate explainability as trace availability and replay-grounded inspection support. The goal is not to claim access to the internal reasoning process of the LLM, but to expose the decision pathway used by the implemented agent system at each replay step. Compared with raw console logs or a replay-only viewer, LuxLLM-Agent combines structured decision traces with visual replay context, making it easier to inspect when the system used an LLM decision, when it fell back to deterministic rules, and when risk filtering changed a unit target.
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\hline
+Configuration & Runs & LLM wins & Rule wins & Win rate & Strategy use & Fallback \\
+\hline
+Basic qwen3 planner & 50 & 28 & 22 & 56\% & 92.7\% & 7.3\% \\
+Target-aware qwen3 strategic planner & 50 & 35 & 15 & 70\% & 96.0\% & 4.0\% \\
+Strategy-diverse prompting & 50 & 29 & 21 & 58\% & -- & -- \\
+Candidate-exploitation ablation & 50 & 26 & 24 & 52\% & -- & -- \\
+\hline
+\end{tabular}
+\caption{Controlled \texttt{qwen3:32b} evaluation on Barkla2. The target-aware strategic planner is the current main controlled result, while earlier prompting variants are retained as development evidence and ablation context. All reported qwen3 runs completed with zero LLM errors.}
+\label{tab:qwen3-controlled-eval}
+\end{table*}
 
-\begin{table}[t]
-  \centering
-  \small
-  \begin{tabular}{lccc}
-    \toprule
-    Capability & Raw Logs & Replay Only & Ours \\
-    \midrule
-    Decision source visible & Yes & No & Yes \\
-    Fallback status visible & Yes & No & Yes \\
-    Risk-filter changes visible & Yes & No & Yes \\
-    Replay-frame alignment & No & Yes & Yes \\
-    Match score summary & No & Partial & Yes \\
-    Final result overlay & No & Partial & Yes \\
-    \bottomrule
-  \end{tabular}
-  \caption{System-level explainability capability comparison. LuxLLM-Agent combines structured decision traces with replay-grounded visual inspection.}
-  \label{tab:explainability-capabilities}
-\end{table}
+For the current target-aware strategic planner, the decision logs contain 1249 fresh LLM calls, 1199 strategy-used decisions, and 50 fallback events across the 50-match run. These statistics show that the system is not merely calling an LLM once for a static plan. Instead, it combines structured LLM planning, schema validation, rule-based arbitration, and fallback-safe execution.
 
-The verified replay package contains 505 replay frames, with both players present in 489 frames, corresponding to 96.83\% both-player replay coverage. The replay records 662 risk-filter changes and aligns these events with match-level replay context. These statistics evaluate explanation availability and replay alignment, rather than human-rated explanation quality. We do not claim that the traces are causally faithful explanations of all internal LLM computations. Instead, they provide system-level evidence about which implemented decision pathway was active during replayed behaviour.
+The results should be interpreted as evidence of controlled runtime stability and inspectability rather than as proof of optimal game-playing strength. The target-aware strategic planner achieved the strongest 50-match controlled result in the current project state, while earlier prompting variants remain useful for understanding the design space.
+
+Figure~\ref{fig:score-summary} summarises match-level score and result information from the replay artefacts.
 
 \begin{figure}[t]
 \centering
-\safefigure{figures/figure_s3_match_score_summary.png}{\linewidth}
-\caption{Per-match score summary in the S3 replay viewer. The panel displays individual match outcomes and total match wins over the replay sequence.}
-\label{fig:s3-match-score-summary}
+\includegraphics[width=\linewidth]{figures/figure_s3_match_score_summary.png}
+\caption{Match score summary produced from replay and evaluation artefacts. The demo connects final results with decision traces rather than presenting only the final score.}
+\label{fig:score-summary}
 \end{figure}
 
-\subsection{Replay Evidence Verification}
+\subsection{Replay-Grounded Decision Traceability}
 
-The replay viewer was verified using the prepared S3 replay package. The package contains 505 replay frames and supports inspection of both players, match scores, risk-filter changes, and final replay outcomes. Across the representative replay sequence, the total match wins are 3:2 and the total score is 407:363. The final replay frame reports \texttt{player\_1} as the final-match winner with a final score of 72:84.
+The replay viewer provides qualitative evidence that the decision trace can be inspected after a match has completed. Each replay frame can be connected to decision-source metadata, including fresh LLM decisions, cached LLM decisions, fallback actions, and rule-player actions. This supports debugging and teaching because users can follow how a high-level decision is reused across multiple turns and how fallback prevents failed model calls from breaking match execution.
 
-This replay verification matters because the paper figures, demo video, and downloadable artifact are generated from the same replay package. As a result, the visual evidence shown in the paper is aligned with the local viewer and the JSON artifact included in the repository. This reduces the risk of presenting screenshots or videos that cannot be reproduced from the downloadable package.
+This evaluation does not claim that the viewer fully explains all causes of agent behaviour. Instead, it provides replay-grounded decision traceability: the user can inspect recorded decision sources, selected strategies, fallback status, and match outcomes in a single interface.
+
+The viewer also makes stale or reused decisions visible. This is important because cached LLM strategies can be beneficial when they reduce latency and preserve consistent behaviour, but they can also become harmful if the local environment changes faster than the strategy is refreshed. By logging cached decision reuse explicitly, the system allows users to diagnose whether an observed behaviour came from a fresh model response, a reused strategy, or a fallback rule.
 
 \subsection{Scalability Simulation}
 
-To evaluate scalability without overstating full-game throughput, we implemented a synthetic lightweight-worker simulation. The runner instantiates 10, 100, 500, and 1000 worker agents, each executing cached policy templates for 100 decision steps. The simulation does not launch full Lux AI Season 3 matches and does not invoke an LLM for every worker. Instead, five synthetic LLM calls represent sparse strategy-template generation. The 1000-worker setting completes 100,000 lightweight decisions in 0.807 seconds, while the LLM-call count remains fixed at 5. This result supports the intended scaling mechanism: expensive strategic reasoning is amortised across many low-cost worker decisions.
+The system also includes a lightweight scalability simulation. This simulation does not run 1000 full Lux AI game instances. Instead, it tests whether sparse LLM-generated policy templates can be reused across many lightweight worker agents. The simulation verifies that the architecture can separate expensive strategy generation from cheaper worker-level execution. The result supports the architectural claim that sparse LLM calls and cached policy reuse can scale better than direct per-agent LLM control.
 
-\begin{table}[t]
-  \centering
-  \small
-  \resizebox{\columnwidth}{!}{%
-    \begin{tabular}{lrrrr}
-      \toprule
-      Agents & Decisions & LLM Calls & Runtime (s) & Memory (MB) \\
-      \midrule
-      10 & 1,000 & 5 & 0.008 & 0.346 \\
-      100 & 10,000 & 5 & 0.079 & 1.214 \\
-      500 & 50,000 & 5 & 0.409 & 5.072 \\
-      1000 & 100,000 & 5 & 0.807 & 9.894 \\
-      \bottomrule
-    \end{tabular}%
-  }
-  \caption{Architecture-level scalability simulation using lightweight worker agents. The runner uses cached policy templates and does not invoke an LLM once per worker.}
-  \label{tab:scalability-simulation}
-\end{table}
+The scalability result should therefore be interpreted as architecture-level evidence rather than as a direct measurement of competitive multi-agent performance. Its purpose is to test whether the system design can support many worker-level decisions once a small number of LLM-generated policies are available. This complements the controlled match evaluation by examining a different system property: reuse of expensive model-generated strategy under lightweight execution.
 
-This scalability result should be interpreted carefully. It is an architecture-level lightweight-worker simulation rather than a full Lux benchmark. The reported runtime measures lightweight policy execution and synthetic worker-state updates, not game-engine stepping, rendering, or 1000 complete Lux matches. The purpose of this experiment is to test the system design claim that sparse LLM-generated policy templates can be reused across many worker agents, rather than to claim that the full Lux environment has been run with 1000 complete LLM-controlled players.
-\subsection{Trace-Based Explainability Evaluation}
-
-We evaluate explainability as trace availability and replay-grounded inspection support. The goal is not to claim access to the internal reasoning process of the LLM, but to expose the decision pathway used by the agent system at each replay step. Compared with raw console logs or a replay-only viewer, LuxLLM-Agent combines structured decision traces with visual replay context, making it easier to inspect when the system used an LLM decision, when it fell back to deterministic rules, and when risk filtering changed a unit target.
-
-\begin{table}[t]
-  \centering
-  \small
-  \begin{tabular}{lccc}
-    \toprule
-    Capability & Raw Logs & Replay Only & Ours \\
-    \midrule
-    Decision source visible & Yes & No & Yes \\
-    Fallback status visible & Yes & No & Yes \\
-    Risk-filter changes visible & Yes & No & Yes \\
-    Replay-frame alignment & No & Yes & Yes \\
-    Match score summary & No & Partial & Yes \\
-    Final result overlay & No & Partial & Yes \\
-    \bottomrule
-  \end{tabular}
-  \caption{System-level explainability capability comparison. LuxLLM-Agent combines structured decision traces with replay-grounded visual inspection.}
-  \label{tab:explainability-capabilities}
-\end{table}
-
-The verified replay package contains 505 replay frames, with both players present in 489 frames, corresponding to 96.83\% both-player replay coverage. The replay records 662 risk-filter changes and aligns these events with match-level replay context. These statistics evaluate explanation availability and replay alignment, rather than human-rated explanation quality. We do not claim that the traces are causally faithful explanations of all internal LLM computations. Instead, they provide system-level evidence about which implemented decision pathway was active during replayed behaviour.
-
-\begin{figure}[t]
-\centering
-\safefigure{figures/figure_s3_match_score_summary.png}{\linewidth}
-\caption{Per-match score summary in the S3 replay viewer. The panel displays individual match outcomes and total match wins over the replay sequence.}
-\label{fig:s3-match-score-summary}
-\end{figure}
-
-\subsection{Replay Evidence Verification}
-
-The replay viewer was verified using the prepared S3 replay package. The package contains 505 replay frames and supports inspection of both players, match scores, risk-filter changes, and final replay outcomes. Across the representative replay sequence, the total match wins are 3:2 and the total score is 407:363. The final replay frame reports \texttt{player\_1} as the final-match winner with a final score of 72:84.
-
-This replay verification matters because the paper figures, demo video, and downloadable artifact are generated from the same replay package. As a result, the visual evidence shown in the paper is aligned with the local viewer and the JSON artifact included in the repository. This reduces the risk of presenting screenshots or videos that cannot be reproduced from the downloadable package.
-
-\subsection{Scalability Simulation}
-
-To evaluate scalability without overstating full-game throughput, we implemented a synthetic lightweight-worker simulation. The runner instantiates 10, 100, 500, and 1000 worker agents, each executing cached policy templates for 100 decision steps. The simulation does not launch full Lux AI Season 3 matches and does not invoke an LLM for every worker. Instead, five synthetic LLM calls represent sparse strategy-template generation. The 1000-worker setting completes 100,000 lightweight decisions in 0.807 seconds, while the LLM-call count remains fixed at 5. This result supports the intended scaling mechanism: expensive strategic reasoning is amortised across many low-cost worker decisions.
-
-\begin{table}[t]
-  \centering
-  \small
-  \resizebox{\columnwidth}{!}{%
-    \begin{tabular}{lrrrr}
-      \toprule
-      Agents & Decisions & LLM Calls & Runtime (s) & Memory (MB) \\
-      \midrule
-      10 & 1,000 & 5 & 0.008 & 0.346 \\
-      100 & 10,000 & 5 & 0.079 & 1.214 \\
-      500 & 50,000 & 5 & 0.409 & 5.072 \\
-      1000 & 100,000 & 5 & 0.807 & 9.894 \\
-      \bottomrule
-    \end{tabular}%
-  }
-  \caption{Architecture-level scalability simulation using lightweight worker agents. The runner uses cached policy templates and does not invoke an LLM once per worker.}
-  \label{tab:scalability-simulation}
-\end{table}
-
-This scalability result should be interpreted carefully. It is an architecture-level lightweight-worker simulation rather than a full Lux benchmark. The reported runtime measures lightweight policy execution and synthetic worker-state updates, not game-engine stepping, rendering, or 1000 complete Lux matches. The purpose of this experiment is to test the system design claim that sparse LLM-generated policy templates can be reused across many worker agents, rather than to claim that the full Lux environment has been run with 1000 complete LLM-controlled players.
-
-\subsection{Ablation and Statistical Testing Plan}
-
-The current evaluation is sufficient for a system demonstration, but it is not yet a full empirical study of every system component. Future work should include ablation studies that separate the effects of model size, rule-based fallback, risk filtering, stale-decision guards, and replay logging. Planned configurations include rule-only policies, LLM-assisted policies without risk filtering, LLM-assisted policies with fallback disabled, and full-system variants under matched random seeds.
-
-Future experiments should also increase the number of matches per condition and apply formal statistical tests when comparing win rates across model configurations. For example, Fisher's exact test or two-proportion tests could be used to compare win-rate differences, while runtime, fallback count, LLM-call count, and risk-filter changes could be reported as supporting operational metrics. This would make it possible to distinguish robust system effects from run-to-run variance.
-% =====================================================================
 \section{Comparison with Existing Systems}
-\label{sec:related}
 
-Prior game-AI systems have demonstrated that complex games can serve as demanding environments for planning, learning, and multi-agent coordination. Examples such as AlphaStar, OpenAI Five, and MuZero show the importance of scalable decision systems, planning, and large-scale evaluation in game domains~\citep{vinyals2019alphastar,berner2019dota,schrittwieser2020muzero}. LuxLLM-Agent is different in scope: it is not a large-scale reinforcement-learning system, but an inspectable LLM-assisted agent and replay-analysis pipeline designed to expose strategy decisions, fallback behaviour, risk-filter events, and replay evidence.
+Most game replays focus on visualising what happened during a match. They show map states, unit movements, and final scores, but they usually do not connect these events to the decision process of an LLM-assisted agent. LuxLLM-Agent focuses on the connection between match replay and decision evidence.
 
-Official Lux replay tools are useful for observing game outcomes, but they are not designed to explain why an LLM-assisted agent selected a strategy, when fallback was triggered, or how risk filtering changed unit targets. Standard console logs provide decision evidence, but they are difficult to interpret visually and do not provide a replay-like user experience. Conversely, a replay-only viewer can show unit movement and scores, but it usually does not expose the decision source or fallback pathway behind a particular action.
+Compared with direct LLM control, our system uses the LLM as a sparse strategic component and keeps low-level execution guarded by deterministic rules. Compared with a pure rule-based baseline, the system records structured LLM decisions and cached strategy reuse, allowing users to inspect where the LLM influenced the agent. Compared with generic agent frameworks, the system is grounded in a reproducible game environment with replay artefacts and controlled match evaluation.
 
-LuxLLM-Agent fills this gap by combining agent decision traces, match evaluation, and replay visualisation. The system is not only a game-playing agent and not only a viewer. It is a demonstration pipeline that connects LLM strategy decisions, rule fallback, risk-filter events, match outcomes, and visual replay evidence. This makes it suitable for analysing LLM-assisted game agents in a way that is more inspectable than raw logs and more decision-aware than a standard replay.
+The system is also different from post-hoc explanation interfaces. A post-hoc explanation can describe an action after the match, but it may not correspond to the actual runtime mechanism that produced the action. LuxLLM-Agent instead records decision-source information during execution and displays it through the replay artefact. This makes the inspection process more directly connected to the executed system.
 
-Compared with a pure game-playing submission, the system emphasises reproducible inspection. Compared with a pure visual replay tool, it preserves decision evidence from the agent pipeline. Compared with a per-agent LLM controller, it uses cached strategy templates and rule execution so that the LLM plays a sparse strategic role instead of controlling every unit action. This positioning is important for a system demonstration paper because the contribution is not only a game result, but also an inspectable artifact for studying LLM-assisted game-agent behaviour.
-
-
-% =====================================================================
-\section{Limitations and Future Work}
-\label{sec:limitations}
-
-LuxLLM-Agent operationalises explainability as system-level, replay-grounded traceability. It exposes decision sources, fallback status, risk-filter changes, unit actions, match scores, and replay-aligned outcomes, but it does not measure neural-mechanistic explanation faithfulness inside the LLM. Future work should evaluate whether these traces improve debugging speed, user trust calibration, and failure-mode identification.
-
-The current controlled evaluation is limited in scale. The Qwen2.5 1.5B configuration wins one more match than the 7B configuration over 19 matches, so this difference should be treated as a preliminary observation rather than a statistically significant model-size effect. Larger evaluations should use more random seeds, matched match conditions, Fisher's exact test or two-proportion tests, and component-level ablations.
-
-Future ablations should separate the effects of model size, rule-based fallback, risk filtering, stale-decision guards, and replay logging. The current experiments were conducted on a single laptop-class machine with an NVIDIA RTX 4060 Laptop GPU and local Ollama models; stronger institutional compute resources would allow more repetitions, larger model variants, and more reliable statistical testing.
-
-% =====================================================================
 \section{Licensing and Availability}
-\label{sec:availability}
 
-The project is released as a downloadable research prototype under the MIT License. For review and submission, the artifact package is available through the anonymous repository link:
+The demo package is intended to be released with source code, replay artefacts, screenshots, evaluation summaries, and a short screencast video. The final public repository and video links will be added before submission. The system uses the Lux AI Season 3 environment and local model inference through Ollama. The code and artefacts will be distributed for research and educational use, subject to the licences of the underlying environment and dependencies.
 
-\begin{center}
-\url{https://anonymous.4open.science/r/luxllm-agent-demo-CED3}
-\end{center}
-
-The package includes the S3 isometric battle replay viewer, merged replay JSON, paper figures, a replay-preview GIF, a screencast video, controlled-evaluation summaries, scalability reports, and a minimal source-code package. The viewer can be run locally with Python's built-in HTTP server and inspected without rerunning the full Lux AI Season 3 environment or making cloud LLM API calls.
-% =====================================================================
 \section{Conclusion}
-\label{sec:conclusion}
 
-LuxLLM-Agent demonstrates an explainable LLM-assisted agent pipeline for Lux AI Season 3. The system combines local LLM strategy generation, rule-based fallback, structured decision logging, replay-driven visualisation, controlled evaluation, and lightweight scalability evidence. The results suggest that smaller local LLMs can be effective under runtime constraints, and that sparse LLM-generated policy templates can be reused across many lightweight worker agents. The demonstration is intended to help researchers and students inspect, reproduce, and discuss LLM-assisted game-agent behaviour.
+LuxLLM-Agent demonstrates an inspectable LLM-assisted agent pipeline for Lux AI Season 3. The system combines local LLM strategy generation, rule-based fallback, structured decision logging, replay-driven visualisation, controlled evaluation, and lightweight scalability evidence. The current \texttt{qwen3:32b} evaluation shows that a target-aware strategic planner can improve the LLM-assisted player's descriptive win rate from 56\% to 70\% over a previous basic qwen3 planner while maintaining zero LLM errors; the scalability simulation additionally shows how sparse LLM-generated policy templates can be reused across many lightweight worker agents. The demonstration is intended to help researchers and students inspect, reproduce, and discuss LLM-assisted game-agent behaviour.
 
-% ---------------------------------------------------------------------
-% The ethics / broader-impact statement does NOT count towards the page
-% limit. The acl.sty hides the section number for these two sections.
-% ---------------------------------------------------------------------
+% The ethics / broader-impact statement does not count towards the page limit.
+% The ACL style hides the section number for this section.
 \section*{Ethics Statement}
 
 This system is developed for research and educational use in a game AI environment. It does not use personal data and does not make decisions about real users. The main risks are overclaiming system capability and misinterpreting synthetic scalability results as full-game multi-agent performance. We mitigate these risks by clearly separating controlled match evaluation, replay-viewer evidence, and architecture-level scalability simulation. The system should be presented as a research prototype rather than a deployed autonomous decision system.
 
 \section*{Acknowledgements}
+
 The author thanks the project supervisor and the Lux AI Challenge community for providing the competition environment and motivation for this work.
 
 % References do NOT count towards the page limit.
-\bibliographystyle{acl_natbib}
-\nocite{*}
-\bibliography{custom}
+% Do not add \bibliographystyle{acl_natbib}; acl.sty already handles the style.
+\bibliography{custom,anthology}
 
 \appendix
+
+% Appendix limited to a maximum of 2 pages for the demo track.
 \section{Additional Details}
 \label{sec:appendix}
 
-The supplementary artifact contains replay JSON files, screenshots, a replay-preview GIF, a screencast video, source code, and Markdown reports. The verified replay package contains 505 frames, 96.83\% both-player frame coverage, and 662 risk-filter changes.
+The local development artefacts include replay JSON, Markdown reports, screenshots, demo video material, and LaTeX integration files. The final replay viewer was verified with 505 replay frames, 96.83% both-player frame coverage, 662 risk-filter changes, and a compiled paper artefact. The scalability simulation was verified up to 1000 lightweight worker agents and 100000 synthetic decisions.
+
+Figure~\ref{fig:final-overlay} shows the final result overlay used in the replay viewer.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/figure_s3_final_result_overlay.png}
+\caption{Final result overlay used by the replay viewer.}
+\label{fig:final-overlay}
+\end{figure}
 
 \end{document}

@@ -1,4 +1,4 @@
-# qwen3:32b GPU Evidence Index
+﻿# qwen3:32b GPU Evidence Index
 
 ## Completed Evidence
 
@@ -84,11 +84,59 @@ Summary:
 
 Interpretation:
 
-E5.2 was a technically stable candidate-exploitation ablation. It completed all 50 matches with zero LLM errors and full trace coverage. However, it did not outperform the E4 strategy-diversity configuration at the 50-match scale. E4 therefore remains the main reported configuration, while E5.2 is retained as an ablation showing that more aggressive candidate-target exploitation does not necessarily improve long-horizon match performance.
+E5.2 was a technically stable candidate-exploitation ablation. It completed all 50 matches with zero LLM errors and full trace coverage. However, it did not outperform the earlier strategy-diversity configuration at the 50-match scale. After the later P5.5-light qwen3:32b strategic-planner run, both E4 and E5.2 should be treated as earlier controlled configurations rather than the final main result.
 
 Paper usage:
 
-- Use E4 strategy-diversity as the main controlled result.
-- Use E5.2 candidate-exploitation as a supplementary ablation.
+- Treat E4 strategy-diversity as an earlier controlled configuration.
+- Treat E5.2 candidate-exploitation as a supplementary ablation.
+- Use P5.5-light qwen3:32b strategic planner as the current main controlled result.
 - Do not claim that E5.2 improves the agent.
-- Present E5.2 as evidence that the system is stable enough to evaluate design variants.
+- Present E4 and E5.2 as evidence that the system is stable enough to evaluate design variants.
+
+---
+
+## P5.5-light Qwen3-32B Strategic Planner Controlled Run
+
+### Status
+
+PASS.
+
+A 50-match controlled run was completed on Barkla2 using `qwen3:32b` as a target-aware strategic planner.
+
+### Result Summary
+
+- Total matches: 50
+- LLM-assisted player wins: 35
+- Rule-controlled opponent wins: 15
+- Draws: 0
+- LLM-assisted player win rate: 70%
+- Average player 0 reward: 3.140
+- Average player 1 reward: 1.860
+
+### LLM Integration Metrics
+
+- Total fresh LLM calls: 1249
+- Total LLM strategy used: 1199
+- Total fallback count: 50
+- Total LLM errors: 0
+- Strategy use rate: 0.960
+- Fallback rate: 0.040
+- Average fresh LLM calls per match: 24.980
+- Average strategy-used calls per match: 23.980
+- Average fallback count per match: 1.000
+- Average LLM errors per match: 0.000
+
+### Comparison with Previous Basic Qwen3 Planner
+
+The previous qwen3:32b basic JSON planner achieved 28 wins and 22 losses over 50 matches, corresponding to a 56% descriptive win rate. It achieved a strategy-use rate of 0.927, a fallback rate of 0.073, and zero LLM errors.
+
+The P5.5-light strategic planner achieved 35 wins and 15 losses over 50 matches, corresponding to a 70% descriptive win rate. It improved the strategy-use rate to 0.960, reduced fallback rate to 0.040, and maintained zero LLM errors.
+
+### Paper Interpretation
+
+This result should be used as the main qwen3:32b controlled evaluation result. It supports the claim that a structured strategic LLM-agent interface can make larger-model planning more operationally useful than a basic intent-only JSON planner.
+
+This should be reported as controlled-run evidence, not as a state-of-the-art Lux AI performance claim or a definitive statistical-significance claim.
+
+

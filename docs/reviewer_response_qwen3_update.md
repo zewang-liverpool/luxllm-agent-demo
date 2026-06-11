@@ -1,47 +1,115 @@
-# Reviewer Response: qwen3:32b Controlled Evaluation Update
+﻿# Reviewer Response Notes: Qwen3-32B Controlled Evaluation Update
 
-## Summary of Changes
+## Purpose
 
-We have updated the project from an early small-model exploration into a controlled qwen3:32b-based evaluation pipeline. Earlier versions used smaller local models mainly to validate the agent interface, logging structure, fallback execution, and replay pipeline. The current paper now reports GPU-backed qwen3:32b evaluation on Barkla2 as the main experimental evidence.
+This document records how the LuxLLM-Agent paper should respond to earlier reviewer or supervisor concerns after the latest qwen3:32b controlled evaluation.
 
-The main reported configuration is E4 strategy-diversity. This configuration achieved the strongest stable 50-match controlled result among the current qwen3:32b variants:
-
-- E4 strategy-diversity: 29 wins for the LLM-assisted player and 21 wins for the rule-controlled opponent.
-- E5.2 candidate-exploitation: 26 wins for the LLM-assisted player and 24 wins for the rule-controlled opponent.
-
-Both configurations completed 50 controlled matches with zero average LLM errors and complete trace coverage.
-
-## Response to Evaluation Concerns
-
-The revised paper now includes quantitative controlled evaluation results. Instead of relying only on isolated demo runs or mixed development-history logs, the paper reports 50-match controlled evaluations using qwen3:32b with GPU-backed Ollama inference on Barkla2.
-
-The E4 strategy-diversity configuration is used as the main reported result because it achieved the best 50-match controlled outcome. The E5.2 candidate-exploitation variant is included as an ablation. Although E5.2 was technically stable, it did not outperform E4 at the 50-match scale. We therefore avoid overstating E5.2 as an improvement and instead use it to show that the system can evaluate design variants in a reproducible way.
+The key update is that the project is no longer limited to early small-model experiments. The main empirical evidence now comes from qwen3:32b controlled runs on Barkla2 GPU resources.
 
 ## Response to Model-Size Concerns
 
-Earlier project stages used smaller Qwen2.5 models to validate the agent runtime and replay pipeline. The current paper no longer treats those small-model experiments as the main evidence. The main evaluation has been updated to qwen3:32b on Barkla2 GPU resources, which better supports the system demonstration claim.
+Earlier project stages used smaller Qwen2.5 models to validate the agent runtime, logging pipeline, replay viewer, fallback handling, and decision-trace generation. Those experiments remain useful as development evidence and lightweight local baselines, but they should not be presented as the main evidence for strategic LLM planning.
+
+The revised paper should present qwen3:32b on Barkla2 as the main controlled evaluation setting. This larger-model setup allows the LLM to operate as a structured strategic planner rather than only as a lightweight intent generator.
+
+## Response to LLM-Contribution Concerns
+
+The updated system is not merely calling an LLM for post-hoc explanation. In the P5.5-light configuration, the LLM produces structured strategic plans containing:
+
+- unit-level intents,
+- target coordinates,
+- priority scores,
+- risk labels,
+- expected-value estimates,
+- and short natural-language reasons.
+
+The runtime then parses, validates, arbitrates, executes, and logs these decisions. This makes the LLM contribution inspectable through strategy-use rate, fallback rate, LLM error count, and replay-grounded decision traces.
+
+## Main Controlled Result
+
+The latest main result is the P5.5-light qwen3:32b strategic planner.
+
+In a 50-match controlled run, it achieved:
+
+- Total matches: 50
+- LLM-assisted player wins: 35
+- Rule-controlled opponent wins: 15
+- LLM-assisted player win rate: 70%
+- Average player 0 reward: 3.140
+- Average player 1 reward: 1.860
+- Strategy use rate: 0.960
+- Fallback rate: 0.040
+- LLM errors: 0
+
+This should be treated as the current main qwen3:32b controlled evaluation result.
+
+## Comparison with Previous Basic Qwen3 Planner
+
+The previous qwen3:32b basic JSON planner achieved:
+
+- Total matches: 50
+- LLM-assisted player wins: 28
+- Rule-controlled opponent wins: 22
+- LLM-assisted player win rate: 56%
+- Average player 0 reward: 2.740
+- Average player 1 reward: 2.260
+- Strategy use rate: 0.927
+- Fallback rate: 0.073
+- LLM errors: 0
+
+The appropriate controlled-run claim is therefore:
+
+In a 50-match controlled comparison, the target-aware qwen3:32b strategic planner improved descriptive win rate from 56% to 70%, reduced fallback rate from 7.3% to 4.0%, and maintained zero LLM errors.
+
+This should be reported as descriptive controlled-run evidence rather than as a definitive statistical-significance claim.
+
+## Earlier Controlled Configurations
+
+The earlier strategy-diverse prompting configuration achieved 29 wins over 50 matches. The candidate-exploitation ablation achieved 26 wins over 50 matches. These results remain useful as development evidence and ablation context, but they should no longer be presented as the final main result.
+
+The paper should treat them as earlier controlled configurations that helped validate the evaluation pipeline and design space.
 
 ## Response to Explainability Concerns
 
-We revised the framing from broad explainability claims to a more precise description: replay-grounded decision traceability. The system records whether actions come from fresh LLM decisions, cached LLM decisions, fallback behaviour, or the rule-controlled opponent. These traces are aligned with replay frames, allowing users to inspect the decision provenance of agent behaviour over time.
+The paper should avoid broad claims of model explainability. The revised framing should use more precise language:
 
-This framing avoids claiming that the system fully explains all internal model reasoning. Instead, it demonstrates that the agent runtime, fallback policy, cached decisions, match outcomes, and replay evidence can be inspected together.
+- replay-grounded decision traceability,
+- inspectable decision provenance,
+- decision-source logging,
+- runtime-level observability.
 
-## Response to Ablation Concerns
+The system records whether actions come from fresh LLM decisions, cached LLM decisions, fallback behaviour, or the rule-controlled opponent. These traces are aligned with replay frames, allowing users to inspect how the agent runtime behaves over time.
 
-The E5.2 candidate-exploitation experiment is reported as an ablation rather than a main improvement. It completed 50 matches with zero average LLM errors and full trace coverage, but achieved 26 wins compared with E4's 29 wins. This result shows that more aggressive candidate-target exploitation does not automatically improve long-horizon match performance.
+The system does not claim to fully explain the internal reasoning process of the LLM.
 
-This ablation strengthens the paper because it demonstrates that the evaluation pipeline can identify both successful and non-improving design changes.
+## Response to Evaluation Concerns
+
+The updated evaluation is stronger because it includes controlled 50-match qwen3:32b experiments rather than only small-model development runs or cherry-picked demo examples.
+
+The key metrics are:
+
+- match outcome,
+- reward distribution,
+- strategy-use rate,
+- fallback rate,
+- LLM error count,
+- and decision-source trace coverage.
+
+These metrics show whether the LLM is actually used by the runtime and whether the system remains stable across repeated matches.
 
 ## Final Paper Positioning
 
-The revised paper presents LuxLLM-Agent as a system demonstration rather than a claim of state-of-the-art Lux AI performance. The contribution is a stable and inspectable LLM-assisted game-agent pipeline that combines:
+The revised paper should present LuxLLM-Agent as a structured LLM-agent runtime and replay-grounded evaluation system for Lux AI Season 3.
 
-1. structured LLM decision generation;
-2. deterministic rule fallback;
-3. cached strategy reuse;
-4. replay-grounded decision traceability;
-5. controlled qwen3:32b evaluation;
-6. lightweight scalability simulation.
+The contribution is the combination of:
 
-The final paper should use E4 as the main controlled configuration and E5.2 as a supplementary ablation.
+- structured LLM strategic planning,
+- schema validation,
+- rule-based arbitration,
+- fallback safety,
+- cached strategy reuse,
+- decision-source logging,
+- replay-grounded inspection,
+- and controlled qwen3:32b evaluation.
+
+The paper should not be framed as a state-of-the-art Lux AI competition bot or a competition-winning policy. Its strongest claim is that structured LLM-agent interfaces and runtime safeguards can make LLM planning more reliable, inspectable, and operationally useful in a competitive game-agent setting.

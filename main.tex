@@ -37,7 +37,7 @@
 \maketitle
 
 \begin{abstract}
-We present LuxLLM-Agent, an inspectable LLM-assisted agent system for Lux AI Season 3. The system combines a local game-playing agent, rule-based fallback policies, structured decision logs, and an isometric battle replay viewer for analysing agent behaviour. Unlike a standard replay viewer, our interface connects game states with decision traces, cached LLM decisions, fallback events, match-level scores, and final result summaries. We evaluate the system through controlled \texttt{qwen3:32b} matches on Barkla2, reporting a strategy-diverse prompting configuration as the main 50-match result and a candidate-exploitation variant as an ablation. The system also includes a lightweight scalability simulation with up to 1000 worker agents. The demo package includes a replay viewer, screenshots, replay JSON, evaluation reports, and a screencast video; the final public links will be added at submission time.
+We present LuxLLM-Agent, an inspectable LLM-assisted agent system for Lux AI Season 3. The system combines a local game-playing agent, rule-based fallback policies, structured decision logs, and an isometric battle replay viewer for analysing agent behaviour. Unlike a standard replay viewer, our interface connects game states with decision traces, cached LLM decisions, fallback events, match-level scores, and final result summaries. We evaluate the system through controlled \texttt{qwen3:32b} matches on Barkla2, where a target-aware strategic planner improves the LLM-assisted player's descriptive win rate from 56\% to 70\% over a previous basic qwen3 planner while maintaining zero LLM errors. The system also includes a lightweight scalability simulation with up to 1000 worker agents. The demo package includes a replay viewer, screenshots, replay JSON, evaluation reports, and a screencast video; the final public links will be added at submission time.
 \end{abstract}
 
 \section{Introduction}
@@ -146,43 +146,32 @@ All controlled matches use the same local agent interface, the same replay loggi
 
 The win count measures how often the LLM-assisted player obtains the better final match result under the controlled setting. The LLM error count measures failed or unusable model interactions after parsing and runtime checks. Trace steps measure how many frame-level records are available for replay-grounded inspection. Fresh LLM decisions count newly generated model responses, while cached LLM decisions count turns where the system reuses a previous strategy. These metrics are important for a system demonstration because they show whether the agent is merely producing occasional successful matches or whether it consistently generates complete, inspectable execution records.
 
-The main strategy-diverse prompting configuration uses compact structured LLM decisions, strategy-diverse prompting, deterministic rule fallback, and cached LLM decisions between fresh model calls. In a 50-match controlled evaluation, the LLM-assisted player won 29 matches against 21 wins for the rule-controlled opponent. The run completed with zero average LLM errors and complete trace coverage, with an average of 1010 logged trace steps per match.
+The previous basic \texttt{qwen3:32b} planner uses compact structured JSON decisions and deterministic fallback. In a 50-match controlled evaluation, the LLM-assisted player won 28 matches against 22 wins for the rule-controlled opponent. This run achieved a strategy-use rate of 92.7\%, a fallback rate of 7.3\%, and zero LLM errors.
 
-We also evaluated a candidate-exploitation ablation. This variant modified target selection to encourage more explicit use of candidate scoring tiles. In a separate 50-match evaluation, it achieved 26 wins for the LLM-assisted player and 24 wins for the rule-controlled opponent. Although the ablation remained technically stable, it did not outperform the strategy-diverse prompting configuration at the 50-match scale. We therefore use the strategy-diverse prompting configuration as the main controlled result and report candidate exploitation as an ablation.
+The current target-aware \texttt{qwen3:32b} strategic planner extends the basic interface with target coordinates, priority scores, risk labels, expected-value estimates, and lightweight rule-based arbitration. In a separate 50-match controlled evaluation, the LLM-assisted player won 35 matches against 15 wins for the rule-controlled opponent. This corresponds to a descriptive win rate of 70\%, with a strategy-use rate of 96.0\%, a fallback rate of 4.0\%, and zero LLM errors.
+
+Earlier strategy-diverse prompting and candidate-exploitation configurations are retained as development evidence and ablation context. They show that the same evaluation pipeline can compare design variants, but they are no longer treated as the final main result.
 
 \begin{table*}[t]
 \centering
 \small
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccccc}
 \hline
-Configuration & Runs & LLM-assisted wins & Rule-opponent wins & Avg. LLM errors & Avg. trace steps \
+Configuration & Runs & LLM wins & Rule wins & Win rate & Strategy use & Fallback \\
 \hline
-Strategy-diverse prompting & 50 & 29 & 21 & 0.0 & 1010.0 \
-Candidate-exploitation ablation & 50 & 26 & 24 & 0.0 & 1010.0 \
+Basic qwen3 planner & 50 & 28 & 22 & 56\% & 92.7\% & 7.3\% \\
+Target-aware qwen3 strategic planner & 50 & 35 & 15 & 70\% & 96.0\% & 4.0\% \\
+Strategy-diverse prompting & 50 & 29 & 21 & 58\% & -- & -- \\
+Candidate-exploitation ablation & 50 & 26 & 24 & 52\% & -- & -- \\
 \hline
 \end{tabular}
-\caption{Controlled \texttt{qwen3:32b} evaluation on Barkla2. The strategy-diverse prompting configuration is used as the main result, while candidate exploitation is reported as an ablation.}
+\caption{Controlled \texttt{qwen3:32b} evaluation on Barkla2. The target-aware strategic planner is the current main controlled result, while earlier prompting variants are retained as development evidence and ablation context. All reported qwen3 runs completed with zero LLM errors.}
 \label{tab:qwen3-controlled-eval}
 \end{table*}
 
-For the main configuration, the decision-source logs contain 787 fresh LLM decisions, 24463 cached LLM decisions, and 25250 rule-player actions across the 50-match run. The candidate-exploitation ablation contains 1277 fresh LLM decisions, 23973 cached LLM decisions, and 25250 rule-player actions. These statistics show that the system is not merely calling an LLM once for a static plan, nor is it relying on a fresh model call at every frame. Instead, it combines sparse LLM strategy generation with cached reuse and fallback-safe execution.
+For the current target-aware strategic planner, the decision logs contain 1249 fresh LLM calls, 1199 strategy-used decisions, and 50 fallback events across the 50-match run. These statistics show that the system is not merely calling an LLM once for a static plan. Instead, it combines structured LLM planning, schema validation, rule-based arbitration, and fallback-safe execution.
 
-\begin{table*}[t]
-\centering
-\small
-\begin{tabular}{lrrrr}
-\hline
-Configuration & Fresh LLM decisions & Cached LLM decisions & Rule-player actions & Total sources \
-\hline
-Strategy-diverse prompting & 787 & 24463 & 25250 & 50500 \
-Candidate-exploitation ablation & 1277 & 23973 & 25250 & 50500 \
-\hline
-\end{tabular}
-\caption{Decision-source statistics across the two 50-match controlled runs. Fresh LLM counts indicate newly generated model decisions, cached LLM counts indicate reused strategies, and rule-player counts correspond to the deterministic opponent.}
-\label{tab:decision-source-stats}
-\end{table*}
-
-The results should be interpreted as evidence of controlled runtime stability and inspectability rather than as proof of optimal game-playing strength. The strategy-diverse prompting configuration achieved the stronger 50-match result, while the candidate-exploitation ablation remained stable but did not improve the win count. This supports a useful negative finding: adding more explicit candidate-target exploitation does not automatically improve long-horizon performance in this environment. The ablation is therefore valuable because it demonstrates that the system can compare design variants using the same trace and evaluation pipeline.
+The results should be interpreted as evidence of controlled runtime stability and inspectability rather than as proof of optimal game-playing strength. The target-aware strategic planner achieved the strongest 50-match controlled result in the current project state, while earlier prompting variants remain useful for understanding the design space.
 
 Figure~\ref{fig:score-summary} summarises match-level score and result information from the replay artefacts.
 
@@ -221,7 +210,7 @@ The demo package is intended to be released with source code, replay artefacts, 
 
 \section{Conclusion}
 
-LuxLLM-Agent demonstrates an inspectable LLM-assisted agent pipeline for Lux AI Season 3. The system combines local LLM strategy generation, rule-based fallback, structured decision logging, replay-driven visualisation, controlled evaluation, and lightweight scalability evidence. The current \texttt{qwen3:32b} evaluation shows that the system can run stable 50-match controlled experiments with complete trace coverage and zero average LLM errors, while the scalability simulation shows how sparse LLM-generated policy templates can be reused across many lightweight worker agents. The demonstration is intended to help researchers and students inspect, reproduce, and discuss LLM-assisted game-agent behaviour.
+LuxLLM-Agent demonstrates an inspectable LLM-assisted agent pipeline for Lux AI Season 3. The system combines local LLM strategy generation, rule-based fallback, structured decision logging, replay-driven visualisation, controlled evaluation, and lightweight scalability evidence. The current \texttt{qwen3:32b} evaluation shows that a target-aware strategic planner can improve the LLM-assisted player's descriptive win rate from 56\% to 70\% over a previous basic qwen3 planner while maintaining zero LLM errors; the scalability simulation additionally shows how sparse LLM-generated policy templates can be reused across many lightweight worker agents. The demonstration is intended to help researchers and students inspect, reproduce, and discuss LLM-assisted game-agent behaviour.
 
 % The ethics / broader-impact statement does not count towards the page limit.
 % The ACL style hides the section number for this section.

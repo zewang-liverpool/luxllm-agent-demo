@@ -1,4 +1,4 @@
-# EMNLP 2026 — System Demonstrations Track (Overleaf project)
+﻿# EMNLP 2026 — System Demonstrations Track (Overleaf project)
 
 Ready-to-upload LaTeX project using the **official ACL style files**, set up
 for the EMNLP 2026 **System Demonstrations** track (single-blind review).
@@ -49,39 +49,50 @@ for the EMNLP 2026 **System Demonstrations** track (single-blind review).
 
 ## Current Experimental Status
 
-This project has reached the controlled-evaluation stage for the Lux AI Season 3 LLM-assisted agent. The current stable research configuration uses `qwen3:32b` with GPU-backed Ollama inference on Barkla2, combined with rule fallback, strategy caching, decision tracing, and replay-grounded inspection.
+This project has reached the controlled-evaluation stage for the Lux AI Season 3 LLM-assisted agent. The current stable research configuration uses `qwen3:32b` with GPU-backed Ollama inference on Barkla2, combined with rule-based fallback, structured LLM planning, decision tracing, and replay-grounded inspection.
 
-The main reported configuration is **E4 strategy-diversity**, which achieved the strongest 50-match controlled result among the stable qwen3:32b variants:
+The current main controlled result is the **target-aware qwen3:32b strategic planner**. This configuration extends the earlier basic intent-only JSON planner by adding target coordinates, priority scores, risk labels, expected-value estimates, and lightweight rule-based arbitration.
 
-| Configuration | Matches | Player 0 Wins | Player 1 Wins | Avg. LLM Errors | Avg. Trace Steps | Main Observation |
-|---|---:|---:|---:|---:|---:|---|
-| E4 strategy-diversity | 50 | 29 | 21 | 0.0 | 1010.0 | Main reported result |
-| E5.2 candidate-exploitation | 50 | 26 | 24 | 0.0 | 1010.0 | Stable ablation, but did not outperform E4 |
+| Configuration | Matches | LLM-Assisted Wins | Rule Opponent Wins | Win Rate | Strategy Use | Fallback Rate | LLM Errors | Main Observation |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Basic qwen3 planner | 50 | 28 | 22 | 56% | 92.7% | 7.3% | 0 | Previous basic JSON planner |
+| Target-aware qwen3 strategic planner | 50 | 35 | 15 | 70% | 96.0% | 4.0% | 0 | Current main controlled result |
+| Strategy-diverse prompting | 50 | 29 | 21 | 58% | — | — | 0.0 avg. | Earlier controlled configuration |
+| Candidate-exploitation ablation | 50 | 26 | 24 | 52% | — | — | 0.0 avg. | Stable ablation, but not an improvement |
 
-The E5.2 candidate-exploitation variant remained technically stable, with zero LLM errors, complete trace coverage, and consistent cached decision reuse. However, it did not improve the 50-match win rate over E4. Therefore, E4 is used as the main paper configuration, while E5.2 is retained as an ablation showing that additional candidate-target exploitation does not necessarily improve long-horizon performance.
+The target-aware qwen3:32b strategic planner is now the main reported controlled result. In a 50-match controlled comparison, it improved the LLM-assisted player's descriptive win rate from 56% to 70% compared with the previous basic qwen3 planner, reduced fallback rate from 7.3% to 4.0%, and maintained zero LLM errors.
 
-### Evidence Directories
+The earlier strategy-diverse prompting and candidate-exploitation configurations are retained as development evidence and ablation context. They show that the evaluation pipeline can compare design variants, but they should not be presented as the final main result.
 
-- `docs/hpc_qwen3_gpu_e4_50run/20260610_180133_qwen3_32b_gpu_e4_50run_job8994080/`
-  - Main 50-match controlled evaluation.
-  - `player_0 = 29`, `player_1 = 21`.
-  - `avg_llm_errors = 0.0`.
-  - `avg_trace_steps = 1010.0`.
+### Evidence Files
 
-- `docs/hpc_qwen3_gpu_e52_50run/20260610_221857_qwen3_32b_gpu_e52_50run_job8997743/`
-  - Candidate-exploitation ablation.
-  - `player_0 = 26`, `player_1 = 24`.
-  - `avg_llm_errors = 0.0`.
-  - `avg_trace_steps = 1010.0`.
+- `docs/evidence/qwen3_gpu_evidence_index.md`
+  - Consolidated qwen3:32b GPU evidence index.
+  - Includes earlier strategy-diverse and candidate-exploitation runs.
+  - Identifies the target-aware qwen3 strategic planner as the current main controlled result.
+
+- `docs/closeout_summary_qwen3_p55_light.md`
+  - Closeout summary for the latest 50-match target-aware qwen3:32b strategic-planner run.
+  - Records the 35/50 main result and reliability metrics.
+
+- `docs/reviewer_response_qwen3_update.md`
+  - Response notes for reviewer or supervisor concerns.
+  - Explains how the project moved beyond small-model limitations.
+  - Clarifies that the contribution is a structured LLM-agent runtime and replay-grounded evaluation system.
 
 ### Final Project Positioning
 
-This project is not presented as a competition-winning Lux AI policy. Instead, it is presented as an inspectable LLM-assisted game-agent system that combines:
+This project is not presented as a state-of-the-art Lux AI competition bot or a competition-winning policy. It is presented as an inspectable LLM-assisted game-agent system for Lux AI Season 3.
 
-1. structured LLM decision generation;
-2. safe rule-based fallback;
-3. strategy caching for long-horizon consistency;
-4. replay-grounded decision tracing;
-5. controlled evaluation across multiple agent variants.
+The main contribution is the integration of:
 
-The paper should report E4 as the main controlled configuration and E5.2 as a supplementary ablation.
+1. structured LLM strategic planning;
+2. schema validation;
+3. rule-based arbitration;
+4. fallback-safe execution;
+5. cached strategy reuse;
+6. decision-source logging;
+7. replay-grounded inspection;
+8. controlled qwen3:32b evaluation.
+
+The strongest empirical claim is that, in controlled 50-match experiments, a target-aware qwen3:32b strategic planner achieved a higher descriptive win rate and lower fallback rate than the previous basic qwen3 planner, while maintaining zero LLM errors.

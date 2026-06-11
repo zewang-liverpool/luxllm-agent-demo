@@ -1,4 +1,4 @@
-# Paper Assets Index
+﻿# Paper Assets Index
 
 Version: `v0.9-K3-final-packaging`
 
@@ -76,9 +76,9 @@ The final package supports the claim that LuxLLM-Agent is an inspectable LLM-ass
 
 ## qwen3:32b Controlled Evaluation Update
 
-This section records the final qwen3:32b evidence used for the current EMNLP demo paper closeout.
+This section records earlier qwen3:32b evidence used during the EMNLP demo paper closeout. The current main controlled result is the later P5.5-light target-aware strategic planner.
 
-### Main Controlled Result
+### Earlier Controlled Configuration
 
 - Configuration: E4 strategy-diversity
 - Run directory: `docs/hpc_qwen3_gpu_e4_50run/20260610_180133_qwen3_32b_gpu_e4_50run_job8994080/`
@@ -112,7 +112,55 @@ This section records the final qwen3:32b evidence used for the current EMNLP dem
 
 ### Paper Usage
 
-- Use E4 strategy-diversity as the main controlled result.
-- Use E5.2 candidate-exploitation as a supplementary ablation.
+- Treat E4 strategy-diversity as an earlier controlled configuration.
+- Treat E5.2 candidate-exploitation as a supplementary ablation.
+- Use P5.5-light target-aware qwen3:32b strategic planner as the current main controlled result.
+- Use the previous basic qwen3 planner as the main comparison baseline.
 - Do not claim that E5.2 improves the agent.
 - Frame the contribution as replay-grounded decision traceability and fallback-safe LLM-agent execution, not as state-of-the-art Lux AI performance.
+
+---
+
+## P5.5-light Qwen3-32B Strategic Planner Update
+
+### Status
+
+Current main controlled qwen3:32b result.
+
+### Result Summary
+
+- Total matches: 50
+- LLM-assisted player wins: 35
+- Rule-controlled opponent wins: 15
+- Win rate: 70%
+- Average player 0 reward: 3.140
+- Average player 1 reward: 1.860
+- Strategy use rate: 0.960
+- Fallback rate: 0.040
+- LLM errors: 0
+
+### Comparison Baseline
+
+The previous basic qwen3 planner achieved:
+
+- Total matches: 50
+- LLM-assisted player wins: 28
+- Rule-controlled opponent wins: 22
+- Win rate: 56%
+- Strategy use rate: 0.927
+- Fallback rate: 0.073
+- LLM errors: 0
+
+### Paper Usage
+
+Use the P5.5-light target-aware qwen3:32b strategic planner as the current main controlled evaluation result.
+
+Use the previous basic qwen3 planner as the main comparison baseline.
+
+Treat the earlier strategy-diverse prompting and candidate-exploitation configurations as development evidence and ablation context, not as the final main result.
+
+The paper should state that the target-aware strategic planner improved descriptive win rate from 56% to 70%, reduced fallback rate from 7.3% to 4.0%, and maintained zero LLM errors.
+
+This result should be reported as controlled-run evidence rather than as a state-of-the-art Lux AI performance claim.
+
+
