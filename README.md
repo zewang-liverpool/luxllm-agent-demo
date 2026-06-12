@@ -5,59 +5,32 @@
 </p>
 
 <table>
-
   <tr>
-
     <td align="center" width="50%">
-
       <b>Season 1 Official GIF</b><br>
-
       <img src="assets/lux_s1_official_game_replay.gif" alt="Official Lux AI Season 1 visualizer GIF" width="420"><br>
-
       <sub>Official Lux AI Season 1 visualizer replay GIF from the Lux-Viewer-S1 reference.</sub>
-
     </td>
-
     <td align="center" width="50%">
-
       <b>Season 1 Local GIF</b><br>
-
       <img src="assets/lux_s1_local_run_generated.gif" alt="Locally verified Lux AI Season 1 visualizer GIF" width="420"><br>
-
       <sub>Locally verified Season 1 visualizer GIF generated from the local S1 setup.</sub>
-
     </td>
-
   </tr>
-
 </table>
-
-
 
 <br>
 
-
-
 <p align="center">
-
   <b>Season 3 LuxLLM-Agent GIF</b>
-
 </p>
 
-
-
 <p align="center">
-
   <img src="assets/luxllm_agent_final_demo_run008.gif" alt="LuxLLM-Agent Season 3 demo GIF" width="760">
-
 </p>
 
-
-
 <p align="center">
-
   <sub>Our Lux AI Season 3 Run008 isometric demo with LLM-assisted evaluation evidence.</sub>
-
 </p>
 
 <p align="center">
