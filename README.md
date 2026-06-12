@@ -1,15 +1,46 @@
 ﻿# LuxLLM-Agent Demo
 
 <p align="center">
-  <img src="assets/luxllm_agent_final_demo_run008.gif" alt="LuxLLM-Agent final demo preview" width="900">
+  <b>From the official Lux AI Season 1 visualizer to a locally verified Season 1 reference and an explainable Lux AI Season 3 LLM-agent demo.</b>
 </p>
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <b>Season 1 Official GIF</b><br>
+      <img src="assets/lux_s1_official_game_replay.gif" alt="Official Lux AI Season 1 visualizer GIF" width="300"><br>
+      <sub>Official Lux AI Season 1 visualizer replay GIF from the Lux-Viewer-S1 reference.</sub>
+    </td>
+    <td align="center" width="33%">
+      <b>Season 1 Local GIF</b><br>
+      <img src="assets/lux_s1_local_run_generated.gif" alt="Locally verified Lux AI Season 1 visualizer GIF" width="300"><br>
+      <sub>Locally verified Season 1 visualizer GIF generated from the local S1 setup.</sub>
+    </td>
+    <td align="center" width="33%">
+      <b>Season 3 LuxLLM-Agent GIF</b><br>
+      <img src="assets/luxllm_agent_final_demo_run008.gif" alt="LuxLLM-Agent Season 3 demo GIF" width="300"><br>
+      <sub>Our Lux AI Season 3 Run008 isometric demo with LLM-assisted evaluation evidence.</sub>
+    </td>
+  </tr>
+</table>
 
 <p align="center">
   <b>LuxLLM-Agent:</b> an LLM-assisted Lux AI Season 3 agent with explainable isometric replay visualization and 50-run evaluation evidence.
 </p>
 
 <p align="center">
-  Full demo video: <a href="https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video">GitHub Release</a>
+  Full demo video:
+  <a href="https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video">GitHub Release</a>
+</p>
+
+<p align="center">
+  Season 1 visualizer source:
+  <a href="https://github.com/Lux-AI-Challenge/Lux-Viewer-S1">Lux-Viewer-S1 official repository</a>
+</p>
+
+<p align="center">
+  50-run evidence:
+  <a href="https://github.com/zewang-liverpool/luxllm-agent-demo/tree/main/docs/demo_evidence/hpc_qwen3_32b_50run">qwen3:32b controlled evidence folder</a>
 </p>
 
 ---
