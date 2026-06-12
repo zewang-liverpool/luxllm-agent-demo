@@ -36,3 +36,6 @@ docs/hpc_qwen3_32b_multirun/
 replays/
 # Generated paper PDFs
 paper/*.pdf
+
+# Generated paper PDFs
+paper/*.pdf
