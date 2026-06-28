@@ -1,0 +1,27 @@
+{
+  "run_dir": "docs/hpc_deepseek_r1_32b_50run/20260624_152843_deepseek_r1_32b_gpu_50run_job9189419",
+  "model": "deepseek-r1:32b",
+  "total_runs": 50,
+  "winner_counts": {
+    "player_1": 24,
+    "player_0": 26
+  },
+  "avg_player_0_reward": 2.7,
+  "avg_player_1_reward": 2.3,
+  "avg_fresh_llm_calls": 33.2,
+  "avg_llm_strategy_used": 27.24,
+  "avg_cached_llm_turns": 412.62,
+  "avg_fallback_count": 570.14,
+  "avg_llm_errors": 0.0,
+  "avg_llm_latency_ms": 4143.595,
+  "max_llm_latency_ms": 10581.076,
+  "avg_trace_steps": 1010.0,
+  "avg_stale_decision_count": 412.62,
+  "decision_source_counts_total": {
+    "rule_player": 25250,
+    "fallback": 94,
+    "rule_fallback": 3163,
+    "llm_fresh": 1362,
+    "cached_llm": 20631
+  }
+}

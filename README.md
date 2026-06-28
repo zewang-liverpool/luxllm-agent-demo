@@ -1,306 +1,482 @@
-﻿# LuxLLM-Agent Demo
+# LuxLLM-Agent
 
-<p align="center">
-  <b>From the official Lux AI Season 1 visualizer to a locally verified Season 1 reference and an explainable Lux AI Season 3 LLM-agent demo.</b>
-</p>
+**LuxLLM-Agent** is an interactive decision-trace and evaluation platform for inspecting LLM-based agents in **Lux AI Season 3**.
 
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <b>Season 1 Official GIF</b><br>
-      <img src="assets/lux_s1_official_game_replay.gif" alt="Official Lux AI Season 1 visualizer GIF" width="420"><br>
-      <sub>Official Lux AI Season 1 visualizer replay GIF from the Lux-Viewer-S1 reference.</sub>
-    </td>
-    <td align="center" width="50%">
-      <b>Season 1 Local GIF</b><br>
-      <img src="assets/lux_s1_local_run_generated.gif" alt="Locally verified Lux AI Season 1 visualizer GIF" width="420"><br>
-      <sub>Locally verified Season 1 visualizer GIF generated from the local S1 setup.</sub>
-    </td>
-  </tr>
-</table>
+The project combines a Lux AI Season 3 agent, structured game-state summarisation, LLM-based strategic decision generation, rule-based action verification, fallback handling, decision provenance logging, controlled-run evaluation, and an isometric replay viewer.
 
-<br>
-
-<p align="center">
-  <b>Season 3 LuxLLM-Agent GIF</b>
-</p>
-
-<p align="center">
-  <img src="assets/luxllm_agent_final_demo_run008.gif" alt="LuxLLM-Agent Season 3 demo GIF" width="760">
-</p>
-
-<p align="center">
-  <sub>Our Lux AI Season 3 Run008 isometric demo with LLM-assisted evaluation evidence.</sub>
-</p>
-
-<p align="center">
-  <b>LuxLLM-Agent:</b> an LLM-assisted Lux AI Season 3 agent with explainable isometric replay visualization and 50-run evaluation evidence.
-</p>
-
-<p align="center">
-  Full demo video:
-  <a href="https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video">GitHub Release</a>
-</p>
-
-<p align="center">
-  Season 1 visualizer source:
-  <a href="https://github.com/Lux-AI-Challenge/Lux-Viewer-S1">Lux-Viewer-S1 official repository</a>
-</p>
-
-<p align="center">
-  50-run evidence:
-  <a href="https://github.com/zewang-liverpool/luxllm-agent-demo/tree/main/docs/demo_evidence/hpc_qwen3_32b_50run">qwen3:32b controlled evidence folder</a>
-</p>
+The project is designed for an MSc dissertation and research-demo style artifact. Its main goal is not simply to build an agent that plays Lux AI, but to investigate how LLM-based game-agent decisions can be structured, verified, traced, and evaluated.
 
 ---
 
-## Project Overview
+## Project Focus
 
-LuxLLM-Agent is an inspectable LLM-assisted game-agent system for **Lux AI Season 3**. The project combines structured LLM strategic planning, rule-based arbitration, fallback-safe execution, decision-source logging, and replay-grounded visualization.
+This project investigates the following research question:
 
-The project is designed as a demo-oriented research artifact for the **EMNLP 2026 System Demonstrations Track**. It is not presented as a competition-winning Lux AI bot. Instead, the main contribution is a reproducible and explainable agent runtime that makes LLM decisions, fallback behavior, and controlled evaluation evidence visible.
+> **How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?**
 
-## Demo and Evidence Links
+The system is built around three sub-questions:
 
-* **Repository:** `luxllm-agent-demo`
-* **Final demo video:** [GitHub Release](https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video)
-* **Final demo GIF preview:** `assets/luxllm_agent_final_demo_run008.gif`
-* **50-run evidence folder:** `docs/demo_evidence/hpc_qwen3_32b_50run/`
-* **Selected demo run:** Run008
-* **Selected decision trace:** `docs/demo_evidence/hpc_qwen3_32b_50run/decision_logs/decision_log_008.jsonl`
+1. How can raw Lux AI Season 3 game states be transformed into compact structured inputs for LLM-based strategic decision making?
+2. How can rule-based verification and fallback mechanisms reduce invalid or unstable LLM-generated actions?
+3. How can replay-grounded decision traces help inspect the relationship between LLM reasoning, selected strategies, executed actions, and game outcomes?
 
 ---
 
-# EMNLP 2026 — System Demonstrations Track
+## Demo Preview
 
-Ready-to-upload LaTeX project using the **official ACL style files**, set up for the EMNLP 2026 **System Demonstrations** track.
+<p align="center">
+  <img src="assets/lux_s3_demo_run008.gif" alt="LuxLLM-Agent Season 3 Run008 demo" width="760">
+</p>
 
-## Upload to Overleaf
+<p align="center">
+  <b>LuxLLM-Agent Season 3 Run008 isometric replay and evaluation demo.</b>
+</p>
 
-1. Zip this folder or use the prepared paper package.
-2. In Overleaf: **New Project -> Upload Project** and select the zip.
-3. Set the main document to `main.tex`.
-4. Use compiler **pdfLaTeX**.
-
-## Files
-
-* `main.tex` — the paper, structured to address demo-track requirements.
-* `acl.sty`, `acl_natbib.bst` — ACL style files.
-* `custom.bib` — project-specific citations.
-* `anthology.bib` — ACL Anthology entries.
-* `figures/` — paper figures.
-* `docs/` — development notes, evidence reports, evaluation summaries, and demo artifacts.
-* `assets/` — repository-level demo media such as the README GIF preview.
-
-## Key Rules Baked into the Template
-
-* **6 pages** of content max.
-* **Unlimited** references.
-* **Unlimited** optional ethics or broader-impact statement.
-* Appendix capped at **2 pages**.
-* Single-blind author visibility is used in the current template.
-* Accepted papers get **1 extra content page** for the camera-ready version.
-
-## Submission Checklist
-
-* [ ] Paper PDF, <= 6 pages, ACL style.
-* [ ] Evaluation reported.
-* [ ] Live demo URL or installable package link.
-* [ ] Screencast video link or supplementary MPEG-4 file.
-* [ ] Licensing stated.
-* [ ] Ethics statement included.
-
-## Important Dates
-
-* Paper submission: **Friday, 10 July 2026** AoE.
-* Notification: **20 August 2026**.
-* Camera-ready: **30 August 2026**.
-* Conference: **24–29 October 2026**, Budapest, Hungary.
-* No rebuttal stage.
-
----
-
-## Current Experimental Status
-
-This project has reached the controlled-evaluation stage for the Lux AI Season 3 LLM-assisted agent. The current stable research configuration uses `qwen3:32b` with GPU-backed Ollama inference on Barkla2, combined with rule-based fallback, structured LLM planning, decision tracing, and replay-grounded inspection.
-
-The current main controlled result is the **target-aware qwen3:32b strategic planner**. This configuration extends the earlier basic intent-only JSON planner by adding target coordinates, priority scores, risk labels, expected-value estimates, and lightweight rule-based arbitration.
-
-| Configuration                        | Matches | LLM-Assisted Wins | Rule Opponent Wins | Win Rate | Strategy Use | Fallback Rate | LLM Errors | Main Observation                        |
-| ------------------------------------ | ------: | ----------------: | -----------------: | -------: | -----------: | ------------: | ---------: | --------------------------------------- |
-| Basic qwen3 planner                  |      50 |                28 |                 22 |      56% |        92.7% |          7.3% |          0 | Previous basic JSON planner             |
-| Target-aware qwen3 strategic planner |      50 |                35 |                 15 |      70% |        96.0% |          4.0% |          0 | Current main controlled result          |
-| Strategy-diverse prompting           |      50 |                29 |                 21 |      58% |            — |             — |   0.0 avg. | Earlier controlled configuration        |
-| Candidate-exploitation ablation      |      50 |                26 |                 24 |      52% |            — |             — |   0.0 avg. | Stable ablation, but not an improvement |
-
-The target-aware qwen3:32b strategic planner is now the main reported controlled result. In a 50-match controlled comparison, it improved the LLM-assisted player's descriptive win rate from 56% to 70% compared with the previous basic qwen3 planner, reduced fallback rate from 7.3% to 4.0%, and maintained zero LLM errors.
-
-The earlier strategy-diverse prompting and candidate-exploitation configurations are retained as development evidence and ablation context. They show that the evaluation pipeline can compare design variants, but they should not be presented as the final main result.
-
----
-
-## Final Demo Evidence
-
-The latest demo uses **Run008** from the qwen3:32b controlled evidence set. The final video is distributed through GitHub Releases rather than committed directly to the repository.
-
-### Final Demo Asset
-
-* Demo title: **LuxLLM Agent Final Demo Run008 Isometric Visualization**
-* Release page: [GitHub Release](https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video)
-* Local video filename: `LuxLLM_Agent_Final_Demo_Run008_Isometric_Visualization.mp4`
-* README GIF preview: `assets/luxllm_agent_final_demo_run008.gif`
-
-### 50-run Evidence Folder
-
-The cleaned 50-run evidence folder is:
-
-```text
-docs/demo_evidence/hpc_qwen3_32b_50run/
-```
-
-It contains:
-
-* `README.md`
-* `hpc_qwen3_32b_multirun_summary.json`
-* `hpc_qwen3_32b_multirun_summary.md`
-* `match_history_full_snapshot.jsonl`
-* `p55_light_qwen3_50run_closeout.md`
-* `decision_logs/decision_log_008.jsonl`
-* `llm_decisions/llm_decisions_001.jsonl` through `llm_decisions_050.jsonl`
-* `selected_demo_run/`
-
-These files document the controlled multi-run evaluation, step-level LLM decision traces, fallback behavior, rule arbitration, and the selected Run008 replay reference.
-
----
-
-## Evidence Files
-
-* `docs/demo_evidence/hpc_qwen3_32b_50run/`
-
-  * Cleaned 50-run evidence folder for the final qwen3:32b controlled experiment.
-  * Includes aggregated summaries, match history, Run008 decision trace, LLM decision logs, and replay references.
-
-* `docs/evidence/qwen3_gpu_evidence_index.md`
-
-  * Consolidated qwen3:32b GPU evidence index.
-  * Includes earlier strategy-diverse and candidate-exploitation runs.
-  * Identifies the target-aware qwen3 strategic planner as the current main controlled result.
-
-* `docs/closeout_summary_qwen3_p55_light.md`
-
-  * Closeout summary for the latest 50-match target-aware qwen3:32b strategic-planner run.
-  * Records the 35/50 main result and reliability metrics.
-
-* `docs/reviewer_response_qwen3_update.md`
-
-  * Response notes for reviewer or supervisor concerns.
-  * Explains how the project moved beyond small-model limitations.
-  * Clarifies that the contribution is a structured LLM-agent runtime and replay-grounded evaluation system.
-
-* `docs/demo_videos/README.md`
-
-  * Documents the final demo video policy.
-  * Points to the GitHub Release asset rather than storing the large MP4 directly in the repository.
-
----
-
-## System Components
-
-The project is organized around four connected components.
-
-### 1. LLM-assisted Agent Runtime
-
-The agent uses structured strategic planning with a fallback-safe runtime. It combines LLM decisions with rule-based arbitration and cached strategy reuse.
-
-Main files include:
-
-* `main.py`
-* `agent.py`
-* `config.py`
-* `llm_decider.py`
-* `rule_policy.py`
-* `action_planner.py`
-* `state_summarizer.py`
-* `game_memory.py`
-* `lux_state.py`
-
-### 2. Decision Tracing
-
-The runtime records structured traces for inspection and evaluation.
-
-Representative evidence includes:
-
-* decision source;
-* LLM plan schema;
-* target coordinates;
-* priority scores;
-* fallback usage;
-* strategy cache usage;
-* rule-arbitration behavior.
-
-### 3. Replay-grounded Viewer
-
-The viewer presents replay-grounded inspection evidence for the final demo.
-
-Main viewer-related files include:
-
-* `s3_log_driven_gameview.html`
-* `data/isometric_replay_frames.json`
-* `data/isometric_replay_frames_run008.json`
-* `assets/luxllm_agent_final_demo_run008.gif`
-
-### 4. Evaluation and Paper Artifacts
-
-The project includes controlled-run evaluation summaries and paper-ready documentation.
-
-Representative files include:
-
-* `docs/evaluation_summary.md`
-* `docs/evaluation_comparison_table.md`
-* `docs/demo_artifact_index_v09o4.md`
-* `docs/reproducibility_guide.md`
-* `main.tex`
-* `figures/`
-
----
-
-## Final Project Positioning
-
-This project is not presented as a state-of-the-art Lux AI competition bot or a competition-winning policy. It is presented as an inspectable LLM-assisted game-agent system for Lux AI Season 3.
-
-The main contribution is the integration of:
-
-1. structured LLM strategic planning;
-2. schema validation;
-3. rule-based arbitration;
-4. fallback-safe execution;
-5. cached strategy reuse;
-6. decision-source logging;
-7. replay-grounded inspection;
-8. controlled qwen3:32b evaluation.
-
-The strongest empirical claim is that, in controlled 50-match experiments, a target-aware qwen3:32b strategic planner achieved a higher descriptive win rate and lower fallback rate than the previous basic qwen3 planner, while maintaining zero LLM errors.
-
----
-
-## Repository Media Policy
-
-Large MP4 demo videos are not committed directly to the repository. They are distributed through GitHub Releases.
-
-The README uses a compressed GIF preview:
+If the final demo GIF has been renamed locally, use the newest available file under `assets/`, for example:
 
 ```text
 assets/luxllm_agent_final_demo_run008.gif
-```
+assets/lux_s3_demo_run008.gif
+````
 
-The complete final demo video is available here:
+---
+
+## System Overview
+
+LuxLLM-Agent separates strategic reasoning from executable game actions.
 
 ```text
-https://github.com/zewang-liverpool/luxllm-agent-demo/releases/tag/demo-video
+Lux AI Season 3 Observation
+        |
+        v
+Structured State Summariser
+        |
+        v
+LLM Strategist
+        |
+        v
+Structured Output Parser
+        |
+        v
+Rule-based Action Verifier
+        |
+        v
+Action Planner
+        |
+        v
+Lux AI Environment
+        |
+        v
+Decision Logger + Replay Viewer + Evaluation Harness
+```
+
+The LLM does not directly execute arbitrary environment actions. Instead, it produces high-level strategic decisions, which are parsed, verified, repaired, cached, or rejected before being converted into legal Lux AI actions.
+
+---
+
+## Key Features
+
+### LLM-assisted Lux AI Season 3 agent
+
+* Supports LLM-based strategic planning.
+* Uses `qwen3:32b` as the main LLM backend.
+* Adds `deepseek-r1:32b` as a comparison LLM backend.
+* Supports rule-only and LLM-enabled experimental settings.
+
+### Structured game-state summarisation
+
+* Converts raw Lux AI observations into compact state summaries.
+* Reduces the burden on the LLM.
+* Provides a structured interface between the game environment and the LLM strategist.
+
+### Rule-based action verification
+
+* Prevents direct execution of arbitrary LLM outputs.
+* Checks action feasibility and safety.
+* Supports fallback behaviour when LLM outputs are invalid, unstable, or low-confidence.
+
+### Decision provenance logging
+
+* Records whether decisions come from:
+
+  * fresh LLM calls;
+  * cached LLM decisions;
+  * rule-based player logic;
+  * fallback logic;
+  * rule fallback.
+* Supports later replay-grounded analysis.
+
+### Isometric replay viewer
+
+* Provides a Season 1-style visual replay interface for Lux AI Season 3.
+* Displays replay state, battle timeline, score context, and final evaluation summary.
+* Intended to support future LLM Decision Trace Overlay.
+
+### Controlled-run evaluation
+
+* Includes 50-run evidence for `qwen3:32b`.
+* Includes 50-run comparison evidence for `deepseek-r1:32b`.
+* Reports win/loss, LLM errors, latency, fallback behaviour, and decision-source distribution.
+
+---
+
+## Main Evaluation Results
+
+### 50-run LLM backend comparison
+
+| Model             | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors | Notes                  |
+| ----------------- | ---: | ------------: | ------------: | ----------------: | ---------: | ---------------------- |
+| `qwen3:32b`       |   50 |            35 |            15 |               70% |          0 | Main LLM backend       |
+| `deepseek-r1:32b` |   50 |            26 |            24 |               52% |          0 | Comparison LLM backend |
+
+The model comparison is not intended as a general-purpose LLM leaderboard. Instead, it evaluates whether the LuxLLM-Agent decision-trace and rule-based action-verification framework can support different reasoning-oriented LLM backends under the same Lux AI Season 3 setting.
+
+Both `qwen3:32b` and `deepseek-r1:32b` completed 50 controlled runs with zero LLM errors, showing that the framework can run different LLMs through the same structured decision pipeline.
+
+---
+
+## DeepSeek-R1-32B 50-run Results
+
+The newly added DeepSeek-R1-32B experiment provides an additional model-level comparison.
+
+| Metric                    |             Value |
+| ------------------------- | ----------------: |
+| Model                     | `deepseek-r1:32b` |
+| Total runs                |                50 |
+| player_0 wins             |                26 |
+| player_1 wins             |                24 |
+| player_0 win rate         |               52% |
+| Average player_0 reward   |               2.7 |
+| Average player_1 reward   |               2.3 |
+| Average fresh LLM calls   |              33.2 |
+| Average LLM strategy used |             27.24 |
+| Average cached LLM turns  |            412.62 |
+| Average fallback count    |            570.14 |
+| Average LLM errors        |               0.0 |
+| Average LLM latency       |       4143.595 ms |
+| Maximum LLM latency       |      10581.076 ms |
+| Average trace steps       |            1010.0 |
+
+### DeepSeek decision-source distribution
+
+| Decision source | Count |
+| --------------- | ----: |
+| `rule_player`   | 25250 |
+| `fallback`      |    94 |
+| `rule_fallback` |  3163 |
+| `llm_fresh`     |  1362 |
+| `cached_llm`    | 20631 |
+
+Derived rates:
+
+```text
+Total decision-source events = 50500
+
+LLM-related events:
+llm_fresh + cached_llm = 1362 + 20631 = 21993
+LLM decision-source rate ?43.55%
+
+Fallback-related events:
+fallback + rule_fallback = 94 + 3163 = 3257
+Fallback decision-source rate ?6.45%
 ```
 
 ---
 
-## Suggested Citation / Description
+## Evidence
 
-LuxLLM-Agent is an LLM-assisted game-agent system for Lux AI Season 3. It combines structured qwen3:32b strategic planning, rule-based arbitration, fallback-safe execution, and replay-grounded visualization. The system is evaluated through controlled 50-match experiments and demonstrated through an isometric Run008 replay visualization.
+Main evidence files and directories:
+
+```text
+docs/demo_evidence_index.md
+docs/demo_evidence/llm_model_comparison_summary.md
+docs/demo_evidence/hpc_qwen3_32b_multirun/
+docs/demo_evidence/hpc_deepseek_r1_32b_50run/
+docs/viewers/s3_isometric_battle_viewer_v09n12c3.html
+data/isometric_replay_frames_run008.json
+```
+
+DeepSeek-R1-32B raw evidence directory:
+
+```text
+docs/demo_evidence/hpc_deepseek_r1_32b_50run/20260624_152843_deepseek_r1_32b_gpu_50run_job9189419/
+```
+
+Expected DeepSeek summary file:
+
+```text
+docs/demo_evidence/hpc_deepseek_r1_32b_50run/20260624_152843_deepseek_r1_32b_gpu_50run_job9189419/summary_50run.json
+```
+
+---
+
+## Repository Structure
+
+```text
+.
+ agent.py
+ baseline_agent.py
+ action_planner.py
+ rule_policy.py
+ state_summarizer.py
+ llm_decider.py
+ game_memory.py
+ config.py
+ main.py
+ record_match_result_from_console.py
+ s3_log_driven_gameview.html
+ assets/
+?   lux_s3_demo_run008.gif
+?   luxllm_agent_final_demo_run008.gif
+?   lux_s1_official_game_replay.gif
+?   lux_s1_official_daynightshift.gif
+?   lux_s1_local_run_generated.gif
+ data/
+?   isometric_replay_frames_run008.json
+ docs/
+?   demo_evidence_index.md
+?   demo_evidence/
+?  ?   llm_model_comparison_summary.md
+?  ?   hpc_qwen3_32b_multirun/
+?  ?   hpc_deepseek_r1_32b_50run/
+?   viewers/
+?  ?   s3_isometric_battle_viewer_v09n12c3.html
+?   demo_videos/
+ logs/
+ replays/
+ paper/
+?   main.tex
+?   acl.sty
+?   acl_natbib.bst
+?   anthology.bib
+?   custom.bib
+?   figures/
+ README.md
+```
+
+Some generated or local-only folders may not be tracked in Git if they contain large raw logs, videos, temporary output, or generated PDFs.
+
+---
+
+## Quick Start: Local Viewer
+
+From the project root:
+
+```powershell
+cd D:\PythonProject\lux_llm_agent
+python -m http.server 8000
+```
+
+Open the Season 3 viewer:
+
+```text
+http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12c3.html
+```
+
+The viewer reads replay frame data from:
+
+```text
+data/isometric_replay_frames_run008.json
+```
+
+---
+
+## Quick Start: Local Match Run
+
+Activate the local Python environment:
+
+```powershell
+cd D:\PythonProject\lux_llm_agent
+.\.venv\Scripts\activate
+```
+
+Run a local LLM-assisted match:
+
+```powershell
+$env:LUX_LLM_ENABLED="1"
+$env:LUX_FORCE_RULE_ONLY="0"
+$env:LUX_LLM_MODEL="qwen3:32b"
+$env:LUX_EXPERIMENT_TAG="local_qwen3_test"
+
+.\run_match_llm.bat
+```
+
+For DeepSeek-R1-32B local testing, use:
+
+```powershell
+$env:LUX_LLM_MODEL="deepseek-r1:32b"
+$env:LUX_EXPERIMENT_TAG="local_deepseek_r1_32b_test"
+
+.\run_match_llm.bat
+```
+
+---
+
+## Barkla2 GPU Evaluation
+
+Large LLM experiments are intended to run on Barkla2 GPU nodes rather than local CPU nodes.
+
+Example Barkla evidence already produced:
+
+```text
+qwen3:32b 50-run
+deepseek-r1:32b 50-run
+```
+
+DeepSeek-R1-32B 50-run evidence was produced with:
+
+```text
+Model: deepseek-r1:32b
+Runs: 50
+Platform: Barkla2 GPU
+LLM errors: 0
+```
+
+The corresponding evidence archive can be stored locally under:
+
+```text
+docs/demo_evidence/hpc_deepseek_r1_32b_50run/
+```
+
+---
+
+## Main Environment Variables
+
+The main runtime settings include:
+
+```text
+LUX_LLM_ENABLED
+LUX_FORCE_RULE_ONLY
+LUX_FORCE_FALLBACK
+LUX_LLM_MODEL
+LUX_LLM_BASE_URL
+LLM_BASE_URL
+LUX_EXPERIMENT_TAG
+LUX_ENABLE_RULE_FALLBACK
+LUX_ENABLE_STRATEGY_CACHE
+LUX_ENABLE_RISK_AWARE_ACTION_FILTER
+LUX_ENABLE_CANDIDATE_EXPLOITATION
+LUX_LLM_TIMEOUT_SECONDS
+LUX_LLM_CALL_INTERVAL
+LUX_LLM_NUM_PREDICT
+LUX_LLM_TEMPERATURE
+```
+
+Typical qwen3 setting:
+
+```text
+LUX_LLM_MODEL=qwen3:32b
+```
+
+Typical DeepSeek setting:
+
+```text
+LUX_LLM_MODEL=deepseek-r1:32b
+```
+
+---
+
+## Research Interpretation
+
+The current results support the following dissertation-level interpretation:
+
+1. **Structured decision tracing** makes the LLM-agent behaviour inspectable beyond final match scores.
+2. **Rule-based action verification** allows LLM outputs to be used as strategic proposals rather than unsafe direct actions.
+3. **Fallback and caching** improve runtime stability and reduce the cost of repeated LLM calls.
+4. **Replay-grounded inspection** connects state, decision source, action execution, and outcome.
+5. **Model comparison** shows that the same framework can support different reasoning-oriented LLM backends.
+
+The main contribution is not that one LLM is always better than another, but that LuxLLM-Agent provides a framework for running, tracing, validating, and evaluating LLM-based game agents under controlled conditions.
+
+---
+
+## Dissertation Use
+
+This repository supports an MSc dissertation with the following likely structure:
+
+```text
+1. Introduction
+2. Background and Related Work
+3. Research Questions and Requirements
+4. System Design
+5. Implementation
+6. Evaluation
+7. Discussion
+8. Conclusion
+```
+
+The strongest dissertation angle is:
+
+> LuxLLM-Agent investigates how LLM-based game agents can be made more inspectable and reliable through structured decision tracing, rule-based action verification, and replay-grounded evaluation.
+
+---
+
+## Current Project Status
+
+| Component                         | Status    |
+| --------------------------------- | --------- |
+| Lux AI Season 3 agent runtime     | Complete  |
+| Rule-based baseline               | Complete  |
+| qwen3:32b integration             | Complete  |
+| DeepSeek-R1-32B comparison        | Complete  |
+| 50-run qwen3 evidence             | Complete  |
+| 50-run DeepSeek evidence          | Complete  |
+| Match history logging             | Complete  |
+| Decision trace logging            | Complete  |
+| Isometric Season 3 viewer         | Complete  |
+| Final Run008 demo visualisation   | Complete  |
+| README evaluation update          | Complete  |
+| Evidence index update             | Complete  |
+| Failure analysis document         | Next step |
+| Viewer LLM Decision Trace Overlay | Next step |
+| Dissertation evaluation write-up  | Next step |
+
+---
+
+## Recommended Next Steps
+
+1. Add the DeepSeek-R1-32B 50-run evidence to Git.
+2. Add `llm_model_comparison_summary.md`.
+3. Add failure-case analysis based on selected `decision_trace.jsonl` examples.
+4. Extend the viewer with an LLM Decision Trace Overlay.
+5. Update the dissertation proposal and evaluation chapter.
+6. Keep generated PDFs, raw videos, and extremely large logs out of the repository unless explicitly required.
+
+---
+
+## File-size and Git Notes
+
+Avoid committing very large generated files unless necessary:
+
+```text
+frame_log.jsonl
+large raw videos
+temporary local recordings
+generated PDFs
+temporary archives
+```
+
+Recommended evidence to commit:
+
+```text
+summary_50run.json
+match_history_50run.jsonl
+decision_log.jsonl
+llm_decisions.jsonl
+decision_trace.jsonl
+ablation_metrics.jsonl
+latest_match_console.txt
+small markdown summaries
+```
+
+Generated PDFs should generally remain untracked unless required for submission.
+
+---
+
+## License
+
+This project is developed for academic research and MSc dissertation purposes. External dependencies, Lux AI components, LLM backends, and viewer assets should follow their respective licenses.
+
+```
+```
+
