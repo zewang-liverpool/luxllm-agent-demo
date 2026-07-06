@@ -1,8 +1,8 @@
-\# Chapter 2 Reference Plan
+﻿# Chapter 2 Reference Plan
 
 
 
-\## 1. Purpose of This Document
+## 1. Purpose of This Document
 
 
 
@@ -42,11 +42,11 @@ This plan should be used before rewriting Chapter 2 and before updating the proj
 
 
 
-\---
+---
 
 
 
-\## 2. Dissertation Positioning
+## 2. Dissertation Positioning
 
 
 
@@ -78,11 +78,11 @@ The related work should therefore support the following ideas:
 
 
 
-\---
+---
 
 
 
-\## 3. Recommended Citation Themes
+## 3. Recommended Citation Themes
 
 
 
@@ -116,19 +116,19 @@ Chapter 2 should be strengthened using the following citation themes.
 
 
 
-\---
+---
 
 
 
-\## 4. Recommended References
+## 4. Recommended References
 
 
 
-\## 4.1 LLM Agents, Reasoning, and Acting
+## 4.1 LLM Agents, Reasoning, and Acting
 
 
 
-\### `yao2023react`
+### `yao2023react`
 
 
 
@@ -170,11 +170,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `shinn2023reflexion`
+### `shinn2023reflexion`
 
 
 
@@ -214,11 +214,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `schick2023toolformer`
+### `schick2023toolformer`
 
 
 
@@ -258,11 +258,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `park2023generative`
+### `park2023generative`
 
 
 
@@ -300,15 +300,15 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `li2023camel`
+### `li2023camel`
 
 
 
-\*\*Paper:\*\* CAMEL: Communicative Agents for “Mind” Exploration of Large Language Model Society
+\*\*Paper:\*\* CAMEL: Communicative Agents for 鈥淢ind鈥?Exploration of Large Language Model Society
 
 \*\*Authors:\*\* Li et al.
 
@@ -342,15 +342,15 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\## 4.2 LLM Planning, Grounding, and Embodied Agents
+## 4.2 LLM Planning, Grounding, and Embodied Agents
 
 
 
-\### `ahn2022saycan`
+### `ahn2022saycan`
 
 
 
@@ -380,7 +380,7 @@ Connection to LuxLLM-Agent:
 
 
 
-SayCan is one of the most relevant references for this project. It supports the idea that a language model’s high-level semantic output must be constrained by what the agent can actually do. In LuxLLM-Agent, rule-based verification and action planning play a similar grounding role.
+SayCan is one of the most relevant references for this project. It supports the idea that a language model鈥檚 high-level semantic output must be constrained by what the agent can actually do. In LuxLLM-Agent, rule-based verification and action planning play a similar grounding role.
 
 
 
@@ -392,11 +392,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `wang2023voyager`
+### `wang2023voyager`
 
 
 
@@ -438,11 +438,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `yao2023tot`
+### `yao2023tot`
 
 
 
@@ -480,15 +480,15 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\## 4.3 Game AI and Sequential Decision Making
+## 4.3 Game AI and Sequential Decision Making
 
 
 
-\### `mnih2015dqn`
+### `mnih2015dqn`
 
 
 
@@ -524,11 +524,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `vinyals2019alphastar`
+### `vinyals2019alphastar`
 
 
 
@@ -566,11 +566,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `berner2019openai`
+### `berner2019openai`
 
 
 
@@ -608,11 +608,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `browne2012mcts`
+### `browne2012mcts`
 
 
 
@@ -648,15 +648,15 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\## 4.4 Lux AI Season 3 Sources
+## 4.4 Lux AI Season 3 Sources
 
 
 
-\### `luxai2024kaggle`
+### `luxai2024kaggle`
 
 
 
@@ -692,11 +692,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `luxdesigns3github`
+### `luxdesigns3github`
 
 
 
@@ -734,11 +734,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `luxdesigns3specs`
+### `luxdesigns3specs`
 
 
 
@@ -774,11 +774,11 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\### `tao2024luxs3`
+### `tao2024luxs3`
 
 
 
@@ -812,15 +812,15 @@ Suggested sentence:
 
 
 
-\---
+---
 
 
 
-\## 5. Section-by-section Citation Placement
+## 5. Section-by-section Citation Placement
 
 
 
-\## 5.1 Chapter 2.2 Large Language Models as Agents
+## 5.1 Chapter 2.2 Large Language Models as Agents
 
 
 
@@ -866,11 +866,11 @@ Suggested paragraph direction:
 
 
 
-\---
+---
 
 
 
-\## 5.2 Chapter 2.3 LLMs for Planning and Decision Making
+## 5.2 Chapter 2.3 LLMs for Planning and Decision Making
 
 
 
@@ -914,11 +914,11 @@ Suggested paragraph direction:
 
 
 
-\---
+---
 
 
 
-\## 5.3 Chapter 2.4 Game AI and Sequential Decision Making
+## 5.3 Chapter 2.4 Game AI and Sequential Decision Making
 
 
 
@@ -962,11 +962,11 @@ Suggested paragraph direction:
 
 
 
-\---
+---
 
 
 
-\## 5.4 Chapter 2.5 Hybrid LLM-rule Agent Architectures
+## 5.4 Chapter 2.5 Hybrid LLM-rule Agent Architectures
 
 
 
@@ -1008,11 +1008,11 @@ Suggested paragraph direction:
 
 
 
-\---
+---
 
 
 
-\## 5.5 Chapter 2.6 Action Verification and Safety Boundaries
+## 5.5 Chapter 2.6 Action Verification and Safety Boundaries
 
 
 
@@ -1052,11 +1052,11 @@ Suggested paragraph direction:
 
 
 
-\---
+---
 
 
 
-\## 5.6 Chapter 2.7 Explainability, Traceability, and Decision Provenance
+## 5.6 Chapter 2.7 Explainability, Traceability, and Decision Provenance
 
 
 
@@ -1096,11 +1096,11 @@ Suggested paragraph direction:
 
 
 
-\---
+---
 
 
 
-\## 5.7 Chapter 2.8 Evaluation of LLM-based Agents
+## 5.7 Chapter 2.8 Evaluation of LLM-based Agents
 
 
 
@@ -1144,11 +1144,11 @@ Suggested paragraph direction:
 
 
 
-\---
+---
 
 
 
-\## 5.8 Chapter 2.10 Lux AI Season 3 as an Evaluation Environment
+## 5.8 Chapter 2.10 Lux AI Season 3 as an Evaluation Environment
 
 
 
@@ -1192,11 +1192,11 @@ Suggested paragraph direction:
 
 
 
-\---
+---
 
 
 
-\## 6. BibTeX Keys to Add Later
+## 6. BibTeX Keys to Add Later
 
 
 
@@ -1258,11 +1258,11 @@ or to the dissertation bibliography file when the dissertation is assembled.
 
 
 
-\---
+---
 
 
 
-\## 7. Recommended Citation Style
+## 7. Recommended Citation Style
 
 
 
@@ -1332,11 +1332,11 @@ and convert them to BibTeX citations later.
 
 
 
-\---
+---
 
 
 
-\## 8. Safe Interpretation Rules
+## 8. Safe Interpretation Rules
 
 
 
@@ -1344,7 +1344,7 @@ When adding citations, avoid overclaiming.
 
 
 
-\### 8.1 Do not claim LuxLLM-Agent is the same as ReAct
+### 8.1 Do not claim LuxLLM-Agent is the same as ReAct
 
 
 
@@ -1356,7 +1356,7 @@ Safe wording:
 
 
 
-\### 8.2 Do not claim LuxLLM-Agent implements SayCan
+### 8.2 Do not claim LuxLLM-Agent implements SayCan
 
 
 
@@ -1368,7 +1368,7 @@ Safe wording:
 
 
 
-\### 8.3 Do not claim LuxLLM-Agent is an RL system like AlphaStar or OpenAI Five
+### 8.3 Do not claim LuxLLM-Agent is an RL system like AlphaStar or OpenAI Five
 
 
 
@@ -1380,7 +1380,7 @@ Safe wording:
 
 
 
-\### 8.4 Do not claim qwen3:32b is universally better than DeepSeek-R1-32B
+### 8.4 Do not claim qwen3:32b is universally better than DeepSeek-R1-32B
 
 
 
@@ -1392,7 +1392,7 @@ Safe wording:
 
 
 
-\### 8.5 Do not claim the viewer proves strategic optimality
+### 8.5 Do not claim the viewer proves strategic optimality
 
 
 
@@ -1404,11 +1404,11 @@ Safe wording:
 
 
 
-\---
+---
 
 
 
-\## 9. Recommended Chapter 2 Revision Strategy
+## 9. Recommended Chapter 2 Revision Strategy
 
 
 
@@ -1416,7 +1416,7 @@ The next step should be to revise Chapter 2 in three passes.
 
 
 
-\### Pass 1: Add citations without changing too much structure
+### Pass 1: Add citations without changing too much structure
 
 
 
@@ -1424,7 +1424,7 @@ Add citation placeholders to the current text.
 
 
 
-\### Pass 2: Strengthen related work comparisons
+### Pass 2: Strengthen related work comparisons
 
 
 
@@ -1444,7 +1444,7 @@ Prior work such as SayCan grounds language-model suggestions in executable robot
 
 
 
-\### Pass 3: Add bibliography entries
+### Pass 3: Add bibliography entries
 
 
 
@@ -1452,11 +1452,11 @@ Add corresponding BibTeX entries to the bibliography file.
 
 
 
-\---
+---
 
 
 
-\## 10. Immediate Next Task
+## 10. Immediate Next Task
 
 
 
@@ -1485,6 +1485,7 @@ The update should:
 4\. Keep the chapter readable for a COMP702 dissertation.
 
 5\. Leave full BibTeX work for the next separate step.
+
 
 
 

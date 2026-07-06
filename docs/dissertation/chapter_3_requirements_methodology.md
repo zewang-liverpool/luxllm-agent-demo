@@ -1,8 +1,8 @@
-\# Chapter 3: Requirements and Methodology
+﻿# Chapter 3: Requirements and Methodology
 
 
 
-\## 3.1 Introduction
+## 3.1 Introduction
 
 
 
@@ -26,11 +26,11 @@ This chapter explains the requirements that guided the system, the methodology u
 
 
 
-\---
+---
 
 
 
-\## 3.2 Project Aim
+## 3.2 Project Aim
 
 
 
@@ -62,11 +62,11 @@ This aim leads to three sub-objectives:
 
 
 
-\---
+---
 
 
 
-\## 3.3 Research Questions
+## 3.3 Research Questions
 
 
 
@@ -82,7 +82,7 @@ This question is divided into three sub-research questions.
 
 
 
-\### 3.3.1 RQ1: State summarisation
+### 3.3.1 RQ1: State summarisation
 
 
 
@@ -94,7 +94,7 @@ This question focuses on the state summarisation process. Raw game observations 
 
 
 
-\### 3.3.2 RQ2: Action verification and fallback
+### 3.3.2 RQ2: Action verification and fallback
 
 
 
@@ -106,7 +106,7 @@ This question focuses on the reliability of LLM-based agents. The LLM output is 
 
 
 
-\### 3.3.3 RQ3: Replay-grounded evaluation
+### 3.3.3 RQ3: Replay-grounded evaluation
 
 
 
@@ -118,11 +118,11 @@ This question focuses on evaluation and inspection. The system should allow the 
 
 
 
-\---
+---
 
 
 
-\## 3.4 Project Requirements
+## 3.4 Project Requirements
 
 
 
@@ -134,15 +134,15 @@ Functional requirements describe what the system should do. Non-functional requi
 
 
 
-\---
+---
 
 
 
-\## 3.5 Functional Requirements
+## 3.5 Functional Requirements
 
 
 
-\### 3.5.1 FR1: Run a Lux AI Season 3 agent
+### 3.5.1 FR1: Run a Lux AI Season 3 agent
 
 
 
@@ -168,11 +168,11 @@ The agent must support:
 
 
 
-\---
+---
 
 
 
-\### 3.5.2 FR2: Support rule-only and LLM-enabled modes
+### 3.5.2 FR2: Support rule-only and LLM-enabled modes
 
 
 
@@ -206,11 +206,11 @@ This allows the project to compare baseline rule-based behaviour with LLM-backed
 
 
 
-\---
+---
 
 
 
-\### 3.5.3 FR3: Summarise game state for LLM planning
+### 3.5.3 FR3: Summarise game state for LLM planning
 
 
 
@@ -248,11 +248,11 @@ This requirement supports RQ1.
 
 
 
-\---
+---
 
 
 
-\### 3.5.4 FR4: Generate structured LLM decisions
+### 3.5.4 FR4: Generate structured LLM decisions
 
 
 
@@ -286,11 +286,11 @@ This design makes the LLM output easier to parse, verify, log, and inspect.
 
 
 
-\---
+---
 
 
 
-\### 3.5.5 FR5: Parse LLM output into internal structures
+### 3.5.5 FR5: Parse LLM output into internal structures
 
 
 
@@ -318,11 +318,11 @@ This requirement is necessary because LLM output cannot be assumed to be reliabl
 
 
 
-\---
+---
 
 
 
-\### 3.5.6 FR6: Verify and convert strategic proposals into actions
+### 3.5.6 FR6: Verify and convert strategic proposals into actions
 
 
 
@@ -356,11 +356,11 @@ This requirement supports RQ2.
 
 
 
-\---
+---
 
 
 
-\### 3.5.7 FR7: Provide fallback behaviour
+### 3.5.7 FR7: Provide fallback behaviour
 
 
 
@@ -390,11 +390,11 @@ Fallback may be used when:
 
 
 
-\---
+---
 
 
 
-\### 3.5.8 FR8: Support strategy caching
+### 3.5.8 FR8: Support strategy caching
 
 
 
@@ -410,11 +410,11 @@ The system should record when cached plans are used so that cached behaviour can
 
 
 
-\---
+---
 
 
 
-\### 3.5.9 FR9: Record decision traces and metrics
+### 3.5.9 FR9: Record decision traces and metrics
 
 
 
@@ -470,11 +470,11 @@ These logs support controlled evaluation and replay-grounded inspection.
 
 
 
-\---
+---
 
 
 
-\### 3.5.10 FR10: Support controlled multi-run evaluation
+### 3.5.10 FR10: Support controlled multi-run evaluation
 
 
 
@@ -508,11 +508,11 @@ This requirement allows qwen3:32b and DeepSeek-R1-32B to be compared under the s
 
 
 
-\---
+---
 
 
 
-\### 3.5.11 FR11: Provide replay-grounded visual inspection
+### 3.5.11 FR11: Provide replay-grounded visual inspection
 
 
 
@@ -550,15 +550,15 @@ This requirement supports RQ3.
 
 
 
-\---
+---
 
 
 
-\## 3.6 Non-functional Requirements
+## 3.6 Non-functional Requirements
 
 
 
-\### 3.6.1 NFR1: Stability
+### 3.6.1 NFR1: Stability
 
 
 
@@ -570,11 +570,11 @@ Fallback and rule-based verification are required to support this.
 
 
 
-\---
+---
 
 
 
-\### 3.6.2 NFR2: Inspectability
+### 3.6.2 NFR2: Inspectability
 
 
 
@@ -586,11 +586,11 @@ This is central to the project because the goal is not only to run an agent but 
 
 
 
-\---
+---
 
 
 
-\### 3.6.3 NFR3: Reproducibility
+### 3.6.3 NFR3: Reproducibility
 
 
 
@@ -598,11 +598,11 @@ The system should support reproducible evaluation through scripts, configuration
 
 
 
-\---
+---
 
 
 
-\### 3.6.4 NFR4: Modularity
+### 3.6.4 NFR4: Modularity
 
 
 
@@ -614,11 +614,11 @@ This makes the project easier to test, document, and extend.
 
 
 
-\---
+---
 
 
 
-\### 3.6.5 NFR5: Practicality
+### 3.6.5 NFR5: Practicality
 
 
 
@@ -626,11 +626,11 @@ The system should work with local or HPC-hosted LLMs. Since large LLMs can be sl
 
 
 
-\---
+---
 
 
 
-\### 3.6.6 NFR6: Demonstrability
+### 3.6.6 NFR6: Demonstrability
 
 
 
@@ -642,11 +642,11 @@ The replay viewer and LLM Decision Trace Overlay support this requirement.
 
 
 
-\---
+---
 
 
 
-\## 3.7 Methodology Overview
+## 3.7 Methodology Overview
 
 
 
@@ -682,11 +682,11 @@ This methodology is appropriate because the research question concerns how a sys
 
 
 
-\---
+---
 
 
 
-\## 3.8 Environment and Task Selection
+## 3.8 Environment and Task Selection
 
 
 
@@ -722,11 +722,11 @@ Lux AI Season 3 is also suitable because it produces replay data that can be con
 
 
 
-\---
+---
 
 
 
-\## 3.9 LLM Integration Method
+## 3.9 LLM Integration Method
 
 
 
@@ -802,11 +802,11 @@ The comparison tests whether the same framework can support multiple reasoning-o
 
 
 
-\---
+---
 
 
 
-\## 3.10 Verification and Fallback Method
+## 3.10 Verification and Fallback Method
 
 
 
@@ -844,11 +844,11 @@ The fallback mechanism also makes evaluation more honest because the system reco
 
 
 
-\---
+---
 
 
 
-\## 3.11 Strategy Cache Method
+## 3.11 Strategy Cache Method
 
 
 
@@ -890,11 +890,11 @@ Caching improves runtime practicality, but it can introduce stale decisions. Thi
 
 
 
-\---
+---
 
 
 
-\## 3.12 Evaluation Method
+## 3.12 Evaluation Method
 
 
 
@@ -902,7 +902,7 @@ The evaluation method combines quantitative and qualitative analysis.
 
 
 
-\### 3.12.1 Quantitative evaluation
+### 3.12.1 Quantitative evaluation
 
 
 
@@ -956,11 +956,11 @@ This comparison evaluates both gameplay outcome and framework stability.
 
 
 
-\---
+---
 
 
 
-\### 3.12.2 Decision-source evaluation
+### 3.12.2 Decision-source evaluation
 
 
 
@@ -994,11 +994,11 @@ This makes it possible to measure how much behaviour comes from the LLM, cached 
 
 
 
-\---
+---
 
 
 
-\### 3.12.3 Replay-grounded evaluation
+### 3.12.3 Replay-grounded evaluation
 
 
 
@@ -1028,11 +1028,11 @@ This allows qualitative analysis of representative cases.
 
 
 
-\---
+---
 
 
 
-\### 3.12.4 Failure-case analysis
+### 3.12.4 Failure-case analysis
 
 
 
@@ -1060,11 +1060,11 @@ This analysis is important because a high-quality dissertation should not only r
 
 
 
-\---
+---
 
 
 
-\## 3.13 Evidence Management
+## 3.13 Evidence Management
 
 
 
@@ -1096,11 +1096,11 @@ The project separates summary evidence from large raw outputs. This keeps the re
 
 
 
-\---
+---
 
 
 
-\## 3.14 Ethical and Practical Considerations
+## 3.14 Ethical and Practical Considerations
 
 
 
@@ -1132,11 +1132,11 @@ Practical considerations include hardware availability, LLM latency, local and H
 
 
 
-\---
+---
 
 
 
-\## 3.15 Summary
+## 3.15 Summary
 
 
 
@@ -1153,6 +1153,7 @@ The methodology is artefact-based. It develops a working system and evaluates it
 
 
 This chapter provides the foundation for the following chapters. Chapter 4 presents the system design, Chapter 5 describes the implementation, and Chapter 6 evaluates the system using the methodology described here.
+
 
 
 

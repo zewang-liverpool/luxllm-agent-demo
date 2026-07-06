@@ -1,8 +1,8 @@
-\# Chapter 6: Evaluation
+﻿# Chapter 6: Evaluation
 
 
 
-\## 6.1 Introduction
+## 6.1 Introduction
 
 
 
@@ -50,11 +50,11 @@ This multi-dimensional evaluation is important because LuxLLM-Agent is not only 
 
 
 
-\---
+---
 
 
 
-\## 6.2 Evaluation Objectives
+## 6.2 Evaluation Objectives
 
 
 
@@ -62,7 +62,7 @@ The evaluation has four main objectives.
 
 
 
-\### 6.2.1 Evaluate gameplay outcome
+### 6.2.1 Evaluate gameplay outcome
 
 
 
@@ -90,7 +90,7 @@ The main metrics are:
 
 
 
-\### 6.2.2 Evaluate LLM execution stability
+### 6.2.2 Evaluate LLM execution stability
 
 
 
@@ -118,7 +118,7 @@ This is important because an LLM-based game agent may fail not only through poor
 
 
 
-\### 6.2.3 Evaluate decision provenance
+### 6.2.3 Evaluate decision provenance
 
 
 
@@ -152,7 +152,7 @@ Decision provenance helps determine whether actions are produced by fresh LLM de
 
 
 
-\### 6.2.4 Evaluate replay-grounded inspectability
+### 6.2.4 Evaluate replay-grounded inspectability
 
 
 
@@ -188,11 +188,11 @@ This allows the evaluation to include qualitative inspection rather than only ag
 
 
 
-\---
+---
 
 
 
-\## 6.3 Evaluation Setup
+## 6.3 Evaluation Setup
 
 
 
@@ -262,11 +262,11 @@ logs/match\_history.jsonl
 
 
 
-\---
+---
 
 
 
-\## 6.4 Evaluation Metrics
+## 6.4 Evaluation Metrics
 
 
 
@@ -274,7 +274,7 @@ The evaluation uses several categories of metrics.
 
 
 
-\### 6.4.1 Gameplay metrics
+### 6.4.1 Gameplay metrics
 
 
 
@@ -306,7 +306,7 @@ These metrics show the final outcome of controlled runs.
 
 
 
-\### 6.4.2 LLM execution metrics
+### 6.4.2 LLM execution metrics
 
 
 
@@ -336,7 +336,7 @@ These metrics evaluate whether the LLM pipeline remains stable and practical.
 
 
 
-\### 6.4.3 Decision-source metrics
+### 6.4.3 Decision-source metrics
 
 
 
@@ -366,7 +366,7 @@ These metrics are central to the evaluation because they show how much the LLM c
 
 
 
-\### 6.4.4 Replay-grounded metrics
+### 6.4.4 Replay-grounded metrics
 
 
 
@@ -396,11 +396,11 @@ These metrics evaluate whether visual inspection can be connected to decision lo
 
 
 
-\---
+---
 
 
 
-\## 6.5 qwen3:32b 50-run Results
+## 6.5 qwen3:32b 50-run Results
 
 
 
@@ -448,11 +448,11 @@ The more important framework-level finding is that qwen3:32b can be integrated i
 
 
 
-\---
+---
 
 
 
-\## 6.6 DeepSeek-R1-32B 50-run Results
+## 6.6 DeepSeek-R1-32B 50-run Results
 
 
 
@@ -512,11 +512,11 @@ The latency values are particularly important. An average latency of approximate
 
 
 
-\---
+---
 
 
 
-\## 6.7 Model Comparison
+## 6.7 Model Comparison
 
 
 
@@ -554,11 +554,11 @@ The comparison also shows why final win rate should not be the only metric. Alth
 
 
 
-\---
+---
 
 
 
-\## 6.8 Decision-source Analysis
+## 6.8 Decision-source Analysis
 
 
 
@@ -660,11 +660,11 @@ This is a strength of the evaluation because the system can explain decision pro
 
 
 
-\---
+---
 
 
 
-\## 6.9 Fallback and Verification Analysis
+## 6.9 Fallback and Verification Analysis
 
 
 
@@ -726,11 +726,11 @@ Therefore, the dissertation should interpret the system as a hybrid LLM-rule fra
 
 
 
-\---
+---
 
 
 
-\## 6.10 Latency and Strategy Cache Analysis
+## 6.10 Latency and Strategy Cache Analysis
 
 
 
@@ -790,11 +790,11 @@ However, caching also introduces a limitation. Cached plans may become stale whe
 
 
 
-\---
+---
 
 
 
-\## 6.11 Replay-grounded Inspection Evaluation
+## 6.11 Replay-grounded Inspection Evaluation
 
 
 
@@ -870,11 +870,11 @@ The overlay is particularly useful because final match results cannot show wheth
 
 
 
-\---
+---
 
 
 
-\## 6.12 Failure-case Analysis
+## 6.12 Failure-case Analysis
 
 
 
@@ -886,7 +886,7 @@ Representative failure and limitation cases include:
 
 
 
-\### 6.12.1 Valid LLM plan but limited strategic impact
+### 6.12.1 Valid LLM plan but limited strategic impact
 
 
 
@@ -898,7 +898,7 @@ This shows that LLM validity is not the same as strategic quality.
 
 
 
-\### 6.12.2 Fallback replaces or supports LLM decision
+### 6.12.2 Fallback replaces or supports LLM decision
 
 
 
@@ -910,7 +910,7 @@ This shows that fallback is both a strength and an evaluation complication.
 
 
 
-\### 6.12.3 Cached plan may become stale
+### 6.12.3 Cached plan may become stale
 
 
 
@@ -922,7 +922,7 @@ This shows the trade-off between latency reduction and adaptiveness.
 
 
 
-\### 6.12.4 Stable execution but different model outcomes
+### 6.12.4 Stable execution but different model outcomes
 
 
 
@@ -930,7 +930,7 @@ Both qwen3:32b and DeepSeek-R1-32B completed 50 runs with zero LLM errors, but t
 
 
 
-\### 6.12.5 Viewer trace alignment requires careful labelling
+### 6.12.5 Viewer trace alignment requires careful labelling
 
 
 
@@ -942,11 +942,11 @@ These failure cases strengthen the evaluation because they demonstrate critical 
 
 
 
-\---
+---
 
 
 
-\## 6.13 Discussion of Results
+## 6.13 Discussion of Results
 
 
 
@@ -954,7 +954,7 @@ The evaluation supports several findings.
 
 
 
-\### 6.13.1 The framework supports multiple LLM backends
+### 6.13.1 The framework supports multiple LLM backends
 
 
 
@@ -962,7 +962,7 @@ Both qwen3:32b and DeepSeek-R1-32B completed 50 controlled runs with zero LLM er
 
 
 
-\### 6.13.2 Decision tracing improves interpretability
+### 6.13.2 Decision tracing improves interpretability
 
 
 
@@ -970,7 +970,7 @@ Decision-source logs and the overlay make it possible to inspect whether actions
 
 
 
-\### 6.13.3 Rule-based verification improves stability
+### 6.13.3 Rule-based verification improves stability
 
 
 
@@ -978,7 +978,7 @@ The verifier and fallback mechanisms prevent arbitrary LLM output from directly 
 
 
 
-\### 6.13.4 Caching is necessary for large LLMs
+### 6.13.4 Caching is necessary for large LLMs
 
 
 
@@ -986,7 +986,7 @@ Latency evidence shows that large LLMs are too slow to call at every step. Strat
 
 
 
-\### 6.13.5 Win rate is not sufficient for evaluation
+### 6.13.5 Win rate is not sufficient for evaluation
 
 
 
@@ -994,11 +994,11 @@ Final outcome metrics are useful, but they must be interpreted together with dec
 
 
 
-\---
+---
 
 
 
-\## 6.14 Threats to Validity
+## 6.14 Threats to Validity
 
 
 
@@ -1006,7 +1006,7 @@ The evaluation has several threats to validity.
 
 
 
-\### 6.14.1 Limited number of LLM backends
+### 6.14.1 Limited number of LLM backends
 
 
 
@@ -1014,7 +1014,7 @@ The evaluation compares qwen3:32b and DeepSeek-R1-32B. This is useful, but it do
 
 
 
-\### 6.14.2 Prompt sensitivity
+### 6.14.2 Prompt sensitivity
 
 
 
@@ -1022,7 +1022,7 @@ Different models may respond differently to the same prompt. The current compari
 
 
 
-\### 6.14.3 Hybrid system attribution
+### 6.14.3 Hybrid system attribution
 
 
 
@@ -1030,7 +1030,7 @@ The final behaviour is produced by a hybrid system. It includes LLM planning, ca
 
 
 
-\### 6.14.4 Run-specific evidence
+### 6.14.4 Run-specific evidence
 
 
 
@@ -1038,7 +1038,7 @@ Some evidence, such as the Run008 viewer and overlay, is based on specific repla
 
 
 
-\### 6.14.5 Gameplay performance is not leaderboard-level
+### 6.14.5 Gameplay performance is not leaderboard-level
 
 
 
@@ -1046,11 +1046,11 @@ The system is designed for inspection and evaluation rather than maximum Lux AI 
 
 
 
-\---
+---
 
 
 
-\## 6.15 Limitations
+## 6.15 Limitations
 
 
 
@@ -1082,11 +1082,11 @@ These limitations should not be hidden. They help define the scope of the projec
 
 
 
-\---
+---
 
 
 
-\## 6.16 Summary
+## 6.16 Summary
 
 
 
@@ -1103,6 +1103,7 @@ The evaluation shows that LuxLLM-Agent can support multiple LLM backends within 
 
 
 The main conclusion is that structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents by making decisions more stable, traceable, and replay-grounded.
+
 
 
 

@@ -1,8 +1,8 @@
-\# Project Freeze Checklist
+﻿# Project Freeze Checklist
 
 
 
-\## 1. Purpose of This Document
+## 1. Purpose of This Document
 
 
 
@@ -34,11 +34,11 @@ The project should now be treated as:
 
 
 
-\---
+---
 
 
 
-\## 2. Final Project Positioning
+## 2. Final Project Positioning
 
 
 
@@ -100,11 +100,11 @@ The dissertation should consistently present the project as a framework that com
 
 
 
-\---
+---
 
 
 
-\## 3. Main Research Question
+## 3. Main Research Question
 
 
 
@@ -120,11 +120,11 @@ This question is now frozen unless the supervisor explicitly asks for a change.
 
 
 
-\---
+---
 
 
 
-\## 4. Sub-research Questions
+## 4. Sub-research Questions
 
 
 
@@ -132,7 +132,7 @@ The final sub-research questions are:
 
 
 
-\### RQ1: State Summarisation
+### RQ1: State Summarisation
 
 
 
@@ -140,7 +140,7 @@ The final sub-research questions are:
 
 
 
-\### RQ2: Action Verification and Fallback
+### RQ2: Action Verification and Fallback
 
 
 
@@ -148,7 +148,7 @@ The final sub-research questions are:
 
 
 
-\### RQ3: Replay-grounded Evaluation
+### RQ3: Replay-grounded Evaluation
 
 
 
@@ -160,11 +160,11 @@ These sub-research questions are now frozen unless the supervisor explicitly req
 
 
 
-\---
+---
 
 
 
-\## 5. Completed Core Deliverables
+## 5. Completed Core Deliverables
 
 
 
@@ -172,7 +172,7 @@ The following core deliverables are considered complete.
 
 
 
-\### 5.1 Agent System
+### 5.1 Agent System
 
 
 
@@ -206,11 +206,11 @@ The following core deliverables are considered complete.
 
 
 
-\---
+---
 
 
 
-\### 5.2 Evaluation Evidence
+### 5.2 Evaluation Evidence
 
 
 
@@ -236,11 +236,11 @@ The following core deliverables are considered complete.
 
 
 
-\---
+---
 
 
 
-\### 5.3 Viewer and Visualisation
+### 5.3 Viewer and Visualisation
 
 
 
@@ -264,11 +264,11 @@ The following core deliverables are considered complete.
 
 
 
-\---
+---
 
 
 
-\### 5.4 Technical Documentation
+### 5.4 Technical Documentation
 
 
 
@@ -288,11 +288,11 @@ The following core deliverables are considered complete.
 
 
 
-\---
+---
 
 
 
-\### 5.5 Analysis Documentation
+### 5.5 Analysis Documentation
 
 
 
@@ -306,11 +306,11 @@ The following core deliverables are considered complete.
 
 
 
-\---
+---
 
 
 
-\### 5.6 Dissertation Drafts
+### 5.6 Dissertation Drafts
 
 
 
@@ -336,11 +336,11 @@ The following core deliverables are considered complete.
 
 
 
-\---
+---
 
 
 
-\## 6. Current Git Milestones
+## 6. Current Git Milestones
 
 
 
@@ -380,11 +380,11 @@ These commits show that the project has reached a stable dissertation-draft stag
 
 
 
-\---
+---
 
 
 
-\## 7. What Is Now Frozen
+## 7. What Is Now Frozen
 
 
 
@@ -392,7 +392,7 @@ The following items are frozen and should not be changed unless there is a serio
 
 
 
-\### 7.1 Research Direction
+### 7.1 Research Direction
 
 
 
@@ -426,11 +426,11 @@ pure reinforcement learning project
 
 
 
-\---
+---
 
 
 
-\### 7.2 Main Experiment Scope
+### 7.2 Main Experiment Scope
 
 
 
@@ -476,11 +476,11 @@ unless the supervisor explicitly requests it.
 
 
 
-\---
+---
 
 
 
-\### 7.3 Viewer Scope
+### 7.3 Viewer Scope
 
 
 
@@ -522,11 +522,11 @@ unless needed for a serious issue.
 
 
 
-\---
+---
 
 
 
-\### 7.4 Dissertation Structure
+### 7.4 Dissertation Structure
 
 
 
@@ -558,11 +558,11 @@ Do not add more major chapters unless the university template requires it.
 
 
 
-\---
+---
 
 
 
-\## 8. Allowed Changes After Freeze
+## 8. Allowed Changes After Freeze
 
 
 
@@ -570,7 +570,7 @@ Only the following types of changes are allowed.
 
 
 
-\### 8.1 Bug Fixes
+### 8.1 Bug Fixes
 
 
 
@@ -590,11 +590,11 @@ Allowed if:
 
 
 
-\---
+---
 
 
 
-\### 8.2 Citation and Reference Improvements
+### 8.2 Citation and Reference Improvements
 
 
 
@@ -618,11 +618,11 @@ Allowed tasks:
 
 
 
-\---
+---
 
 
 
-\### 8.3 Figure and Table Preparation
+### 8.3 Figure and Table Preparation
 
 
 
@@ -648,11 +648,11 @@ Allowed tasks:
 
 
 
-\---
+---
 
 
 
-\### 8.4 Writing Quality Improvements
+### 8.4 Writing Quality Improvements
 
 
 
@@ -676,11 +676,11 @@ Allowed tasks:
 
 
 
-\---
+---
 
 
 
-\### 8.5 Final Assembly
+### 8.5 Final Assembly
 
 
 
@@ -700,11 +700,11 @@ Allowed tasks:
 
 
 
-\---
+---
 
 
 
-\## 9. Disallowed Changes After Freeze
+## 9. Disallowed Changes After Freeze
 
 
 
@@ -738,11 +738,11 @@ Do not use git add docs without checking staged files.
 
 
 
-\---
+---
 
 
 
-\## 10. Final Completion Criteria
+## 10. Final Completion Criteria
 
 
 
@@ -784,11 +784,11 @@ The project should stop major modification after these pending items are complet
 
 
 
-\---
+---
 
 
 
-\## 11. Evidence for 70+ Target
+## 11. Evidence for 70+ Target
 
 
 
@@ -796,7 +796,7 @@ The project supports a 70+ target because it includes:
 
 
 
-\### 11.1 Clear Research Question
+### 11.1 Clear Research Question
 
 
 
@@ -804,7 +804,7 @@ The project has a focused research question about structured decision tracing an
 
 
 
-\### 11.2 Non-trivial Technical Implementation
+### 11.2 Non-trivial Technical Implementation
 
 
 
@@ -812,7 +812,7 @@ The project includes an implemented agent, LLM decision module, action verifier,
 
 
 
-\### 11.3 Controlled Evaluation
+### 11.3 Controlled Evaluation
 
 
 
@@ -820,7 +820,7 @@ The project includes 50-run evidence for two LLM backends.
 
 
 
-\### 11.4 Multi-dimensional Metrics
+### 11.4 Multi-dimensional Metrics
 
 
 
@@ -828,7 +828,7 @@ The evaluation includes win/loss, LLM errors, latency, decision-source distribut
 
 
 
-\### 11.5 Critical Reflection
+### 11.5 Critical Reflection
 
 
 
@@ -836,7 +836,7 @@ The project includes failure-case analysis, limitations, threats to validity, an
 
 
 
-\### 11.6 Demonstrable Artefact
+### 11.6 Demonstrable Artefact
 
 
 
@@ -844,7 +844,7 @@ The project includes a replay-grounded visual interface with LLM Decision Trace 
 
 
 
-\### 11.7 Reproducible Documentation
+### 11.7 Reproducible Documentation
 
 
 
@@ -852,11 +852,11 @@ The project includes technical docs, analysis docs, evidence index, and disserta
 
 
 
-\---
+---
 
 
 
-\## 12. Remaining Tasks Before Supervisor Review
+## 12. Remaining Tasks Before Supervisor Review
 
 
 
@@ -864,7 +864,7 @@ Only the following tasks remain before preparing a supervisor review version.
 
 
 
-\### Task 1: Chapter 2 Citation Enhancement
+### Task 1: Chapter 2 Citation Enhancement
 
 
 
@@ -908,11 +908,11 @@ No fake references are used.
 
 
 
-\---
+---
 
 
 
-\### Task 2: Figure and Table Plan
+### Task 2: Figure and Table Plan
 
 
 
@@ -958,11 +958,11 @@ No unnecessary figures are added.
 
 
 
-\---
+---
 
 
 
-\### Task 3: Full Dissertation Draft Assembly
+### Task 3: Full Dissertation Draft Assembly
 
 
 
@@ -1008,11 +1008,11 @@ No obvious placeholders remain.
 
 
 
-\---
+---
 
 
 
-\### Task 4: Supervisor Review Summary
+### Task 4: Supervisor Review Summary
 
 
 
@@ -1064,11 +1064,11 @@ The summary explains:
 
 
 
-\---
+---
 
 
 
-\### Task 5: Final Git Safety Check
+### Task 5: Final Git Safety Check
 
 
 
@@ -1100,11 +1100,11 @@ Remote GitHub is up to date.
 
 
 
-\---
+---
 
 
 
-\## 13. Stop Condition
+## 13. Stop Condition
 
 
 
@@ -1132,11 +1132,11 @@ After this point, only supervisor-requested changes or final formatting correcti
 
 
 
-\---
+---
 
 
 
-\## 14. Final Reminder
+## 14. Final Reminder
 
 
 
@@ -1165,6 +1165,7 @@ Prepare supervisor review.
 Stop when completion criteria are met.
 
 ```
+
 
 
 

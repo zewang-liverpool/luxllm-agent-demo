@@ -1,8 +1,8 @@
-\# Chapter 4: System Design
+﻿# Chapter 4: System Design
 
 
 
-\## 4.1 Introduction
+## 4.1 Introduction
 
 
 
@@ -38,11 +38,11 @@ This chapter describes the architecture, data flow, main components, design rati
 
 
 
-\---
+---
 
 
 
-\## 4.2 Design Goals
+## 4.2 Design Goals
 
 
 
@@ -50,7 +50,7 @@ The design of LuxLLM-Agent is guided by five goals.
 
 
 
-\### 4.2.1 Inspectability
+### 4.2.1 Inspectability
 
 
 
@@ -62,7 +62,7 @@ This is necessary because final game outcomes alone do not explain how an LLM-ba
 
 
 
-\### 4.2.2 Stability
+### 4.2.2 Stability
 
 
 
@@ -74,7 +74,7 @@ To support this, the system includes fallback mechanisms, strategy caching, rule
 
 
 
-\### 4.2.3 Controlled LLM Use
+### 4.2.3 Controlled LLM Use
 
 
 
@@ -86,7 +86,7 @@ This reduces the risk of invalid Lux AI actions and makes the system easier to e
 
 
 
-\### 4.2.4 Evaluation Support
+### 4.2.4 Evaluation Support
 
 
 
@@ -118,7 +118,7 @@ Important evaluation dimensions include:
 
 
 
-\### 4.2.5 Reproducibility and Demonstrability
+### 4.2.5 Reproducibility and Demonstrability
 
 
 
@@ -126,11 +126,11 @@ The system should support reproducible experiments and visual demonstration. Thi
 
 
 
-\---
+---
 
 
 
-\## 4.3 High-level Architecture
+## 4.3 High-level Architecture
 
 
 
@@ -206,15 +206,15 @@ This design is different from a direct LLM controller. In a direct controller, t
 
 
 
-\---
+---
 
 
 
-\## 4.4 System Components
+## 4.4 System Components
 
 
 
-\### 4.4.1 Lux AI Season 3 Runtime
+### 4.4.1 Lux AI Season 3 Runtime
 
 
 
@@ -286,11 +286,11 @@ This allows the same system to be tested under different settings, including rul
 
 
 
-\---
+---
 
 
 
-\### 4.4.2 Structured State Summariser
+### 4.4.2 Structured State Summariser
 
 
 
@@ -338,11 +338,11 @@ The summariser reduces prompt noise and helps the LLM reason about strategy rath
 
 
 
-\---
+---
 
 
 
-\### 4.4.3 LLM Decision Module
+### 4.4.3 LLM Decision Module
 
 
 
@@ -396,11 +396,11 @@ The LLM decision module therefore contributes high-level reasoning while leaving
 
 
 
-\---
+---
 
 
 
-\### 4.4.4 Structured Plan Parser
+### 4.4.4 Structured Plan Parser
 
 
 
@@ -432,11 +432,11 @@ The parser is a safety boundary between LLM output and the action pipeline. With
 
 
 
-\---
+---
 
 
 
-\### 4.4.5 Rule-based Action Verifier
+### 4.4.5 Rule-based Action Verifier
 
 
 
@@ -482,11 +482,11 @@ The verifier is one of the main technical contributions of LuxLLM-Agent because 
 
 
 
-\---
+---
 
 
 
-\### 4.4.6 Fallback Mechanism
+### 4.4.6 Fallback Mechanism
 
 
 
@@ -538,11 +538,11 @@ Fallback is not treated as a system failure. Instead, it is a deliberate stabili
 
 
 
-\---
+---
 
 
 
-\### 4.4.7 Strategy Cache
+### 4.4.7 Strategy Cache
 
 
 
@@ -590,11 +590,11 @@ The strategy cache introduces a trade-off. It improves efficiency, but cached pl
 
 
 
-\---
+---
 
 
 
-\### 4.4.8 Risk-aware Action Filter
+### 4.4.8 Risk-aware Action Filter
 
 
 
@@ -642,11 +642,11 @@ The risk-aware filter supports the broader design goal of treating LLM decisions
 
 
 
-\---
+---
 
 
 
-\### 4.4.9 Action Planner
+### 4.4.9 Action Planner
 
 
 
@@ -704,11 +704,11 @@ This component bridges the gap between strategic planning and environment execut
 
 
 
-\---
+---
 
 
 
-\### 4.4.10 Decision Trace Logger
+### 4.4.10 Decision Trace Logger
 
 
 
@@ -784,11 +784,11 @@ These logs allow evaluation to go beyond final scores. They make it possible to 
 
 
 
-\---
+---
 
 
 
-\## 4.5 Data Flow
+## 4.5 Data Flow
 
 
 
@@ -836,11 +836,11 @@ This data flow shows how the project connects gameplay, LLM reasoning, rule-base
 
 
 
-\---
+---
 
 
 
-\## 4.6 Decision Provenance Design
+## 4.6 Decision Provenance Design
 
 
 
@@ -878,11 +878,11 @@ Decision provenance also supports failure analysis. For example, if a visible ac
 
 
 
-\---
+---
 
 
 
-\## 4.7 Replay-grounded Inspection
+## 4.7 Replay-grounded Inspection
 
 
 
@@ -944,11 +944,11 @@ The overlay turns the viewer from a replay-only tool into a decision inspection 
 
 
 
-\---
+---
 
 
 
-\## 4.8 Evaluation-oriented Design
+## 4.8 Evaluation-oriented Design
 
 
 
@@ -994,11 +994,11 @@ This design supports a stronger dissertation evaluation because it measures both
 
 
 
-\---
+---
 
 
 
-\## 4.9 Design Rationale
+## 4.9 Design Rationale
 
 
 
@@ -1006,7 +1006,7 @@ The system design is motivated by three main challenges.
 
 
 
-\### 4.9.1 LLM Output May Be Invalid
+### 4.9.1 LLM Output May Be Invalid
 
 
 
@@ -1014,7 +1014,7 @@ LLMs may produce malformed or non-executable outputs. The parser, verifier, and 
 
 
 
-\### 4.9.2 LLM Calls Are Expensive
+### 4.9.2 LLM Calls Are Expensive
 
 
 
@@ -1022,7 +1022,7 @@ Large LLMs can take several seconds to respond. The strategy cache and controlle
 
 
 
-\### 4.9.3 Win/Loss Alone Is Not Explainable
+### 4.9.3 Win/Loss Alone Is Not Explainable
 
 
 
@@ -1030,11 +1030,11 @@ A final score does not explain how decisions were made. Decision trace logging a
 
 
 
-\---
+---
 
 
 
-\## 4.10 Limitations of the Design
+## 4.10 Limitations of the Design
 
 
 
@@ -1066,11 +1066,11 @@ These limitations are not hidden. They are important parts of the evaluation and
 
 
 
-\---
+---
 
 
 
-\## 4.11 Summary
+## 4.11 Summary
 
 
 
@@ -1087,6 +1087,7 @@ The key technical contribution is the controlled boundary between LLM reasoning 
 
 
 The next chapter describes the implementation of these design components in more detail.
+
 
 
 

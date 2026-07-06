@@ -1,8 +1,8 @@
-\# Chapter 7: Discussion and Conclusion
+﻿# Chapter 7: Discussion and Conclusion
 
 
 
-\## 7.1 Introduction
+## 7.1 Introduction
 
 
 
@@ -26,11 +26,11 @@ This chapter reflects on how well the project answered the research question, wh
 
 
 
-\---
+---
 
 
 
-\## 7.2 Answering the Research Question
+## 7.2 Answering the Research Question
 
 
 
@@ -62,15 +62,15 @@ Overall, the project demonstrates that structured decision tracing and rule-base
 
 
 
-\---
+---
 
 
 
-\## 7.3 Discussion of Main Findings
+## 7.3 Discussion of Main Findings
 
 
 
-\### 7.3.1 LLM-based agents require more than prompt engineering
+### 7.3.1 LLM-based agents require more than prompt engineering
 
 
 
@@ -82,7 +82,7 @@ Lux AI Season 3 requires repeated action decisions under uncertainty. LLMs may p
 
 
 
-This supports the project’s central design principle:
+This supports the project鈥檚 central design principle:
 
 
 
@@ -94,11 +94,11 @@ This principle helped make the system more robust and easier to evaluate.
 
 
 
-\---
+---
 
 
 
-\### 7.3.2 Final scores alone are not enough for evaluation
+### 7.3.2 Final scores alone are not enough for evaluation
 
 
 
@@ -132,11 +132,11 @@ The evaluation showed that qwen3:32b and DeepSeek-R1-32B produced different game
 
 
 
-\---
+---
 
 
 
-\### 7.3.3 The framework can support multiple LLM backends
+### 7.3.3 The framework can support multiple LLM backends
 
 
 
@@ -166,11 +166,11 @@ This suggests that the framework can support different reasoning-oriented LLM ba
 
 
 
-\---
+---
 
 
 
-\### 7.3.4 Strategy caching is necessary but introduces trade-offs
+### 7.3.4 Strategy caching is necessary but introduces trade-offs
 
 
 
@@ -190,11 +190,11 @@ This trade-off is important for future work. A better system could use event-tri
 
 
 
-\---
+---
 
 
 
-\### 7.3.5 Replay-grounded inspection improves interpretability
+### 7.3.5 Replay-grounded inspection improves interpretability
 
 
 
@@ -236,11 +236,11 @@ The overlay therefore turns the viewer from a simple replay tool into a replay-g
 
 
 
-\---
+---
 
 
 
-\## 7.4 Technical Contributions
+## 7.4 Technical Contributions
 
 
 
@@ -248,7 +248,7 @@ The project makes several technical contributions.
 
 
 
-\### 7.4.1 Structured LLM decision pipeline
+### 7.4.1 Structured LLM decision pipeline
 
 
 
@@ -260,11 +260,11 @@ This contribution is important because it avoids direct execution of arbitrary L
 
 
 
-\---
+---
 
 
 
-\### 7.4.2 Rule-based action verification
+### 7.4.2 Rule-based action verification
 
 
 
@@ -276,11 +276,11 @@ The verifier helps ensure that the final action respects the current game state 
 
 
 
-\---
+---
 
 
 
-\### 7.4.3 Fallback and strategy caching
+### 7.4.3 Fallback and strategy caching
 
 
 
@@ -292,11 +292,11 @@ Fallback allows the agent to continue acting when the LLM is unavailable or unsu
 
 
 
-\---
+---
 
 
 
-\### 7.4.4 Decision provenance logging
+### 7.4.4 Decision provenance logging
 
 
 
@@ -308,11 +308,11 @@ This allows the project to analyse how behaviour was produced rather than only m
 
 
 
-\---
+---
 
 
 
-\### 7.4.5 Replay-grounded decision trace overlay
+### 7.4.5 Replay-grounded decision trace overlay
 
 
 
@@ -324,11 +324,11 @@ This is a practical contribution because it makes the system easier to inspect, 
 
 
 
-\---
+---
 
 
 
-\### 7.4.6 Controlled multi-model evaluation
+### 7.4.6 Controlled multi-model evaluation
 
 
 
@@ -336,11 +336,11 @@ The project evaluates both qwen3:32b and DeepSeek-R1-32B under the same framewor
 
 
 
-\---
+---
 
 
 
-\## 7.5 Limitations
+## 7.5 Limitations
 
 
 
@@ -348,7 +348,7 @@ The project has several limitations.
 
 
 
-\### 7.5.1 The system is not a leaderboard-level Lux AI agent
+### 7.5.1 The system is not a leaderboard-level Lux AI agent
 
 
 
@@ -360,11 +360,11 @@ This limitation is important because the project should be assessed as a researc
 
 
 
-\---
+---
 
 
 
-\### 7.5.2 Fallback complicates attribution
+### 7.5.2 Fallback complicates attribution
 
 
 
@@ -380,15 +380,15 @@ Therefore, final outcomes should be interpreted as the result of a hybrid LLM-ru
 
 
 
-\---
+---
 
 
 
-\### 7.5.3 Cached plans may become stale
+### 7.5.3 Cached plans may become stale
 
 
 
-Strategy caching reduces LLM latency, but cached plans may become stale when the game state changes. For example, a cached objective may no longer be suitable if the opponent moves, a target becomes less valuable, or a unit’s energy changes.
+Strategy caching reduces LLM latency, but cached plans may become stale when the game state changes. For example, a cached objective may no longer be suitable if the opponent moves, a target becomes less valuable, or a unit鈥檚 energy changes.
 
 
 
@@ -396,11 +396,11 @@ This limitation suggests the need for better event-triggered plan refresh mechan
 
 
 
-\---
+---
 
 
 
-\### 7.5.4 Limited number of model backends
+### 7.5.4 Limited number of model backends
 
 
 
@@ -412,11 +412,11 @@ A larger evaluation could include additional models and more runs.
 
 
 
-\---
+---
 
 
 
-\### 7.5.5 Trace alignment requires careful labelling
+### 7.5.5 Trace alignment requires careful labelling
 
 
 
@@ -428,11 +428,11 @@ Future versions should include shared run identifiers across replay frames and t
 
 
 
-\---
+---
 
 
 
-\### 7.5.6 Failure-case analysis is representative rather than exhaustive
+### 7.5.6 Failure-case analysis is representative rather than exhaustive
 
 
 
@@ -444,15 +444,15 @@ A stronger future version could automatically mine logs for fallback-heavy steps
 
 
 
-\---
+---
 
 
 
-\## 7.6 Threats to Validity
+## 7.6 Threats to Validity
 
 
 
-\### 7.6.1 Internal validity
+### 7.6.1 Internal validity
 
 
 
@@ -464,11 +464,11 @@ The evaluation addresses this by recording decision sources, fallback behaviour,
 
 
 
-\---
+---
 
 
 
-\### 7.6.2 External validity
+### 7.6.2 External validity
 
 
 
@@ -480,11 +480,11 @@ However, the general framework idea of combining LLM strategic planning with rul
 
 
 
-\---
+---
 
 
 
-\### 7.6.3 Construct validity
+### 7.6.3 Construct validity
 
 
 
@@ -496,11 +496,11 @@ For example, a valid LLM plan may still be strategically weak. This is why the p
 
 
 
-\---
+---
 
 
 
-\### 7.6.4 Reliability
+### 7.6.4 Reliability
 
 
 
@@ -512,11 +512,11 @@ However, some runs depend on local or HPC configurations, such as installed LLM 
 
 
 
-\---
+---
 
 
 
-\## 7.7 Future Work
+## 7.7 Future Work
 
 
 
@@ -524,7 +524,7 @@ Several future improvements are possible.
 
 
 
-\### 7.7.1 Event-triggered LLM refresh
+### 7.7.1 Event-triggered LLM refresh
 
 
 
@@ -550,11 +550,11 @@ This could reduce stale-plan behaviour.
 
 
 
-\---
+---
 
 
 
-\### 7.7.2 Stronger utility scoring
+### 7.7.2 Stronger utility scoring
 
 
 
@@ -584,11 +584,11 @@ This would make the system more strategically grounded.
 
 
 
-\---
+---
 
 
 
-\### 7.7.3 Better verifier logging
+### 7.7.3 Better verifier logging
 
 
 
@@ -612,11 +612,11 @@ This would make failure analysis more precise.
 
 
 
-\---
+---
 
 
 
-\### 7.7.4 Multi-run viewer support
+### 7.7.4 Multi-run viewer support
 
 
 
@@ -628,11 +628,11 @@ This would make the visual inspection system more general.
 
 
 
-\---
+---
 
 
 
-\### 7.7.5 Cross-model trace comparison
+### 7.7.5 Cross-model trace comparison
 
 
 
@@ -644,11 +644,11 @@ For example, the viewer could show how different models choose objectives, use r
 
 
 
-\---
+---
 
 
 
-\### 7.7.6 Larger-scale evaluation
+### 7.7.6 Larger-scale evaluation
 
 
 
@@ -676,11 +676,11 @@ This would strengthen statistical confidence.
 
 
 
-\---
+---
 
 
 
-\## 7.8 Lessons Learned
+## 7.8 Lessons Learned
 
 
 
@@ -704,11 +704,11 @@ Fourth, limitations are valuable. By analysing fallback, caching, latency, and t
 
 
 
-\---
+---
 
 
 
-\## 7.9 Conclusion
+## 7.9 Conclusion
 
 
 
@@ -729,6 +729,7 @@ The key conclusion is that structured decision tracing and rule-based action ver
 
 
 This makes the project more than a game-playing agent. It is a framework for understanding how LLM-based agents make decisions, how those decisions are verified, and how their behaviour can be evaluated through logs, metrics, and replay-grounded inspection.
+
 
 
 

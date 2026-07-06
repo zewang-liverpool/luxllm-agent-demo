@@ -1,8 +1,8 @@
-\# Dissertation Draft Index
+﻿# Dissertation Draft Index
 
 
 
-\## Project Title
+## Project Title
 
 
 
@@ -10,11 +10,11 @@
 
 
 
-\---
+---
 
 
 
-\## Current Dissertation Goal
+## Current Dissertation Goal
 
 
 
@@ -26,11 +26,11 @@ The dissertation is positioned as an artefact-based computer science project. It
 
 
 
-\---
+---
 
 
 
-\## Main Research Question
+## Main Research Question
 
 
 
@@ -38,15 +38,15 @@ The dissertation is positioned as an artefact-based computer science project. It
 
 
 
-\---
+---
 
 
 
-\## Sub-research Questions
+## Sub-research Questions
 
 
 
-\### RQ1: State Summarisation
+### RQ1: State Summarisation
 
 
 
@@ -54,7 +54,7 @@ The dissertation is positioned as an artefact-based computer science project. It
 
 
 
-\### RQ2: Action Verification and Fallback
+### RQ2: Action Verification and Fallback
 
 
 
@@ -62,7 +62,7 @@ The dissertation is positioned as an artefact-based computer science project. It
 
 
 
-\### RQ3: Replay-grounded Evaluation
+### RQ3: Replay-grounded Evaluation
 
 
 
@@ -70,11 +70,11 @@ The dissertation is positioned as an artefact-based computer science project. It
 
 
 
-\---
+---
 
 
 
-\## Dissertation Chapter Drafts
+## Dissertation Chapter Drafts
 
 
 
@@ -102,11 +102,11 @@ The current dissertation draft consists of seven chapters.
 
 
 
-\---
+---
 
 
 
-\## Supporting Technical Documentation
+## Supporting Technical Documentation
 
 
 
@@ -130,11 +130,11 @@ The following technical documents support the dissertation chapters.
 
 
 
-\---
+---
 
 
 
-\## Supporting Analysis Documentation
+## Supporting Analysis Documentation
 
 
 
@@ -152,11 +152,11 @@ The following analysis documents support Chapter 6 and Chapter 7.
 
 
 
-\---
+---
 
 
 
-\## Main Implementation Files
+## Main Implementation Files
 
 
 
@@ -190,11 +190,11 @@ The main implementation files are:
 
 
 
-\---
+---
 
 
 
-\## Main Viewer and Overlay Files
+## Main Viewer and Overlay Files
 
 
 
@@ -224,11 +224,11 @@ The main viewer and overlay files are:
 
 
 
-\---
+---
 
 
 
-\## Main Evidence Files
+## Main Evidence Files
 
 
 
@@ -252,15 +252,15 @@ The main evidence files are:
 
 
 
-\---
+---
 
 
 
-\## Key Evaluation Results
+## Key Evaluation Results
 
 
 
-\### qwen3:32b 50-run Result
+### qwen3:32b 50-run Result
 
 
 
@@ -284,7 +284,7 @@ The main evidence files are:
 
 
 
-\### DeepSeek-R1-32B 50-run Result
+### DeepSeek-R1-32B 50-run Result
 
 
 
@@ -324,11 +324,11 @@ The main evidence files are:
 
 
 
-\---
+---
 
 
 
-\## DeepSeek-R1-32B Decision Source Distribution
+## DeepSeek-R1-32B Decision Source Distribution
 
 
 
@@ -388,11 +388,11 @@ Fallback decision-source rate = 3257 / 50500 = approximately 6.45%
 
 
 
-\---
+---
 
 
 
-\## Replay-grounded Overlay Evidence
+## Replay-grounded Overlay Evidence
 
 
 
@@ -462,11 +462,11 @@ This supports replay-grounded decision inspection.
 
 
 
-\---
+---
 
 
 
-\## Current Dissertation Argument
+## Current Dissertation Argument
 
 
 
@@ -478,11 +478,11 @@ The central argument of the dissertation is:
 
 
 
-\---
+---
 
 
 
-\## Main Contributions
+## Main Contributions
 
 
 
@@ -506,11 +506,11 @@ The dissertation currently claims the following contributions:
 
 
 
-\---
+---
 
 
 
-\## Current Limitations
+## Current Limitations
 
 
 
@@ -538,11 +538,11 @@ The dissertation should clearly acknowledge the following limitations:
 
 
 
-\---
+---
 
 
 
-\## Next Revision Tasks
+## Next Revision Tasks
 
 
 
@@ -576,11 +576,11 @@ Priority tasks:
 
 
 
-\---
+---
 
 
 
-\## Suggested Figures
+## Suggested Figures
 
 
 
@@ -606,11 +606,11 @@ Suggested dissertation figures:
 
 
 
-\---
+---
 
 
 
-\## Suggested Tables
+## Suggested Tables
 
 
 
@@ -640,11 +640,11 @@ Suggested dissertation tables:
 
 
 
-\---
+---
 
 
 
-\## Current Git Milestones
+## Current Git Milestones
 
 
 
@@ -678,11 +678,11 @@ efa3f38 Draft dissertation evaluation chapter
 
 
 
-\---
+---
 
 
 
-\## Immediate Next Step
+## Immediate Next Step
 
 
 
@@ -723,6 +723,7 @@ Chapter 2 citation enhancement:
 \- Add references for Lux AI / competition environment if available.
 
 ```
+
 
 
 

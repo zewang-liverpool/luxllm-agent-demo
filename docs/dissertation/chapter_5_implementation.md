@@ -1,8 +1,8 @@
-\# Chapter 5: Implementation
+﻿# Chapter 5: Implementation
 
 
 
-\## 5.1 Introduction
+## 5.1 Introduction
 
 
 
@@ -26,11 +26,11 @@ This principle shaped the implementation choices throughout the project. The LLM
 
 
 
-\---
+---
 
 
 
-\## 5.2 Project Structure
+## 5.2 Project Structure
 
 
 
@@ -126,11 +126,11 @@ The project structure separates runtime logic, generated evidence, visualisation
 
 
 
-\---
+---
 
 
 
-\## 5.3 Agent Runtime Implementation
+## 5.3 Agent Runtime Implementation
 
 
 
@@ -202,11 +202,11 @@ This configuration approach was important during experimentation because it allo
 
 
 
-\---
+---
 
 
 
-\## 5.4 State Summarisation Implementation
+## 5.4 State Summarisation Implementation
 
 
 
@@ -272,11 +272,11 @@ This implementation supports the first sub-research question:
 
 
 
-\---
+---
 
 
 
-\## 5.5 LLM Decision Implementation
+## 5.5 LLM Decision Implementation
 
 
 
@@ -362,11 +362,11 @@ This reduces the risk of invalid LLM output causing invalid environment actions.
 
 
 
-\---
+---
 
 
 
-\## 5.6 Structured Parsing Implementation
+## 5.6 Structured Parsing Implementation
 
 
 
@@ -420,15 +420,15 @@ This stage is a key reliability boundary. Without parsing, the system would have
 
 
 
-This implementation supports the project’s broader goal of making LLM-agent behaviour inspectable and evaluable.
+This implementation supports the project鈥檚 broader goal of making LLM-agent behaviour inspectable and evaluable.
 
 
 
-\---
+---
 
 
 
-\## 5.7 Action Verification Implementation
+## 5.7 Action Verification Implementation
 
 
 
@@ -490,11 +490,11 @@ The verification layer is one of the main reasons the project can use large LLMs
 
 
 
-\---
+---
 
 
 
-\## 5.8 Fallback Implementation
+## 5.8 Fallback Implementation
 
 
 
@@ -550,11 +550,11 @@ This is important for evaluation because the system can later analyse when the L
 
 
 
-\---
+---
 
 
 
-\## 5.9 Strategy Cache Implementation
+## 5.9 Strategy Cache Implementation
 
 
 
@@ -602,11 +602,11 @@ The cache also creates an evaluation issue: a cached plan may become stale if th
 
 
 
-\---
+---
 
 
 
-\## 5.10 Risk-aware Action Filter Implementation
+## 5.10 Risk-aware Action Filter Implementation
 
 
 
@@ -648,15 +648,15 @@ risk\_filter\_events\_count
 
 
 
-This implementation supports the project’s argument that the LLM is not the only decision component. Instead, the final action emerges from a pipeline that combines LLM planning with rule-based verification and safety checks.
+This implementation supports the project鈥檚 argument that the LLM is not the only decision component. Instead, the final action emerges from a pipeline that combines LLM planning with rule-based verification and safety checks.
 
 
 
-\---
+---
 
 
 
-\## 5.11 Action Planning Implementation
+## 5.11 Action Planning Implementation
 
 
 
@@ -716,11 +716,11 @@ This component is important because it bridges the gap between strategic reasoni
 
 
 
-\---
+---
 
 
 
-\## 5.12 Decision Trace Logging Implementation
+## 5.12 Decision Trace Logging Implementation
 
 
 
@@ -816,11 +816,11 @@ The JSONL format is practical because each line is a separate event. This makes 
 
 
 
-\---
+---
 
 
 
-\## 5.13 Match Result Recording
+## 5.13 Match Result Recording
 
 
 
@@ -890,11 +890,11 @@ This implementation supports controlled multi-run evaluation, including the qwen
 
 
 
-\---
+---
 
 
 
-\## 5.14 Controlled-run Evidence Implementation
+## 5.14 Controlled-run Evidence Implementation
 
 
 
@@ -948,11 +948,11 @@ The implementation keeps summary evidence separate from raw run folders. This av
 
 
 
-\---
+---
 
 
 
-\## 5.15 Replay Frame Generation
+## 5.15 Replay Frame Generation
 
 
 
@@ -998,11 +998,11 @@ and opened through a browser.
 
 
 
-\---
+---
 
 
 
-\## 5.16 LLM Decision Trace Overlay Implementation
+## 5.16 LLM Decision Trace Overlay Implementation
 
 
 
@@ -1126,11 +1126,11 @@ This implementation directly supports the third sub-research question:
 
 
 
-\---
+---
 
 
 
-\## 5.17 Viewer Implementation
+## 5.17 Viewer Implementation
 
 
 
@@ -1188,11 +1188,11 @@ This implementation makes the project easier to demonstrate and provides visual 
 
 
 
-\---
+---
 
 
 
-\## 5.18 Evidence and Documentation Implementation
+## 5.18 Evidence and Documentation Implementation
 
 
 
@@ -1252,11 +1252,11 @@ This structure helps convert the project from an engineering prototype into a di
 
 
 
-\---
+---
 
 
 
-\## 5.19 Implementation Challenges
+## 5.19 Implementation Challenges
 
 
 
@@ -1264,7 +1264,7 @@ Several implementation challenges occurred during the project.
 
 
 
-\### 5.19.1 Integrating LLMs with a fast game loop
+### 5.19.1 Integrating LLMs with a fast game loop
 
 
 
@@ -1276,7 +1276,7 @@ The implementation addresses this through strategy caching, controlled LLM call 
 
 
 
-\### 5.19.2 Handling invalid or unavailable LLM output
+### 5.19.2 Handling invalid or unavailable LLM output
 
 
 
@@ -1288,7 +1288,7 @@ This reduces the risk of runtime failure.
 
 
 
-\### 5.19.3 Connecting logs to replay frames
+### 5.19.3 Connecting logs to replay frames
 
 
 
@@ -1312,7 +1312,7 @@ The resulting overlay makes the replay more informative, but it also introduces 
 
 
 
-\### 5.19.4 Managing evidence files
+### 5.19.4 Managing evidence files
 
 
 
@@ -1320,7 +1320,7 @@ Controlled runs can produce many files. The implementation therefore separates k
 
 
 
-\### 5.19.5 Maintaining reproducibility
+### 5.19.5 Maintaining reproducibility
 
 
 
@@ -1328,11 +1328,11 @@ The system uses scripts, JSON/JSONL evidence, and markdown documentation to make
 
 
 
-\---
+---
 
 
 
-\## 5.20 Summary
+## 5.20 Summary
 
 
 
@@ -1349,6 +1349,7 @@ The key implementation contribution is the controlled pipeline between LLM strat
 
 
 The next chapter evaluates the system using gameplay outcomes, LLM execution metrics, decision-source analysis, model comparison, replay-grounded inspection, and failure-case analysis.
+
 
 
 

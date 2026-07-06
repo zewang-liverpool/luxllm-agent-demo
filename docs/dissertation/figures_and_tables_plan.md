@@ -1,8 +1,8 @@
-\# Figures and Tables Plan
+﻿# Figures and Tables Plan
 
 
 
-\## 1. Purpose of This Document
+## 1. Purpose of This Document
 
 
 
@@ -26,11 +26,11 @@ The central dissertation argument is:
 
 
 
-\---
+---
 
 
 
-\## 2. Figure Selection Rules
+## 2. Figure Selection Rules
 
 
 
@@ -60,11 +60,11 @@ Avoid adding figures that are only decorative.
 
 
 
-\---
+---
 
 
 
-\## 3. Table Selection Rules
+## 3. Table Selection Rules
 
 
 
@@ -96,11 +96,11 @@ Avoid repeating the same table in many chapters unless the context requires it.
 
 
 
-\---
+---
 
 
 
-\## 4. Final Figure List
+## 4. Final Figure List
 
 
 
@@ -146,19 +146,19 @@ Do not exceed 6 figures unless the supervisor requests more.
 
 
 
-\---
+---
 
 
 
-\## 5. Figure Details
+## 5. Figure Details
 
 
 
-\## 5.1 Figure 1: LuxLLM-Agent System Architecture
+## 5.1 Figure 1: LuxLLM-Agent System Architecture
 
 
 
-\### Purpose
+### Purpose
 
 
 
@@ -166,7 +166,7 @@ This figure should explain the complete system design.
 
 
 
-\### Suggested diagram content
+### Suggested diagram content
 
 
 
@@ -226,7 +226,7 @@ Decision Logs + Evaluation Metrics + Replay Viewer
 
 
 
-\### Recommended chapter
+### Recommended chapter
 
 
 
@@ -234,7 +234,7 @@ Chapter 4: System Design
 
 
 
-\### Why it is needed
+### Why it is needed
 
 
 
@@ -242,7 +242,7 @@ This figure helps the reader understand the overall architecture before reading 
 
 
 
-\### Status
+### Status
 
 
 
@@ -250,15 +250,15 @@ Needed.
 
 
 
-\---
+---
 
 
 
-\## 5.2 Figure 2: LLM Decision Pipeline
+## 5.2 Figure 2: LLM Decision Pipeline
 
 
 
-\### Purpose
+### Purpose
 
 
 
@@ -266,7 +266,7 @@ This figure should focus on how the LLM is used inside the system.
 
 
 
-\### Suggested diagram content
+### Suggested diagram content
 
 
 
@@ -320,7 +320,7 @@ Executable Lux AI Action
 
 
 
-\### Recommended chapter
+### Recommended chapter
 
 
 
@@ -328,7 +328,7 @@ Chapter 5: Implementation
 
 
 
-\### Why it is needed
+### Why it is needed
 
 
 
@@ -340,7 +340,7 @@ This figure supports the key design principle:
 
 
 
-\### Status
+### Status
 
 
 
@@ -348,15 +348,15 @@ Needed.
 
 
 
-\---
+---
 
 
 
-\## 5.3 Figure 3: Run008 Isometric Replay Viewer
+## 5.3 Figure 3: Run008 Isometric Replay Viewer
 
 
 
-\### Purpose
+### Purpose
 
 
 
@@ -364,7 +364,7 @@ This figure should show the replay viewer without focusing only on the overlay.
 
 
 
-\### Source
+### Source
 
 
 
@@ -388,7 +388,7 @@ docs/viewers/s3\_isometric\_battle\_viewer\_v09n12d\_trace\_overlay.html
 
 
 
-\### Recommended chapter
+### Recommended chapter
 
 
 
@@ -396,7 +396,7 @@ Chapter 5 or Chapter 6
 
 
 
-\### Why it is needed
+### Why it is needed
 
 
 
@@ -404,7 +404,7 @@ This figure demonstrates that the project includes a visual replay artefact, not
 
 
 
-\### Status
+### Status
 
 
 
@@ -412,15 +412,15 @@ Needed.
 
 
 
-\---
+---
 
 
 
-\## 5.4 Figure 4: LLM Decision Trace Overlay
+## 5.4 Figure 4: LLM Decision Trace Overlay
 
 
 
-\### Purpose
+### Purpose
 
 
 
@@ -454,7 +454,7 @@ It should show:
 
 
 
-\### Source
+### Source
 
 
 
@@ -466,7 +466,7 @@ docs/viewers/s3\_isometric\_battle\_viewer\_v09n12d\_trace\_overlay.html
 
 
 
-\### Recommended chapter
+### Recommended chapter
 
 
 
@@ -474,7 +474,7 @@ Chapter 6: Evaluation
 
 
 
-\### Why it is needed
+### Why it is needed
 
 
 
@@ -486,7 +486,7 @@ This figure directly supports RQ3:
 
 
 
-\### Status
+### Status
 
 
 
@@ -494,15 +494,15 @@ Needed.
 
 
 
-\---
+---
 
 
 
-\## 5.5 Figure 5: DeepSeek-R1-32B Decision-source Distribution
+## 5.5 Figure 5: DeepSeek-R1-32B Decision-source Distribution
 
 
 
-\### Purpose
+### Purpose
 
 
 
@@ -510,7 +510,7 @@ This figure should visualise the decision-source distribution from the DeepSeek-
 
 
 
-\### Source values
+### Source values
 
 
 
@@ -530,7 +530,7 @@ This figure should visualise the decision-source distribution from the DeepSeek-
 
 
 
-\### Recommended chapter
+### Recommended chapter
 
 
 
@@ -538,7 +538,7 @@ Chapter 6: Evaluation
 
 
 
-\### Why it is needed
+### Why it is needed
 
 
 
@@ -546,7 +546,7 @@ This figure supports the argument that the framework can analyse decision proven
 
 
 
-\### Status
+### Status
 
 
 
@@ -554,15 +554,15 @@ Optional but recommended.
 
 
 
-\---
+---
 
 
 
-\## 5.6 Figure 6: Failure-case Example with Overlay
+## 5.6 Figure 6: Failure-case Example with Overlay
 
 
 
-\### Purpose
+### Purpose
 
 
 
@@ -584,7 +584,7 @@ Possible examples:
 
 
 
-\### Recommended chapter
+### Recommended chapter
 
 
 
@@ -592,7 +592,7 @@ Chapter 6 or Chapter 7
 
 
 
-\### Why it is needed
+### Why it is needed
 
 
 
@@ -600,7 +600,7 @@ This figure shows critical analysis rather than only successful demonstration.
 
 
 
-\### Status
+### Status
 
 
 
@@ -612,11 +612,11 @@ Only include this figure if a clear screenshot can be captured without creating 
 
 
 
-\---
+---
 
 
 
-\## 6. Final Table List
+## 6. Final Table List
 
 
 
@@ -668,19 +668,19 @@ Do not exceed 9 tables unless necessary.
 
 
 
-\---
+---
 
 
 
-\## 7. Table Details
+## 7. Table Details
 
 
 
-\## 7.1 Table 1: Functional Requirements
+## 7.1 Table 1: Functional Requirements
 
 
 
-\### Chapter
+### Chapter
 
 
 
@@ -688,7 +688,7 @@ Chapter 3: Requirements and Methodology
 
 
 
-\### Suggested columns
+### Suggested columns
 
 
 
@@ -698,7 +698,7 @@ Chapter 3: Requirements and Methodology
 
 
 
-\### Example rows
+### Example rows
 
 
 
@@ -716,15 +716,15 @@ Chapter 3: Requirements and Methodology
 
 
 
-\---
+---
 
 
 
-\## 7.2 Table 2: Non-functional Requirements
+## 7.2 Table 2: Non-functional Requirements
 
 
 
-\### Chapter
+### Chapter
 
 
 
@@ -732,7 +732,7 @@ Chapter 3: Requirements and Methodology
 
 
 
-\### Suggested columns
+### Suggested columns
 
 
 
@@ -742,7 +742,7 @@ Chapter 3: Requirements and Methodology
 
 
 
-\### Example rows
+### Example rows
 
 
 
@@ -760,15 +760,15 @@ Chapter 3: Requirements and Methodology
 
 
 
-\---
+---
 
 
 
-\## 7.3 Table 3: Main Implementation Files
+## 7.3 Table 3: Main Implementation Files
 
 
 
-\### Chapter
+### Chapter
 
 
 
@@ -776,7 +776,7 @@ Chapter 5: Implementation
 
 
 
-\### Suggested columns
+### Suggested columns
 
 
 
@@ -786,7 +786,7 @@ Chapter 5: Implementation
 
 
 
-\### Example rows
+### Example rows
 
 
 
@@ -806,15 +806,15 @@ Chapter 5: Implementation
 
 
 
-\---
+---
 
 
 
-\## 7.4 Table 4: Evaluation Metrics
+## 7.4 Table 4: Evaluation Metrics
 
 
 
-\### Chapter
+### Chapter
 
 
 
@@ -822,7 +822,7 @@ Chapter 6: Evaluation
 
 
 
-\### Suggested columns
+### Suggested columns
 
 
 
@@ -832,7 +832,7 @@ Chapter 6: Evaluation
 
 
 
-\### Example rows
+### Example rows
 
 
 
@@ -850,15 +850,15 @@ Chapter 6: Evaluation
 
 
 
-\---
+---
 
 
 
-\## 7.5 Table 5: qwen3:32b vs DeepSeek-R1-32B 50-run Results
+## 7.5 Table 5: qwen3:32b vs DeepSeek-R1-32B 50-run Results
 
 
 
-\### Chapter
+### Chapter
 
 
 
@@ -866,7 +866,7 @@ Chapter 6: Evaluation
 
 
 
-\### Final table
+### Final table
 
 
 
@@ -880,7 +880,7 @@ Chapter 6: Evaluation
 
 
 
-\### Why it is needed
+### Why it is needed
 
 
 
@@ -888,15 +888,15 @@ This is the main quantitative result table.
 
 
 
-\---
+---
 
 
 
-\## 7.6 Table 6: DeepSeek-R1-32B Decision-source Distribution
+## 7.6 Table 6: DeepSeek-R1-32B Decision-source Distribution
 
 
 
-\### Chapter
+### Chapter
 
 
 
@@ -904,7 +904,7 @@ Chapter 6: Evaluation
 
 
 
-\### Final table
+### Final table
 
 
 
@@ -924,7 +924,7 @@ Chapter 6: Evaluation
 
 
 
-\### Derived values
+### Derived values
 
 
 
@@ -942,7 +942,7 @@ Fallback decision-source rate = approximately 6.45%
 
 
 
-\### Why it is needed
+### Why it is needed
 
 
 
@@ -950,15 +950,15 @@ This table supports decision provenance analysis.
 
 
 
-\---
+---
 
 
 
-\## 7.7 Table 7: Failure-case Summary
+## 7.7 Table 7: Failure-case Summary
 
 
 
-\### Chapter
+### Chapter
 
 
 
@@ -966,7 +966,7 @@ Chapter 6: Evaluation
 
 
 
-\### Suggested columns
+### Suggested columns
 
 
 
@@ -976,7 +976,7 @@ Chapter 6: Evaluation
 
 
 
-\### Suggested rows
+### Suggested rows
 
 
 
@@ -996,15 +996,15 @@ Chapter 6: Evaluation
 
 
 
-\---
+---
 
 
 
-\## 7.8 Table 8: Threats to Validity
+## 7.8 Table 8: Threats to Validity
 
 
 
-\### Chapter
+### Chapter
 
 
 
@@ -1012,7 +1012,7 @@ Chapter 7: Discussion and Conclusion
 
 
 
-\### Suggested columns
+### Suggested columns
 
 
 
@@ -1022,7 +1022,7 @@ Chapter 7: Discussion and Conclusion
 
 
 
-\### Suggested rows
+### Suggested rows
 
 
 
@@ -1040,15 +1040,15 @@ Chapter 7: Discussion and Conclusion
 
 
 
-\---
+---
 
 
 
-\## 7.9 Table 9: Future Work Summary
+## 7.9 Table 9: Future Work Summary
 
 
 
-\### Chapter
+### Chapter
 
 
 
@@ -1056,7 +1056,7 @@ Chapter 7: Discussion and Conclusion
 
 
 
-\### Suggested columns
+### Suggested columns
 
 
 
@@ -1066,7 +1066,7 @@ Chapter 7: Discussion and Conclusion
 
 
 
-\### Suggested rows
+### Suggested rows
 
 
 
@@ -1090,11 +1090,11 @@ This table is optional because Chapter 7 may already discuss future work in pros
 
 
 
-\---
+---
 
 
 
-\## 8. Screenshot Capture Plan
+## 8. Screenshot Capture Plan
 
 
 
@@ -1150,11 +1150,11 @@ python -m http.server 8000
 
 
 
-\---
+---
 
 
 
-\## 9. Final Figure/Table Limit
+## 9. Final Figure/Table Limit
 
 
 
@@ -1190,11 +1190,11 @@ This is enough for a strong COMP702 dissertation without making it look overload
 
 
 
-\---
+---
 
 
 
-\## 10. Remaining Figure/Table Tasks
+## 10. Remaining Figure/Table Tasks
 
 
 
@@ -1222,11 +1222,11 @@ The remaining tasks are:
 
 
 
-\---
+---
 
 
 
-\## 11. Stop Condition
+## 11. Stop Condition
 
 
 
@@ -1251,6 +1251,7 @@ No extra visual artefacts are added without supervisor request.
 
 
 After this, do not add more figures or tables unless there is a clear need.
+
 
 
 

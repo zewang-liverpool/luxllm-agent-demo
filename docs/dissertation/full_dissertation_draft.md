@@ -1,8 +1,8 @@
-\# Chapter 1: Introduction
+﻿# Chapter 1: Introduction
 
 
 
-\## 1.1 Background
+## 1.1 Background
 
 
 
@@ -22,11 +22,11 @@ This dissertation presents LuxLLM-Agent, a decision-trace and action-verificatio
 
 
 
-\---
+---
 
 
 
-\## 1.2 Motivation
+## 1.2 Motivation
 
 
 
@@ -66,11 +66,11 @@ The project is also motivated by the need for inspectable evaluation. If an LLM-
 
 
 
-\---
+---
 
 
 
-\## 1.3 Problem Statement
+## 1.3 Problem Statement
 
 
 
@@ -94,11 +94,11 @@ This problem is both practical and research-oriented. It requires implementing a
 
 
 
-\---
+---
 
 
 
-\## 1.4 Aim and Objectives
+## 1.4 Aim and Objectives
 
 
 
@@ -114,7 +114,7 @@ This aim is divided into the following objectives.
 
 
 
-\### Objective 1: Implement a working Lux AI Season 3 agent
+### Objective 1: Implement a working Lux AI Season 3 agent
 
 
 
@@ -122,7 +122,7 @@ The project must implement an agent that can receive observations, produce actio
 
 
 
-\### Objective 2: Build a structured state summarisation pipeline
+### Objective 2: Build a structured state summarisation pipeline
 
 
 
@@ -130,7 +130,7 @@ The system should convert raw Lux AI observations into compact structured summar
 
 
 
-\### Objective 3: Integrate LLM-based strategic planning
+### Objective 3: Integrate LLM-based strategic planning
 
 
 
@@ -138,7 +138,7 @@ The system should use an LLM to produce high-level strategic proposals, such as 
 
 
 
-\### Objective 4: Verify and control LLM-generated decisions
+### Objective 4: Verify and control LLM-generated decisions
 
 
 
@@ -146,7 +146,7 @@ The system should parse LLM output and use rule-based verification, fallback, st
 
 
 
-\### Objective 5: Record decision traces and evaluation metrics
+### Objective 5: Record decision traces and evaluation metrics
 
 
 
@@ -154,7 +154,7 @@ The system should record decision-source information, LLM usage, fallback status
 
 
 
-\### Objective 6: Evaluate multiple LLM backends
+### Objective 6: Evaluate multiple LLM backends
 
 
 
@@ -162,7 +162,7 @@ The project should compare at least two LLM backends under the same framework to
 
 
 
-\### Objective 7: Provide replay-grounded visual inspection
+### Objective 7: Provide replay-grounded visual inspection
 
 
 
@@ -170,11 +170,11 @@ The project should provide a viewer that connects replay frames with decision-tr
 
 
 
-\---
+---
 
 
 
-\## 1.5 Research Question
+## 1.5 Research Question
 
 
 
@@ -190,7 +190,7 @@ This question is supported by three sub-research questions.
 
 
 
-\### RQ1: State summarisation
+### RQ1: State summarisation
 
 
 
@@ -202,7 +202,7 @@ This question examines how the system prepares game-state information for LLM re
 
 
 
-\### RQ2: Action verification and fallback
+### RQ2: Action verification and fallback
 
 
 
@@ -214,7 +214,7 @@ This question examines how the system controls LLM output before execution.
 
 
 
-\### RQ3: Replay-grounded evaluation
+### RQ3: Replay-grounded evaluation
 
 
 
@@ -226,11 +226,11 @@ This question examines how the system evaluates and visualises agent behaviour.
 
 
 
-\---
+---
 
 
 
-\## 1.6 Project Contributions
+## 1.6 Project Contributions
 
 
 
@@ -238,7 +238,7 @@ This project makes several contributions.
 
 
 
-\### 1.6.1 A structured LLM-assisted agent framework
+### 1.6.1 A structured LLM-assisted agent framework
 
 
 
@@ -246,7 +246,7 @@ The project implements a complete framework that connects state summarisation, L
 
 
 
-\### 1.6.2 Rule-based verification of LLM proposals
+### 1.6.2 Rule-based verification of LLM proposals
 
 
 
@@ -254,7 +254,7 @@ The system treats LLM output as a strategic proposal rather than a directly exec
 
 
 
-\### 1.6.3 Decision-source logging
+### 1.6.3 Decision-source logging
 
 
 
@@ -262,7 +262,7 @@ The system records whether decisions come from fresh LLM calls, cached LLM plans
 
 
 
-\### 1.6.4 Controlled evaluation with multiple LLM backends
+### 1.6.4 Controlled evaluation with multiple LLM backends
 
 
 
@@ -270,7 +270,7 @@ The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework. Bo
 
 
 
-\### 1.6.5 Replay-grounded decision trace overlay
+### 1.6.5 Replay-grounded decision trace overlay
 
 
 
@@ -278,7 +278,7 @@ The project implements an LLM Decision Trace Overlay for the Season 3 viewer. Th
 
 
 
-\### 1.6.6 Dissertation-oriented analysis and documentation
+### 1.6.6 Dissertation-oriented analysis and documentation
 
 
 
@@ -286,11 +286,11 @@ The project includes technical documentation, evaluation analysis, model compari
 
 
 
-\---
+---
 
 
 
-\## 1.7 Project Scope
+## 1.7 Project Scope
 
 
 
@@ -324,11 +324,11 @@ The project is best understood as an artefact-based investigation into how LLM-b
 
 
 
-\---
+---
 
 
 
-\## 1.8 Summary of Evaluation Evidence
+## 1.8 Summary of Evaluation Evidence
 
 
 
@@ -354,11 +354,11 @@ The evaluation also includes decision-source analysis, latency analysis, fallbac
 
 
 
-\---
+---
 
 
 
-\## 1.9 Dissertation Structure
+## 1.9 Dissertation Structure
 
 
 
@@ -366,7 +366,7 @@ The rest of the dissertation is organised as follows.
 
 
 
-\### Chapter 2: Background and Related Work
+### Chapter 2: Background and Related Work
 
 
 
@@ -374,7 +374,7 @@ This chapter introduces relevant background on LLM-based agents, game AI, hybrid
 
 
 
-\### Chapter 3: Requirements and Methodology
+### Chapter 3: Requirements and Methodology
 
 
 
@@ -382,7 +382,7 @@ This chapter presents the project requirements and methodology. It explains the 
 
 
 
-\### Chapter 4: System Design
+### Chapter 4: System Design
 
 
 
@@ -390,7 +390,7 @@ This chapter presents the system architecture of LuxLLM-Agent. It explains state
 
 
 
-\### Chapter 5: Implementation
+### Chapter 5: Implementation
 
 
 
@@ -398,7 +398,7 @@ This chapter describes how the system was implemented in the project codebase. I
 
 
 
-\### Chapter 6: Evaluation
+### Chapter 6: Evaluation
 
 
 
@@ -406,7 +406,7 @@ This chapter evaluates the system using gameplay outcomes, LLM execution metrics
 
 
 
-\### Chapter 7: Discussion and Conclusion
+### Chapter 7: Discussion and Conclusion
 
 
 
@@ -414,11 +414,11 @@ This chapter discusses the main findings, limitations, threats to validity, futu
 
 
 
-\---
+---
 
 
 
-\## 1.10 Summary
+## 1.10 Summary
 
 
 
@@ -600,7 +600,7 @@ The core principle is:
 
 This principle reduces the risk of invalid LLM output affecting the environment. It also makes the system easier to evaluate because the pipeline records when a plan is accepted, cached, replaced, or supported by fallback.
 
-Action verification is therefore not only a reliability mechanism. It is also part of the project’s evaluation framework.
+Action verification is therefore not only a reliability mechanism. It is also part of the project鈥檚 evaluation framework.
 
 ---
 
@@ -663,7 +663,7 @@ LuxLLM-Agent uses a broader evaluation approach, including:
 
 This evaluation approach supports the dissertation research question because it focuses on inspection and evaluation rather than only performance.
 
-The project’s controlled-run evidence includes 50-run results for qwen3:32b and DeepSeek-R1-32B. Both models completed 50 controlled runs with zero LLM errors in the current evidence, while producing different gameplay outcomes.
+The project鈥檚 controlled-run evidence includes 50-run results for qwen3:32b and DeepSeek-R1-32B. Both models completed 50 controlled runs with zero LLM errors in the current evidence, while producing different gameplay outcomes.
 
 This shows why evaluation should distinguish between execution stability, strategic quality, and final outcome.
 
@@ -717,7 +717,7 @@ These properties make Lux AI Season 3 suitable for this project because it inclu
 
 The environment also exposes the limitations of direct LLM control. Since actions must be legal and timely, the LLM cannot simply output arbitrary text. It must be integrated into a controlled action pipeline.
 
-This makes Lux AI Season 3 a suitable environment for investigating the project’s research question.
+This makes Lux AI Season 3 a suitable environment for investigating the project鈥檚 research question.
 
 ---
 
@@ -736,7 +736,7 @@ Its main distinguishing features are:
 * controlled multi-run evaluation;
 * replay-grounded decision trace overlay.
 
-This positioning is important because the project’s contribution is not only that an LLM can be connected to Lux AI Season 3. The contribution is that LLM decisions can be structured, verified, traced, evaluated, and visually inspected.
+This positioning is important because the project鈥檚 contribution is not only that an LLM can be connected to Lux AI Season 3. The contribution is that LLM decisions can be structured, verified, traced, evaluated, and visually inspected.
 
 This distinguishes the project from a simple LLM wrapper around an existing rule-based agent.
 
@@ -761,7 +761,7 @@ The following references should be added to the final bibliography or BibTeX fil
 * Ahn et al. (2022), *Do As I Can, Not As I Say: Grounding Language in Robotic Affordances*.
 * Berner et al. (2019), *Dota 2 with Large Scale Deep Reinforcement Learning*.
 * Browne et al. (2012), *A Survey of Monte Carlo Tree Search Methods*.
-* Li et al. (2023), *CAMEL: Communicative Agents for “Mind�?Exploration of Large Language Model Society*.
+* Li et al. (2023), *CAMEL: Communicative Agents for 鈥淢ind鈥?Exploration of Large Language Model Society*.
 * Mnih et al. (2015), *Human-level Control through Deep Reinforcement Learning*.
 * Park et al. (2023), *Generative Agents: Interactive Simulacra of Human Behavior*.
 * Schick et al. (2023), *Toolformer: Language Models Can Teach Themselves to Use Tools*.
@@ -777,11 +777,11 @@ The following references should be added to the final bibliography or BibTeX fil
 ---
 
 
-\# Chapter 3: Requirements and Methodology
+# Chapter 3: Requirements and Methodology
 
 
 
-\## 3.1 Introduction
+## 3.1 Introduction
 
 
 
@@ -805,11 +805,11 @@ This chapter explains the requirements that guided the system, the methodology u
 
 
 
-\---
+---
 
 
 
-\## 3.2 Project Aim
+## 3.2 Project Aim
 
 
 
@@ -841,11 +841,11 @@ This aim leads to three sub-objectives:
 
 
 
-\---
+---
 
 
 
-\## 3.3 Research Questions
+## 3.3 Research Questions
 
 
 
@@ -861,7 +861,7 @@ This question is divided into three sub-research questions.
 
 
 
-\### 3.3.1 RQ1: State summarisation
+### 3.3.1 RQ1: State summarisation
 
 
 
@@ -873,7 +873,7 @@ This question focuses on the state summarisation process. Raw game observations 
 
 
 
-\### 3.3.2 RQ2: Action verification and fallback
+### 3.3.2 RQ2: Action verification and fallback
 
 
 
@@ -885,7 +885,7 @@ This question focuses on the reliability of LLM-based agents. The LLM output is 
 
 
 
-\### 3.3.3 RQ3: Replay-grounded evaluation
+### 3.3.3 RQ3: Replay-grounded evaluation
 
 
 
@@ -897,11 +897,11 @@ This question focuses on evaluation and inspection. The system should allow the 
 
 
 
-\---
+---
 
 
 
-\## 3.4 Project Requirements
+## 3.4 Project Requirements
 
 
 
@@ -913,15 +913,15 @@ Functional requirements describe what the system should do. Non-functional requi
 
 
 
-\---
+---
 
 
 
-\## 3.5 Functional Requirements
+## 3.5 Functional Requirements
 
 
 
-\### 3.5.1 FR1: Run a Lux AI Season 3 agent
+### 3.5.1 FR1: Run a Lux AI Season 3 agent
 
 
 
@@ -947,11 +947,11 @@ The agent must support:
 
 
 
-\---
+---
 
 
 
-\### 3.5.2 FR2: Support rule-only and LLM-enabled modes
+### 3.5.2 FR2: Support rule-only and LLM-enabled modes
 
 
 
@@ -985,11 +985,11 @@ This allows the project to compare baseline rule-based behaviour with LLM-backed
 
 
 
-\---
+---
 
 
 
-\### 3.5.3 FR3: Summarise game state for LLM planning
+### 3.5.3 FR3: Summarise game state for LLM planning
 
 
 
@@ -1027,11 +1027,11 @@ This requirement supports RQ1.
 
 
 
-\---
+---
 
 
 
-\### 3.5.4 FR4: Generate structured LLM decisions
+### 3.5.4 FR4: Generate structured LLM decisions
 
 
 
@@ -1065,11 +1065,11 @@ This design makes the LLM output easier to parse, verify, log, and inspect.
 
 
 
-\---
+---
 
 
 
-\### 3.5.5 FR5: Parse LLM output into internal structures
+### 3.5.5 FR5: Parse LLM output into internal structures
 
 
 
@@ -1097,11 +1097,11 @@ This requirement is necessary because LLM output cannot be assumed to be reliabl
 
 
 
-\---
+---
 
 
 
-\### 3.5.6 FR6: Verify and convert strategic proposals into actions
+### 3.5.6 FR6: Verify and convert strategic proposals into actions
 
 
 
@@ -1135,11 +1135,11 @@ This requirement supports RQ2.
 
 
 
-\---
+---
 
 
 
-\### 3.5.7 FR7: Provide fallback behaviour
+### 3.5.7 FR7: Provide fallback behaviour
 
 
 
@@ -1169,11 +1169,11 @@ Fallback may be used when:
 
 
 
-\---
+---
 
 
 
-\### 3.5.8 FR8: Support strategy caching
+### 3.5.8 FR8: Support strategy caching
 
 
 
@@ -1189,11 +1189,11 @@ The system should record when cached plans are used so that cached behaviour can
 
 
 
-\---
+---
 
 
 
-\### 3.5.9 FR9: Record decision traces and metrics
+### 3.5.9 FR9: Record decision traces and metrics
 
 
 
@@ -1249,11 +1249,11 @@ These logs support controlled evaluation and replay-grounded inspection.
 
 
 
-\---
+---
 
 
 
-\### 3.5.10 FR10: Support controlled multi-run evaluation
+### 3.5.10 FR10: Support controlled multi-run evaluation
 
 
 
@@ -1287,11 +1287,11 @@ This requirement allows qwen3:32b and DeepSeek-R1-32B to be compared under the s
 
 
 
-\---
+---
 
 
 
-\### 3.5.11 FR11: Provide replay-grounded visual inspection
+### 3.5.11 FR11: Provide replay-grounded visual inspection
 
 
 
@@ -1329,15 +1329,15 @@ This requirement supports RQ3.
 
 
 
-\---
+---
 
 
 
-\## 3.6 Non-functional Requirements
+## 3.6 Non-functional Requirements
 
 
 
-\### 3.6.1 NFR1: Stability
+### 3.6.1 NFR1: Stability
 
 
 
@@ -1349,11 +1349,11 @@ Fallback and rule-based verification are required to support this.
 
 
 
-\---
+---
 
 
 
-\### 3.6.2 NFR2: Inspectability
+### 3.6.2 NFR2: Inspectability
 
 
 
@@ -1365,11 +1365,11 @@ This is central to the project because the goal is not only to run an agent but 
 
 
 
-\---
+---
 
 
 
-\### 3.6.3 NFR3: Reproducibility
+### 3.6.3 NFR3: Reproducibility
 
 
 
@@ -1377,11 +1377,11 @@ The system should support reproducible evaluation through scripts, configuration
 
 
 
-\---
+---
 
 
 
-\### 3.6.4 NFR4: Modularity
+### 3.6.4 NFR4: Modularity
 
 
 
@@ -1393,11 +1393,11 @@ This makes the project easier to test, document, and extend.
 
 
 
-\---
+---
 
 
 
-\### 3.6.5 NFR5: Practicality
+### 3.6.5 NFR5: Practicality
 
 
 
@@ -1405,11 +1405,11 @@ The system should work with local or HPC-hosted LLMs. Since large LLMs can be sl
 
 
 
-\---
+---
 
 
 
-\### 3.6.6 NFR6: Demonstrability
+### 3.6.6 NFR6: Demonstrability
 
 
 
@@ -1421,11 +1421,11 @@ The replay viewer and LLM Decision Trace Overlay support this requirement.
 
 
 
-\---
+---
 
 
 
-\## 3.7 Methodology Overview
+## 3.7 Methodology Overview
 
 
 
@@ -1461,11 +1461,11 @@ This methodology is appropriate because the research question concerns how a sys
 
 
 
-\---
+---
 
 
 
-\## 3.8 Environment and Task Selection
+## 3.8 Environment and Task Selection
 
 
 
@@ -1501,11 +1501,11 @@ Lux AI Season 3 is also suitable because it produces replay data that can be con
 
 
 
-\---
+---
 
 
 
-\## 3.9 LLM Integration Method
+## 3.9 LLM Integration Method
 
 
 
@@ -1581,11 +1581,11 @@ The comparison tests whether the same framework can support multiple reasoning-o
 
 
 
-\---
+---
 
 
 
-\## 3.10 Verification and Fallback Method
+## 3.10 Verification and Fallback Method
 
 
 
@@ -1623,11 +1623,11 @@ The fallback mechanism also makes evaluation more honest because the system reco
 
 
 
-\---
+---
 
 
 
-\## 3.11 Strategy Cache Method
+## 3.11 Strategy Cache Method
 
 
 
@@ -1669,11 +1669,11 @@ Caching improves runtime practicality, but it can introduce stale decisions. Thi
 
 
 
-\---
+---
 
 
 
-\## 3.12 Evaluation Method
+## 3.12 Evaluation Method
 
 
 
@@ -1681,7 +1681,7 @@ The evaluation method combines quantitative and qualitative analysis.
 
 
 
-\### 3.12.1 Quantitative evaluation
+### 3.12.1 Quantitative evaluation
 
 
 
@@ -1735,11 +1735,11 @@ This comparison evaluates both gameplay outcome and framework stability.
 
 
 
-\---
+---
 
 
 
-\### 3.12.2 Decision-source evaluation
+### 3.12.2 Decision-source evaluation
 
 
 
@@ -1773,11 +1773,11 @@ This makes it possible to measure how much behaviour comes from the LLM, cached 
 
 
 
-\---
+---
 
 
 
-\### 3.12.3 Replay-grounded evaluation
+### 3.12.3 Replay-grounded evaluation
 
 
 
@@ -1807,11 +1807,11 @@ This allows qualitative analysis of representative cases.
 
 
 
-\---
+---
 
 
 
-\### 3.12.4 Failure-case analysis
+### 3.12.4 Failure-case analysis
 
 
 
@@ -1839,11 +1839,11 @@ This analysis is important because a high-quality dissertation should not only r
 
 
 
-\---
+---
 
 
 
-\## 3.13 Evidence Management
+## 3.13 Evidence Management
 
 
 
@@ -1875,11 +1875,11 @@ The project separates summary evidence from large raw outputs. This keeps the re
 
 
 
-\---
+---
 
 
 
-\## 3.14 Ethical and Practical Considerations
+## 3.14 Ethical and Practical Considerations
 
 
 
@@ -1911,11 +1911,11 @@ Practical considerations include hardware availability, LLM latency, local and H
 
 
 
-\---
+---
 
 
 
-\## 3.15 Summary
+## 3.15 Summary
 
 
 
@@ -1940,11 +1940,11 @@ This chapter provides the foundation for the following chapters. Chapter 4 prese
 ---
 
 
-\# Chapter 4: System Design
+# Chapter 4: System Design
 
 
 
-\## 4.1 Introduction
+## 4.1 Introduction
 
 
 
@@ -1980,11 +1980,11 @@ This chapter describes the architecture, data flow, main components, design rati
 
 
 
-\---
+---
 
 
 
-\## 4.2 Design Goals
+## 4.2 Design Goals
 
 
 
@@ -1992,7 +1992,7 @@ The design of LuxLLM-Agent is guided by five goals.
 
 
 
-\### 4.2.1 Inspectability
+### 4.2.1 Inspectability
 
 
 
@@ -2004,7 +2004,7 @@ This is necessary because final game outcomes alone do not explain how an LLM-ba
 
 
 
-\### 4.2.2 Stability
+### 4.2.2 Stability
 
 
 
@@ -2016,7 +2016,7 @@ To support this, the system includes fallback mechanisms, strategy caching, rule
 
 
 
-\### 4.2.3 Controlled LLM Use
+### 4.2.3 Controlled LLM Use
 
 
 
@@ -2028,7 +2028,7 @@ This reduces the risk of invalid Lux AI actions and makes the system easier to e
 
 
 
-\### 4.2.4 Evaluation Support
+### 4.2.4 Evaluation Support
 
 
 
@@ -2060,7 +2060,7 @@ Important evaluation dimensions include:
 
 
 
-\### 4.2.5 Reproducibility and Demonstrability
+### 4.2.5 Reproducibility and Demonstrability
 
 
 
@@ -2068,11 +2068,11 @@ The system should support reproducible experiments and visual demonstration. Thi
 
 
 
-\---
+---
 
 
 
-\## 4.3 High-level Architecture
+## 4.3 High-level Architecture
 
 
 
@@ -2148,15 +2148,15 @@ This design is different from a direct LLM controller. In a direct controller, t
 
 
 
-\---
+---
 
 
 
-\## 4.4 System Components
+## 4.4 System Components
 
 
 
-\### 4.4.1 Lux AI Season 3 Runtime
+### 4.4.1 Lux AI Season 3 Runtime
 
 
 
@@ -2228,11 +2228,11 @@ This allows the same system to be tested under different settings, including rul
 
 
 
-\---
+---
 
 
 
-\### 4.4.2 Structured State Summariser
+### 4.4.2 Structured State Summariser
 
 
 
@@ -2280,11 +2280,11 @@ The summariser reduces prompt noise and helps the LLM reason about strategy rath
 
 
 
-\---
+---
 
 
 
-\### 4.4.3 LLM Decision Module
+### 4.4.3 LLM Decision Module
 
 
 
@@ -2338,11 +2338,11 @@ The LLM decision module therefore contributes high-level reasoning while leaving
 
 
 
-\---
+---
 
 
 
-\### 4.4.4 Structured Plan Parser
+### 4.4.4 Structured Plan Parser
 
 
 
@@ -2374,11 +2374,11 @@ The parser is a safety boundary between LLM output and the action pipeline. With
 
 
 
-\---
+---
 
 
 
-\### 4.4.5 Rule-based Action Verifier
+### 4.4.5 Rule-based Action Verifier
 
 
 
@@ -2424,11 +2424,11 @@ The verifier is one of the main technical contributions of LuxLLM-Agent because 
 
 
 
-\---
+---
 
 
 
-\### 4.4.6 Fallback Mechanism
+### 4.4.6 Fallback Mechanism
 
 
 
@@ -2480,11 +2480,11 @@ Fallback is not treated as a system failure. Instead, it is a deliberate stabili
 
 
 
-\---
+---
 
 
 
-\### 4.4.7 Strategy Cache
+### 4.4.7 Strategy Cache
 
 
 
@@ -2532,11 +2532,11 @@ The strategy cache introduces a trade-off. It improves efficiency, but cached pl
 
 
 
-\---
+---
 
 
 
-\### 4.4.8 Risk-aware Action Filter
+### 4.4.8 Risk-aware Action Filter
 
 
 
@@ -2584,11 +2584,11 @@ The risk-aware filter supports the broader design goal of treating LLM decisions
 
 
 
-\---
+---
 
 
 
-\### 4.4.9 Action Planner
+### 4.4.9 Action Planner
 
 
 
@@ -2646,11 +2646,11 @@ This component bridges the gap between strategic planning and environment execut
 
 
 
-\---
+---
 
 
 
-\### 4.4.10 Decision Trace Logger
+### 4.4.10 Decision Trace Logger
 
 
 
@@ -2726,11 +2726,11 @@ These logs allow evaluation to go beyond final scores. They make it possible to 
 
 
 
-\---
+---
 
 
 
-\## 4.5 Data Flow
+## 4.5 Data Flow
 
 
 
@@ -2778,11 +2778,11 @@ This data flow shows how the project connects gameplay, LLM reasoning, rule-base
 
 
 
-\---
+---
 
 
 
-\## 4.6 Decision Provenance Design
+## 4.6 Decision Provenance Design
 
 
 
@@ -2820,11 +2820,11 @@ Decision provenance also supports failure analysis. For example, if a visible ac
 
 
 
-\---
+---
 
 
 
-\## 4.7 Replay-grounded Inspection
+## 4.7 Replay-grounded Inspection
 
 
 
@@ -2886,11 +2886,11 @@ The overlay turns the viewer from a replay-only tool into a decision inspection 
 
 
 
-\---
+---
 
 
 
-\## 4.8 Evaluation-oriented Design
+## 4.8 Evaluation-oriented Design
 
 
 
@@ -2936,11 +2936,11 @@ This design supports a stronger dissertation evaluation because it measures both
 
 
 
-\---
+---
 
 
 
-\## 4.9 Design Rationale
+## 4.9 Design Rationale
 
 
 
@@ -2948,7 +2948,7 @@ The system design is motivated by three main challenges.
 
 
 
-\### 4.9.1 LLM Output May Be Invalid
+### 4.9.1 LLM Output May Be Invalid
 
 
 
@@ -2956,7 +2956,7 @@ LLMs may produce malformed or non-executable outputs. The parser, verifier, and 
 
 
 
-\### 4.9.2 LLM Calls Are Expensive
+### 4.9.2 LLM Calls Are Expensive
 
 
 
@@ -2964,7 +2964,7 @@ Large LLMs can take several seconds to respond. The strategy cache and controlle
 
 
 
-\### 4.9.3 Win/Loss Alone Is Not Explainable
+### 4.9.3 Win/Loss Alone Is Not Explainable
 
 
 
@@ -2972,11 +2972,11 @@ A final score does not explain how decisions were made. Decision trace logging a
 
 
 
-\---
+---
 
 
 
-\## 4.10 Limitations of the Design
+## 4.10 Limitations of the Design
 
 
 
@@ -3008,11 +3008,11 @@ These limitations are not hidden. They are important parts of the evaluation and
 
 
 
-\---
+---
 
 
 
-\## 4.11 Summary
+## 4.11 Summary
 
 
 
@@ -3037,11 +3037,11 @@ The next chapter describes the implementation of these design components in more
 ---
 
 
-\# Chapter 5: Implementation
+# Chapter 5: Implementation
 
 
 
-\## 5.1 Introduction
+## 5.1 Introduction
 
 
 
@@ -3065,11 +3065,11 @@ This principle shaped the implementation choices throughout the project. The LLM
 
 
 
-\---
+---
 
 
 
-\## 5.2 Project Structure
+## 5.2 Project Structure
 
 
 
@@ -3165,11 +3165,11 @@ The project structure separates runtime logic, generated evidence, visualisation
 
 
 
-\---
+---
 
 
 
-\## 5.3 Agent Runtime Implementation
+## 5.3 Agent Runtime Implementation
 
 
 
@@ -3241,11 +3241,11 @@ This configuration approach was important during experimentation because it allo
 
 
 
-\---
+---
 
 
 
-\## 5.4 State Summarisation Implementation
+## 5.4 State Summarisation Implementation
 
 
 
@@ -3311,11 +3311,11 @@ This implementation supports the first sub-research question:
 
 
 
-\---
+---
 
 
 
-\## 5.5 LLM Decision Implementation
+## 5.5 LLM Decision Implementation
 
 
 
@@ -3401,11 +3401,11 @@ This reduces the risk of invalid LLM output causing invalid environment actions.
 
 
 
-\---
+---
 
 
 
-\## 5.6 Structured Parsing Implementation
+## 5.6 Structured Parsing Implementation
 
 
 
@@ -3459,15 +3459,15 @@ This stage is a key reliability boundary. Without parsing, the system would have
 
 
 
-This implementation supports the project’s broader goal of making LLM-agent behaviour inspectable and evaluable.
+This implementation supports the project鈥檚 broader goal of making LLM-agent behaviour inspectable and evaluable.
 
 
 
-\---
+---
 
 
 
-\## 5.7 Action Verification Implementation
+## 5.7 Action Verification Implementation
 
 
 
@@ -3529,11 +3529,11 @@ The verification layer is one of the main reasons the project can use large LLMs
 
 
 
-\---
+---
 
 
 
-\## 5.8 Fallback Implementation
+## 5.8 Fallback Implementation
 
 
 
@@ -3589,11 +3589,11 @@ This is important for evaluation because the system can later analyse when the L
 
 
 
-\---
+---
 
 
 
-\## 5.9 Strategy Cache Implementation
+## 5.9 Strategy Cache Implementation
 
 
 
@@ -3641,11 +3641,11 @@ The cache also creates an evaluation issue: a cached plan may become stale if th
 
 
 
-\---
+---
 
 
 
-\## 5.10 Risk-aware Action Filter Implementation
+## 5.10 Risk-aware Action Filter Implementation
 
 
 
@@ -3687,15 +3687,15 @@ risk\_filter\_events\_count
 
 
 
-This implementation supports the project’s argument that the LLM is not the only decision component. Instead, the final action emerges from a pipeline that combines LLM planning with rule-based verification and safety checks.
+This implementation supports the project鈥檚 argument that the LLM is not the only decision component. Instead, the final action emerges from a pipeline that combines LLM planning with rule-based verification and safety checks.
 
 
 
-\---
+---
 
 
 
-\## 5.11 Action Planning Implementation
+## 5.11 Action Planning Implementation
 
 
 
@@ -3755,11 +3755,11 @@ This component is important because it bridges the gap between strategic reasoni
 
 
 
-\---
+---
 
 
 
-\## 5.12 Decision Trace Logging Implementation
+## 5.12 Decision Trace Logging Implementation
 
 
 
@@ -3855,11 +3855,11 @@ The JSONL format is practical because each line is a separate event. This makes 
 
 
 
-\---
+---
 
 
 
-\## 5.13 Match Result Recording
+## 5.13 Match Result Recording
 
 
 
@@ -3929,11 +3929,11 @@ This implementation supports controlled multi-run evaluation, including the qwen
 
 
 
-\---
+---
 
 
 
-\## 5.14 Controlled-run Evidence Implementation
+## 5.14 Controlled-run Evidence Implementation
 
 
 
@@ -3987,11 +3987,11 @@ The implementation keeps summary evidence separate from raw run folders. This av
 
 
 
-\---
+---
 
 
 
-\## 5.15 Replay Frame Generation
+## 5.15 Replay Frame Generation
 
 
 
@@ -4037,11 +4037,11 @@ and opened through a browser.
 
 
 
-\---
+---
 
 
 
-\## 5.16 LLM Decision Trace Overlay Implementation
+## 5.16 LLM Decision Trace Overlay Implementation
 
 
 
@@ -4165,11 +4165,11 @@ This implementation directly supports the third sub-research question:
 
 
 
-\---
+---
 
 
 
-\## 5.17 Viewer Implementation
+## 5.17 Viewer Implementation
 
 
 
@@ -4227,11 +4227,11 @@ This implementation makes the project easier to demonstrate and provides visual 
 
 
 
-\---
+---
 
 
 
-\## 5.18 Evidence and Documentation Implementation
+## 5.18 Evidence and Documentation Implementation
 
 
 
@@ -4291,11 +4291,11 @@ This structure helps convert the project from an engineering prototype into a di
 
 
 
-\---
+---
 
 
 
-\## 5.19 Implementation Challenges
+## 5.19 Implementation Challenges
 
 
 
@@ -4303,7 +4303,7 @@ Several implementation challenges occurred during the project.
 
 
 
-\### 5.19.1 Integrating LLMs with a fast game loop
+### 5.19.1 Integrating LLMs with a fast game loop
 
 
 
@@ -4315,7 +4315,7 @@ The implementation addresses this through strategy caching, controlled LLM call 
 
 
 
-\### 5.19.2 Handling invalid or unavailable LLM output
+### 5.19.2 Handling invalid or unavailable LLM output
 
 
 
@@ -4327,7 +4327,7 @@ This reduces the risk of runtime failure.
 
 
 
-\### 5.19.3 Connecting logs to replay frames
+### 5.19.3 Connecting logs to replay frames
 
 
 
@@ -4351,7 +4351,7 @@ The resulting overlay makes the replay more informative, but it also introduces 
 
 
 
-\### 5.19.4 Managing evidence files
+### 5.19.4 Managing evidence files
 
 
 
@@ -4359,7 +4359,7 @@ Controlled runs can produce many files. The implementation therefore separates k
 
 
 
-\### 5.19.5 Maintaining reproducibility
+### 5.19.5 Maintaining reproducibility
 
 
 
@@ -4367,11 +4367,11 @@ The system uses scripts, JSON/JSONL evidence, and markdown documentation to make
 
 
 
-\---
+---
 
 
 
-\## 5.20 Summary
+## 5.20 Summary
 
 
 
@@ -4396,11 +4396,11 @@ The next chapter evaluates the system using gameplay outcomes, LLM execution met
 ---
 
 
-\# Chapter 6: Evaluation
+# Chapter 6: Evaluation
 
 
 
-\## 6.1 Introduction
+## 6.1 Introduction
 
 
 
@@ -4448,11 +4448,11 @@ This multi-dimensional evaluation is important because LuxLLM-Agent is not only 
 
 
 
-\---
+---
 
 
 
-\## 6.2 Evaluation Objectives
+## 6.2 Evaluation Objectives
 
 
 
@@ -4460,7 +4460,7 @@ The evaluation has four main objectives.
 
 
 
-\### 6.2.1 Evaluate gameplay outcome
+### 6.2.1 Evaluate gameplay outcome
 
 
 
@@ -4488,7 +4488,7 @@ The main metrics are:
 
 
 
-\### 6.2.2 Evaluate LLM execution stability
+### 6.2.2 Evaluate LLM execution stability
 
 
 
@@ -4516,7 +4516,7 @@ This is important because an LLM-based game agent may fail not only through poor
 
 
 
-\### 6.2.3 Evaluate decision provenance
+### 6.2.3 Evaluate decision provenance
 
 
 
@@ -4550,7 +4550,7 @@ Decision provenance helps determine whether actions are produced by fresh LLM de
 
 
 
-\### 6.2.4 Evaluate replay-grounded inspectability
+### 6.2.4 Evaluate replay-grounded inspectability
 
 
 
@@ -4586,11 +4586,11 @@ This allows the evaluation to include qualitative inspection rather than only ag
 
 
 
-\---
+---
 
 
 
-\## 6.3 Evaluation Setup
+## 6.3 Evaluation Setup
 
 
 
@@ -4660,11 +4660,11 @@ logs/match\_history.jsonl
 
 
 
-\---
+---
 
 
 
-\## 6.4 Evaluation Metrics
+## 6.4 Evaluation Metrics
 
 
 
@@ -4672,7 +4672,7 @@ The evaluation uses several categories of metrics.
 
 
 
-\### 6.4.1 Gameplay metrics
+### 6.4.1 Gameplay metrics
 
 
 
@@ -4704,7 +4704,7 @@ These metrics show the final outcome of controlled runs.
 
 
 
-\### 6.4.2 LLM execution metrics
+### 6.4.2 LLM execution metrics
 
 
 
@@ -4734,7 +4734,7 @@ These metrics evaluate whether the LLM pipeline remains stable and practical.
 
 
 
-\### 6.4.3 Decision-source metrics
+### 6.4.3 Decision-source metrics
 
 
 
@@ -4764,7 +4764,7 @@ These metrics are central to the evaluation because they show how much the LLM c
 
 
 
-\### 6.4.4 Replay-grounded metrics
+### 6.4.4 Replay-grounded metrics
 
 
 
@@ -4794,11 +4794,11 @@ These metrics evaluate whether visual inspection can be connected to decision lo
 
 
 
-\---
+---
 
 
 
-\## 6.5 qwen3:32b 50-run Results
+## 6.5 qwen3:32b 50-run Results
 
 
 
@@ -4846,11 +4846,11 @@ The more important framework-level finding is that qwen3:32b can be integrated i
 
 
 
-\---
+---
 
 
 
-\## 6.6 DeepSeek-R1-32B 50-run Results
+## 6.6 DeepSeek-R1-32B 50-run Results
 
 
 
@@ -4910,11 +4910,11 @@ The latency values are particularly important. An average latency of approximate
 
 
 
-\---
+---
 
 
 
-\## 6.7 Model Comparison
+## 6.7 Model Comparison
 
 
 
@@ -4952,11 +4952,11 @@ The comparison also shows why final win rate should not be the only metric. Alth
 
 
 
-\---
+---
 
 
 
-\## 6.8 Decision-source Analysis
+## 6.8 Decision-source Analysis
 
 
 
@@ -5058,11 +5058,11 @@ This is a strength of the evaluation because the system can explain decision pro
 
 
 
-\---
+---
 
 
 
-\## 6.9 Fallback and Verification Analysis
+## 6.9 Fallback and Verification Analysis
 
 
 
@@ -5124,11 +5124,11 @@ Therefore, the dissertation should interpret the system as a hybrid LLM-rule fra
 
 
 
-\---
+---
 
 
 
-\## 6.10 Latency and Strategy Cache Analysis
+## 6.10 Latency and Strategy Cache Analysis
 
 
 
@@ -5188,11 +5188,11 @@ However, caching also introduces a limitation. Cached plans may become stale whe
 
 
 
-\---
+---
 
 
 
-\## 6.11 Replay-grounded Inspection Evaluation
+## 6.11 Replay-grounded Inspection Evaluation
 
 
 
@@ -5268,11 +5268,11 @@ The overlay is particularly useful because final match results cannot show wheth
 
 
 
-\---
+---
 
 
 
-\## 6.12 Failure-case Analysis
+## 6.12 Failure-case Analysis
 
 
 
@@ -5284,7 +5284,7 @@ Representative failure and limitation cases include:
 
 
 
-\### 6.12.1 Valid LLM plan but limited strategic impact
+### 6.12.1 Valid LLM plan but limited strategic impact
 
 
 
@@ -5296,7 +5296,7 @@ This shows that LLM validity is not the same as strategic quality.
 
 
 
-\### 6.12.2 Fallback replaces or supports LLM decision
+### 6.12.2 Fallback replaces or supports LLM decision
 
 
 
@@ -5308,7 +5308,7 @@ This shows that fallback is both a strength and an evaluation complication.
 
 
 
-\### 6.12.3 Cached plan may become stale
+### 6.12.3 Cached plan may become stale
 
 
 
@@ -5320,7 +5320,7 @@ This shows the trade-off between latency reduction and adaptiveness.
 
 
 
-\### 6.12.4 Stable execution but different model outcomes
+### 6.12.4 Stable execution but different model outcomes
 
 
 
@@ -5328,7 +5328,7 @@ Both qwen3:32b and DeepSeek-R1-32B completed 50 runs with zero LLM errors, but t
 
 
 
-\### 6.12.5 Viewer trace alignment requires careful labelling
+### 6.12.5 Viewer trace alignment requires careful labelling
 
 
 
@@ -5340,11 +5340,11 @@ These failure cases strengthen the evaluation because they demonstrate critical 
 
 
 
-\---
+---
 
 
 
-\## 6.13 Discussion of Results
+## 6.13 Discussion of Results
 
 
 
@@ -5352,7 +5352,7 @@ The evaluation supports several findings.
 
 
 
-\### 6.13.1 The framework supports multiple LLM backends
+### 6.13.1 The framework supports multiple LLM backends
 
 
 
@@ -5360,7 +5360,7 @@ Both qwen3:32b and DeepSeek-R1-32B completed 50 controlled runs with zero LLM er
 
 
 
-\### 6.13.2 Decision tracing improves interpretability
+### 6.13.2 Decision tracing improves interpretability
 
 
 
@@ -5368,7 +5368,7 @@ Decision-source logs and the overlay make it possible to inspect whether actions
 
 
 
-\### 6.13.3 Rule-based verification improves stability
+### 6.13.3 Rule-based verification improves stability
 
 
 
@@ -5376,7 +5376,7 @@ The verifier and fallback mechanisms prevent arbitrary LLM output from directly 
 
 
 
-\### 6.13.4 Caching is necessary for large LLMs
+### 6.13.4 Caching is necessary for large LLMs
 
 
 
@@ -5384,7 +5384,7 @@ Latency evidence shows that large LLMs are too slow to call at every step. Strat
 
 
 
-\### 6.13.5 Win rate is not sufficient for evaluation
+### 6.13.5 Win rate is not sufficient for evaluation
 
 
 
@@ -5392,11 +5392,11 @@ Final outcome metrics are useful, but they must be interpreted together with dec
 
 
 
-\---
+---
 
 
 
-\## 6.14 Threats to Validity
+## 6.14 Threats to Validity
 
 
 
@@ -5404,7 +5404,7 @@ The evaluation has several threats to validity.
 
 
 
-\### 6.14.1 Limited number of LLM backends
+### 6.14.1 Limited number of LLM backends
 
 
 
@@ -5412,7 +5412,7 @@ The evaluation compares qwen3:32b and DeepSeek-R1-32B. This is useful, but it do
 
 
 
-\### 6.14.2 Prompt sensitivity
+### 6.14.2 Prompt sensitivity
 
 
 
@@ -5420,7 +5420,7 @@ Different models may respond differently to the same prompt. The current compari
 
 
 
-\### 6.14.3 Hybrid system attribution
+### 6.14.3 Hybrid system attribution
 
 
 
@@ -5428,7 +5428,7 @@ The final behaviour is produced by a hybrid system. It includes LLM planning, ca
 
 
 
-\### 6.14.4 Run-specific evidence
+### 6.14.4 Run-specific evidence
 
 
 
@@ -5436,7 +5436,7 @@ Some evidence, such as the Run008 viewer and overlay, is based on specific repla
 
 
 
-\### 6.14.5 Gameplay performance is not leaderboard-level
+### 6.14.5 Gameplay performance is not leaderboard-level
 
 
 
@@ -5444,11 +5444,11 @@ The system is designed for inspection and evaluation rather than maximum Lux AI 
 
 
 
-\---
+---
 
 
 
-\## 6.15 Limitations
+## 6.15 Limitations
 
 
 
@@ -5480,11 +5480,11 @@ These limitations should not be hidden. They help define the scope of the projec
 
 
 
-\---
+---
 
 
 
-\## 6.16 Summary
+## 6.16 Summary
 
 
 
@@ -5509,11 +5509,11 @@ The main conclusion is that structured decision tracing and rule-based action ve
 ---
 
 
-\# Chapter 7: Discussion and Conclusion
+# Chapter 7: Discussion and Conclusion
 
 
 
-\## 7.1 Introduction
+## 7.1 Introduction
 
 
 
@@ -5537,11 +5537,11 @@ This chapter reflects on how well the project answered the research question, wh
 
 
 
-\---
+---
 
 
 
-\## 7.2 Answering the Research Question
+## 7.2 Answering the Research Question
 
 
 
@@ -5573,15 +5573,15 @@ Overall, the project demonstrates that structured decision tracing and rule-base
 
 
 
-\---
+---
 
 
 
-\## 7.3 Discussion of Main Findings
+## 7.3 Discussion of Main Findings
 
 
 
-\### 7.3.1 LLM-based agents require more than prompt engineering
+### 7.3.1 LLM-based agents require more than prompt engineering
 
 
 
@@ -5593,7 +5593,7 @@ Lux AI Season 3 requires repeated action decisions under uncertainty. LLMs may p
 
 
 
-This supports the project’s central design principle:
+This supports the project鈥檚 central design principle:
 
 
 
@@ -5605,11 +5605,11 @@ This principle helped make the system more robust and easier to evaluate.
 
 
 
-\---
+---
 
 
 
-\### 7.3.2 Final scores alone are not enough for evaluation
+### 7.3.2 Final scores alone are not enough for evaluation
 
 
 
@@ -5643,11 +5643,11 @@ The evaluation showed that qwen3:32b and DeepSeek-R1-32B produced different game
 
 
 
-\---
+---
 
 
 
-\### 7.3.3 The framework can support multiple LLM backends
+### 7.3.3 The framework can support multiple LLM backends
 
 
 
@@ -5677,11 +5677,11 @@ This suggests that the framework can support different reasoning-oriented LLM ba
 
 
 
-\---
+---
 
 
 
-\### 7.3.4 Strategy caching is necessary but introduces trade-offs
+### 7.3.4 Strategy caching is necessary but introduces trade-offs
 
 
 
@@ -5701,11 +5701,11 @@ This trade-off is important for future work. A better system could use event-tri
 
 
 
-\---
+---
 
 
 
-\### 7.3.5 Replay-grounded inspection improves interpretability
+### 7.3.5 Replay-grounded inspection improves interpretability
 
 
 
@@ -5747,11 +5747,11 @@ The overlay therefore turns the viewer from a simple replay tool into a replay-g
 
 
 
-\---
+---
 
 
 
-\## 7.4 Technical Contributions
+## 7.4 Technical Contributions
 
 
 
@@ -5759,7 +5759,7 @@ The project makes several technical contributions.
 
 
 
-\### 7.4.1 Structured LLM decision pipeline
+### 7.4.1 Structured LLM decision pipeline
 
 
 
@@ -5771,11 +5771,11 @@ This contribution is important because it avoids direct execution of arbitrary L
 
 
 
-\---
+---
 
 
 
-\### 7.4.2 Rule-based action verification
+### 7.4.2 Rule-based action verification
 
 
 
@@ -5787,11 +5787,11 @@ The verifier helps ensure that the final action respects the current game state 
 
 
 
-\---
+---
 
 
 
-\### 7.4.3 Fallback and strategy caching
+### 7.4.3 Fallback and strategy caching
 
 
 
@@ -5803,11 +5803,11 @@ Fallback allows the agent to continue acting when the LLM is unavailable or unsu
 
 
 
-\---
+---
 
 
 
-\### 7.4.4 Decision provenance logging
+### 7.4.4 Decision provenance logging
 
 
 
@@ -5819,11 +5819,11 @@ This allows the project to analyse how behaviour was produced rather than only m
 
 
 
-\---
+---
 
 
 
-\### 7.4.5 Replay-grounded decision trace overlay
+### 7.4.5 Replay-grounded decision trace overlay
 
 
 
@@ -5835,11 +5835,11 @@ This is a practical contribution because it makes the system easier to inspect, 
 
 
 
-\---
+---
 
 
 
-\### 7.4.6 Controlled multi-model evaluation
+### 7.4.6 Controlled multi-model evaluation
 
 
 
@@ -5847,11 +5847,11 @@ The project evaluates both qwen3:32b and DeepSeek-R1-32B under the same framewor
 
 
 
-\---
+---
 
 
 
-\## 7.5 Limitations
+## 7.5 Limitations
 
 
 
@@ -5859,7 +5859,7 @@ The project has several limitations.
 
 
 
-\### 7.5.1 The system is not a leaderboard-level Lux AI agent
+### 7.5.1 The system is not a leaderboard-level Lux AI agent
 
 
 
@@ -5871,11 +5871,11 @@ This limitation is important because the project should be assessed as a researc
 
 
 
-\---
+---
 
 
 
-\### 7.5.2 Fallback complicates attribution
+### 7.5.2 Fallback complicates attribution
 
 
 
@@ -5891,15 +5891,15 @@ Therefore, final outcomes should be interpreted as the result of a hybrid LLM-ru
 
 
 
-\---
+---
 
 
 
-\### 7.5.3 Cached plans may become stale
+### 7.5.3 Cached plans may become stale
 
 
 
-Strategy caching reduces LLM latency, but cached plans may become stale when the game state changes. For example, a cached objective may no longer be suitable if the opponent moves, a target becomes less valuable, or a unit’s energy changes.
+Strategy caching reduces LLM latency, but cached plans may become stale when the game state changes. For example, a cached objective may no longer be suitable if the opponent moves, a target becomes less valuable, or a unit鈥檚 energy changes.
 
 
 
@@ -5907,11 +5907,11 @@ This limitation suggests the need for better event-triggered plan refresh mechan
 
 
 
-\---
+---
 
 
 
-\### 7.5.4 Limited number of model backends
+### 7.5.4 Limited number of model backends
 
 
 
@@ -5923,11 +5923,11 @@ A larger evaluation could include additional models and more runs.
 
 
 
-\---
+---
 
 
 
-\### 7.5.5 Trace alignment requires careful labelling
+### 7.5.5 Trace alignment requires careful labelling
 
 
 
@@ -5939,11 +5939,11 @@ Future versions should include shared run identifiers across replay frames and t
 
 
 
-\---
+---
 
 
 
-\### 7.5.6 Failure-case analysis is representative rather than exhaustive
+### 7.5.6 Failure-case analysis is representative rather than exhaustive
 
 
 
@@ -5955,15 +5955,15 @@ A stronger future version could automatically mine logs for fallback-heavy steps
 
 
 
-\---
+---
 
 
 
-\## 7.6 Threats to Validity
+## 7.6 Threats to Validity
 
 
 
-\### 7.6.1 Internal validity
+### 7.6.1 Internal validity
 
 
 
@@ -5975,11 +5975,11 @@ The evaluation addresses this by recording decision sources, fallback behaviour,
 
 
 
-\---
+---
 
 
 
-\### 7.6.2 External validity
+### 7.6.2 External validity
 
 
 
@@ -5991,11 +5991,11 @@ However, the general framework idea of combining LLM strategic planning with rul
 
 
 
-\---
+---
 
 
 
-\### 7.6.3 Construct validity
+### 7.6.3 Construct validity
 
 
 
@@ -6007,11 +6007,11 @@ For example, a valid LLM plan may still be strategically weak. This is why the p
 
 
 
-\---
+---
 
 
 
-\### 7.6.4 Reliability
+### 7.6.4 Reliability
 
 
 
@@ -6023,11 +6023,11 @@ However, some runs depend on local or HPC configurations, such as installed LLM 
 
 
 
-\---
+---
 
 
 
-\## 7.7 Future Work
+## 7.7 Future Work
 
 
 
@@ -6035,7 +6035,7 @@ Several future improvements are possible.
 
 
 
-\### 7.7.1 Event-triggered LLM refresh
+### 7.7.1 Event-triggered LLM refresh
 
 
 
@@ -6061,11 +6061,11 @@ This could reduce stale-plan behaviour.
 
 
 
-\---
+---
 
 
 
-\### 7.7.2 Stronger utility scoring
+### 7.7.2 Stronger utility scoring
 
 
 
@@ -6095,11 +6095,11 @@ This would make the system more strategically grounded.
 
 
 
-\---
+---
 
 
 
-\### 7.7.3 Better verifier logging
+### 7.7.3 Better verifier logging
 
 
 
@@ -6123,11 +6123,11 @@ This would make failure analysis more precise.
 
 
 
-\---
+---
 
 
 
-\### 7.7.4 Multi-run viewer support
+### 7.7.4 Multi-run viewer support
 
 
 
@@ -6139,11 +6139,11 @@ This would make the visual inspection system more general.
 
 
 
-\---
+---
 
 
 
-\### 7.7.5 Cross-model trace comparison
+### 7.7.5 Cross-model trace comparison
 
 
 
@@ -6155,11 +6155,11 @@ For example, the viewer could show how different models choose objectives, use r
 
 
 
-\---
+---
 
 
 
-\### 7.7.6 Larger-scale evaluation
+### 7.7.6 Larger-scale evaluation
 
 
 
@@ -6187,11 +6187,11 @@ This would strengthen statistical confidence.
 
 
 
-\---
+---
 
 
 
-\## 7.8 Lessons Learned
+## 7.8 Lessons Learned
 
 
 
@@ -6215,11 +6215,11 @@ Fourth, limitations are valuable. By analysing fallback, caching, latency, and t
 
 
 
-\---
+---
 
 
 
-\## 7.9 Conclusion
+## 7.9 Conclusion
 
 
 
@@ -6246,5 +6246,6 @@ This makes the project more than a game-playing agent. It is a framework for und
 
 
 ---
+
 
 

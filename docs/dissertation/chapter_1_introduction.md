@@ -1,8 +1,8 @@
-\# Chapter 1: Introduction
+﻿# Chapter 1: Introduction
 
 
 
-\## 1.1 Background
+## 1.1 Background
 
 
 
@@ -22,11 +22,11 @@ This dissertation presents LuxLLM-Agent, a decision-trace and action-verificatio
 
 
 
-\---
+---
 
 
 
-\## 1.2 Motivation
+## 1.2 Motivation
 
 
 
@@ -66,11 +66,11 @@ The project is also motivated by the need for inspectable evaluation. If an LLM-
 
 
 
-\---
+---
 
 
 
-\## 1.3 Problem Statement
+## 1.3 Problem Statement
 
 
 
@@ -94,11 +94,11 @@ This problem is both practical and research-oriented. It requires implementing a
 
 
 
-\---
+---
 
 
 
-\## 1.4 Aim and Objectives
+## 1.4 Aim and Objectives
 
 
 
@@ -114,7 +114,7 @@ This aim is divided into the following objectives.
 
 
 
-\### Objective 1: Implement a working Lux AI Season 3 agent
+### Objective 1: Implement a working Lux AI Season 3 agent
 
 
 
@@ -122,7 +122,7 @@ The project must implement an agent that can receive observations, produce actio
 
 
 
-\### Objective 2: Build a structured state summarisation pipeline
+### Objective 2: Build a structured state summarisation pipeline
 
 
 
@@ -130,7 +130,7 @@ The system should convert raw Lux AI observations into compact structured summar
 
 
 
-\### Objective 3: Integrate LLM-based strategic planning
+### Objective 3: Integrate LLM-based strategic planning
 
 
 
@@ -138,7 +138,7 @@ The system should use an LLM to produce high-level strategic proposals, such as 
 
 
 
-\### Objective 4: Verify and control LLM-generated decisions
+### Objective 4: Verify and control LLM-generated decisions
 
 
 
@@ -146,7 +146,7 @@ The system should parse LLM output and use rule-based verification, fallback, st
 
 
 
-\### Objective 5: Record decision traces and evaluation metrics
+### Objective 5: Record decision traces and evaluation metrics
 
 
 
@@ -154,7 +154,7 @@ The system should record decision-source information, LLM usage, fallback status
 
 
 
-\### Objective 6: Evaluate multiple LLM backends
+### Objective 6: Evaluate multiple LLM backends
 
 
 
@@ -162,7 +162,7 @@ The project should compare at least two LLM backends under the same framework to
 
 
 
-\### Objective 7: Provide replay-grounded visual inspection
+### Objective 7: Provide replay-grounded visual inspection
 
 
 
@@ -170,11 +170,11 @@ The project should provide a viewer that connects replay frames with decision-tr
 
 
 
-\---
+---
 
 
 
-\## 1.5 Research Question
+## 1.5 Research Question
 
 
 
@@ -190,7 +190,7 @@ This question is supported by three sub-research questions.
 
 
 
-\### RQ1: State summarisation
+### RQ1: State summarisation
 
 
 
@@ -202,7 +202,7 @@ This question examines how the system prepares game-state information for LLM re
 
 
 
-\### RQ2: Action verification and fallback
+### RQ2: Action verification and fallback
 
 
 
@@ -214,7 +214,7 @@ This question examines how the system controls LLM output before execution.
 
 
 
-\### RQ3: Replay-grounded evaluation
+### RQ3: Replay-grounded evaluation
 
 
 
@@ -226,11 +226,11 @@ This question examines how the system evaluates and visualises agent behaviour.
 
 
 
-\---
+---
 
 
 
-\## 1.6 Project Contributions
+## 1.6 Project Contributions
 
 
 
@@ -238,7 +238,7 @@ This project makes several contributions.
 
 
 
-\### 1.6.1 A structured LLM-assisted agent framework
+### 1.6.1 A structured LLM-assisted agent framework
 
 
 
@@ -246,7 +246,7 @@ The project implements a complete framework that connects state summarisation, L
 
 
 
-\### 1.6.2 Rule-based verification of LLM proposals
+### 1.6.2 Rule-based verification of LLM proposals
 
 
 
@@ -254,7 +254,7 @@ The system treats LLM output as a strategic proposal rather than a directly exec
 
 
 
-\### 1.6.3 Decision-source logging
+### 1.6.3 Decision-source logging
 
 
 
@@ -262,7 +262,7 @@ The system records whether decisions come from fresh LLM calls, cached LLM plans
 
 
 
-\### 1.6.4 Controlled evaluation with multiple LLM backends
+### 1.6.4 Controlled evaluation with multiple LLM backends
 
 
 
@@ -270,7 +270,7 @@ The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework. Bo
 
 
 
-\### 1.6.5 Replay-grounded decision trace overlay
+### 1.6.5 Replay-grounded decision trace overlay
 
 
 
@@ -278,7 +278,7 @@ The project implements an LLM Decision Trace Overlay for the Season 3 viewer. Th
 
 
 
-\### 1.6.6 Dissertation-oriented analysis and documentation
+### 1.6.6 Dissertation-oriented analysis and documentation
 
 
 
@@ -286,11 +286,11 @@ The project includes technical documentation, evaluation analysis, model compari
 
 
 
-\---
+---
 
 
 
-\## 1.7 Project Scope
+## 1.7 Project Scope
 
 
 
@@ -324,11 +324,11 @@ The project is best understood as an artefact-based investigation into how LLM-b
 
 
 
-\---
+---
 
 
 
-\## 1.8 Summary of Evaluation Evidence
+## 1.8 Summary of Evaluation Evidence
 
 
 
@@ -354,11 +354,11 @@ The evaluation also includes decision-source analysis, latency analysis, fallbac
 
 
 
-\---
+---
 
 
 
-\## 1.9 Dissertation Structure
+## 1.9 Dissertation Structure
 
 
 
@@ -366,7 +366,7 @@ The rest of the dissertation is organised as follows.
 
 
 
-\### Chapter 2: Background and Related Work
+### Chapter 2: Background and Related Work
 
 
 
@@ -374,7 +374,7 @@ This chapter introduces relevant background on LLM-based agents, game AI, hybrid
 
 
 
-\### Chapter 3: Requirements and Methodology
+### Chapter 3: Requirements and Methodology
 
 
 
@@ -382,7 +382,7 @@ This chapter presents the project requirements and methodology. It explains the 
 
 
 
-\### Chapter 4: System Design
+### Chapter 4: System Design
 
 
 
@@ -390,7 +390,7 @@ This chapter presents the system architecture of LuxLLM-Agent. It explains state
 
 
 
-\### Chapter 5: Implementation
+### Chapter 5: Implementation
 
 
 
@@ -398,7 +398,7 @@ This chapter describes how the system was implemented in the project codebase. I
 
 
 
-\### Chapter 6: Evaluation
+### Chapter 6: Evaluation
 
 
 
@@ -406,7 +406,7 @@ This chapter evaluates the system using gameplay outcomes, LLM execution metrics
 
 
 
-\### Chapter 7: Discussion and Conclusion
+### Chapter 7: Discussion and Conclusion
 
 
 
@@ -414,11 +414,11 @@ This chapter discusses the main findings, limitations, threats to validity, futu
 
 
 
-\---
+---
 
 
 
-\## 1.10 Summary
+## 1.10 Summary
 
 
 
@@ -431,6 +431,7 @@ The central argument is that LLM-based game agents should not be evaluated only 
 
 
 The next chapter introduces the background and related work needed to situate this project.
+
 
 
 
