@@ -24,24 +24,22 @@
 \title{LuxLLM-Agent: An Inspectable LLM-Assisted Agent and Replay Viewer for Lux AI Season 3}
 
 \author{
-  First Author \\
-  Affiliation / Address line 1 \\
-  Affiliation / Address line 2 \\
-  Affiliation / Address line 3 \\
-  \texttt{email@domain} \\
+  Ze Wang \\
+  University of Liverpool \\
+  Liverpool, United Kingdom \\
+  \texttt{Z.Wang300@liverpool.ac.uk} \\
   \And
-  Second Author \\
-  Affiliation / Address line 1 \\
-  Affiliation / Address line 2 \\
-  Affiliation / Address line 3 \\
-  \texttt{email@domain}
+  Meng Fang \\
+  University of Liverpool \\
+  Liverpool, United Kingdom \\
+  \texttt{mfang@liverpool.ac.uk}
 }
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We present LuxLLM-Agent, an inspectable LLM-assisted agent system for Lux AI Season 3. The system combines a local game-playing agent, rule-based fallback policies, structured decision logs, and an isometric battle replay viewer for analysing agent behaviour. Unlike a standard replay viewer, our interface connects game states with decision traces, cached LLM decisions, fallback events, match-level scores, and final result summaries. We evaluate the system through controlled \texttt{qwen3:32b} matches on Barkla2, where a target-aware strategic planner improves the LLM-assisted player's descriptive win rate from 56\% to 70\% over a previous basic qwen3 planner while maintaining zero LLM errors. The system also includes a lightweight scalability simulation with up to 1000 worker agents. The demo package includes a replay viewer, screenshots, replay JSON, evaluation reports, and screencast material for research and educational use.
+We present LuxLLM-Agent, an inspectable LLM-assisted agent system for Lux AI Season 3. The system combines a local game-playing agent, rule-based fallback policies, structured decision logs, and an isometric battle replay viewer for analysing agent behaviour. Unlike a standard replay viewer, our interface connects game states with decision traces, cached LLM decisions, fallback events, match-level scores, and final result summaries. In separate 50-match controlled runs on Barkla2, a target-aware \texttt{qwen3:32b} planner achieved a descriptive win rate of 70\%, compared with 56\% for a previous basic planner, while both configurations recorded zero LLM errors. The system also includes a lightweight scalability simulation with up to 1000 worker agents. The demo package includes a replay viewer, screenshots, replay JSON, evaluation reports, and screencast material for research and educational use.
 \end{abstract}
 
 \section{Introduction}
@@ -154,6 +152,8 @@ The previous basic \texttt{qwen3:32b} planner uses compact structured JSON decis
 
 The current target-aware \texttt{qwen3:32b} strategic planner extends the basic interface with target coordinates, priority scores, risk labels, expected-value estimates, and lightweight rule-based arbitration. In a separate 50-match controlled evaluation, the LLM-assisted player won 35 matches against 15 wins for the rule-controlled opponent. This corresponds to a descriptive win rate of 70\%, with a strategy-use rate of 96.0\%, a fallback rate of 4.0\%, and zero LLM errors.
 
+In all reported controlled runs, the LLM-assisted configuration occupied the \texttt{player\_0} role and the rule-controlled opponent occupied \texttt{player\_1}. The roles were not swapped under matched seeds, and the study does not report confidence intervals or hypothesis tests. The win rates are therefore descriptive outcomes for these configurations and should not be interpreted as statistically significant or as isolating a causal effect of the planner from possible player-side and environment effects.
+
 Earlier strategy-diverse prompting and candidate-exploitation configurations are retained as development evidence and ablation context. They show that the same evaluation pipeline can compare design variants, but they are no longer treated as the final main result.
 
 \begin{table*}[t]
@@ -210,11 +210,11 @@ The system is also different from post-hoc explanation interfaces. A post-hoc ex
 
 \section{Licensing and Availability}
 
-The demo package is intended to be released with source code, replay artefacts, screenshots, evaluation summaries, and screencast material. The system uses the Lux AI Season 3 environment and local model inference through Ollama. The code and artefacts will be distributed for research and educational use, subject to the licences of the underlying environment and dependencies.
+The frozen artefact is available at \url{https://github.com/zewang-liverpool/luxllm-agent-demo}. Its tracked Run008 viewer can be served with \texttt{python -m http.server 8000} without model inference, and a 75-second MP4 accompanies the supplementary material. Full match re-execution requires compatible Lux AI Season 3, Ollama, model, and local or Slurm configurations. Use remains subject to the licences of the underlying dependencies.
 
 \section{Conclusion}
 
-LuxLLM-Agent demonstrates an inspectable LLM-assisted agent pipeline for Lux AI Season 3. The system combines local LLM strategy generation, rule-based fallback, structured decision logging, replay-driven visualisation, controlled evaluation, and lightweight scalability evidence. The current \texttt{qwen3:32b} evaluation shows that a target-aware strategic planner can improve the LLM-assisted player's descriptive win rate from 56\% to 70\% over a previous basic qwen3 planner while maintaining zero LLM errors; the scalability simulation additionally shows how sparse LLM-generated policy templates can be reused across many lightweight worker agents. The demonstration is intended to help researchers and students inspect, reproduce, and discuss LLM-assisted game-agent behaviour.
+LuxLLM-Agent demonstrates an inspectable LLM-assisted agent pipeline for Lux AI Season 3. The system combines local LLM strategy generation, rule-based fallback, structured decision logging, replay-driven visualisation, controlled evaluation, and lightweight scalability evidence. In the reported separate \texttt{qwen3:32b} evaluations, the target-aware planner achieved a descriptive win rate of 70\%, compared with 56\% for the previous basic planner, while both configurations maintained zero LLM errors; the scalability simulation additionally illustrates how sparse LLM-generated policy templates can be reused across many lightweight worker agents. The demonstration is intended to help researchers and students inspect, reproduce, and discuss LLM-assisted game-agent behaviour.
 
 % The ethics / broader-impact statement does not count towards the page limit.
 % The ACL style hides the section number for this section.
@@ -224,7 +224,7 @@ This system is developed for research and educational use in a game AI environme
 
 \section*{Acknowledgements}
 
-The author thanks the project supervisor and the Lux AI Challenge community for providing the competition environment and motivation for this work.
+The authors thank the Lux AI Challenge community for providing the competition environment and motivation for this work.
 
 % References do NOT count towards the page limit.
 % Do not add \bibliographystyle{acl_natbib}; acl.sty already handles the style.

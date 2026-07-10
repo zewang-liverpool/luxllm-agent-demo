@@ -9,7 +9,7 @@ This report verifies whether the final screenshots and demo video for the Lux AI
 
 The stable viewer for this stage is:
 
-`docs/viewers/s3_isometric_battle_viewer_v09n12c3.html`
+`docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html`
 
 ## 2. Readiness Summary
 
@@ -22,12 +22,12 @@ The stable viewer for this stage is:
 
 | Artifact | Path | Exists | Size |
 |---|---|---:|---:|
-| Viewer | `docs/viewers/s3_isometric_battle_viewer_v09n12c3.html` | `True` | `0.053` MB |
+| Viewer | `docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html` | `True` | `0.053` MB |
 | Replay JSON | `logs/isometric_replay_frames_v09n11.json` | `True` | `16.307` MB |
 
 Viewer URL:
 
-`http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12c3.html`
+`http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html`
 
 ## 4. Replay Evidence
 

@@ -3,6 +3,12 @@
 Ready-to-upload LaTeX project using the **official ACL style files**, set up
 for the EMNLP 2026 **System Demonstrations** track (single-blind review).
 
+## Frozen artifact
+
+- Repository: <https://github.com/zewang-liverpool/luxllm-agent-demo>
+- Local viewer: run `python -m http.server 8000` from the repository root, then open `docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html`.
+- Full match re-execution requires the compatible Lux AI Season 3, Ollama, model, and local or Slurm runtime configuration; the tracked Run008 viewer does not require model inference.
+
 ## Upload to Overleaf
 1. Zip this folder (or use the provided `emnlp2026-demo.zip`).
 2. In Overleaf: **New Project -> Upload Project** and select the zip.
@@ -26,16 +32,24 @@ for the EMNLP 2026 **System Demonstrations** track (single-blind review).
 - Accepted papers get **1 extra content page** for the camera-ready.
 
 ## Submission checklist (all enforced this year)
-- [ ] Paper PDF, <= 6 pages, ACL style.
-- [ ] **Evaluation reported** (quantitative / user study / human eval) —
+- [x] Six pages of main content in ACL style; references, ethics, and appendix currently occupy page 7.
+- [x] **Evaluation reported** (quantitative / user study / human eval) —
       papers with no evaluation may be desk rejected. See Section "Evaluation".
-- [ ] **Live demo URL or installable package link** — strict requirement;
+- [x] **Installable artifact link** — the frozen GitHub repository and local viewer instructions are included in the paper.
+- [x] Replace the placeholder author names, affiliations, and email addresses.
+- [ ] **Live demo URL**, if required separately from the installable artifact link.
       missing link => desk reject (exceptions only for special-hardware cases,
       which must be justified in the paper).
-- [ ] **Screencast video**, <= 2.5 min (YouTube/similar link in the paper, or
-      MPEG-4 as supplementary material).
-- [ ] Licensing stated (Section "Licensing and Availability").
-- [ ] Ethics statement conforming to the ACM Code of Ethics.
+- [x] **Screencast video**, 75-second MPEG-4 prepared as supplementary material and intentionally excluded from Git history.
+- [x] Licensing and availability stated in the corresponding paper section.
+- [x] Ethics statement included.
+- [ ] Recheck the final page-count interpretation and all requirements against the official call immediately before submission.
+
+Local supplementary video:
+
+```text
+docs/demo_videos/LuxLLM_Agent_Final_Demo_Run008_Isometric_Visualization.mp4
+```
 
 ## Important dates
 - Paper submission: **Friday, 10 July 2026** (AoE, UTC-12)

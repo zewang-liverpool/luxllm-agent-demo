@@ -1,58 +1,30 @@
-﻿# Project Freeze Checklist
-
-
+# Project Freeze Checklist
 
 ## 1. Purpose of This Document
 
-
-
 This document defines the freeze criteria for the LuxLLM-Agent COMP702 project.
-
-
 
 The purpose is to prevent unlimited modification and uncontrolled feature expansion. The project has already reached the point where the main system, evidence, technical documentation, analysis documentation, and dissertation chapter drafts exist.
 
-
-
 From this point onward, the project should focus on submission quality rather than adding new functionality.
-
-
 
 The current target is:
 
-
-
 > COMP702 dissertation quality improvement for a 70+ target mark.
-
-
 
 The project should now be treated as:
 
-
-
 > LuxLLM-Agent COMP702 Submission Freeze v1.
-
-
 
 ---
 
-
-
 ## 2. Final Project Positioning
-
-
 
 The final project positioning is:
 
-
-
 > LuxLLM-Agent is a decision-trace and action-verification framework for inspecting and evaluating LLM-based agents in Lux AI Season 3.
 
-
-
 The project should not be positioned as only:
-
-
 
 ```text
 
@@ -60,11 +32,7 @@ an LLM game bot
 
 ```
 
-
-
 or:
-
-
 
 ```text
 
@@ -72,281 +40,151 @@ a Lux AI competition-winning agent
 
 ```
 
-
-
 The dissertation should consistently present the project as a framework that combines:
 
+* structured state summarisation;
 
+* LLM-based strategic planning;
 
-\* structured state summarisation;
+* structured output parsing;
 
-\* LLM-based strategic planning;
+* rule-based action verification;
 
-\* structured output parsing;
+* fallback behaviour;
 
-\* rule-based action verification;
+* strategy caching;
 
-\* fallback behaviour;
+* risk-aware action filtering;
 
-\* strategy caching;
+* decision trace logging;
 
-\* risk-aware action filtering;
+* controlled-run evaluation;
 
-\* decision trace logging;
-
-\* controlled-run evaluation;
-
-\* replay-grounded visual inspection.
-
-
+* replay-grounded visual inspection.
 
 ---
-
-
 
 ## 3. Main Research Question
 
-
-
 The final main research question is:
-
-
 
 > How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
 
-
-
 This question is now frozen unless the supervisor explicitly asks for a change.
 
-
-
 ---
-
-
 
 ## 4. Sub-research Questions
 
-
-
 The final sub-research questions are:
-
-
 
 ### RQ1: State Summarisation
 
-
-
 > How can raw Lux AI Season 3 observations be transformed into compact structured inputs for LLM-based strategic decision making?
-
-
 
 ### RQ2: Action Verification and Fallback
 
-
-
 > How can rule-based verification, fallback mechanisms, and strategy caching reduce invalid or unstable LLM-generated decisions?
-
-
 
 ### RQ3: Replay-grounded Evaluation
 
-
-
 > How can replay-grounded decision traces help analyse the relationship between LLM strategy, decision source, action execution, and game outcome?
-
-
 
 These sub-research questions are now frozen unless the supervisor explicitly requests a change.
 
-
-
 ---
-
-
 
 ## 5. Completed Core Deliverables
 
-
-
 The following core deliverables are considered complete.
-
-
 
 ### 5.1 Agent System
 
-
-
 | Deliverable                     | Status   |
-
 | ------------------------------- | -------- |
-
 | Lux AI Season 3 agent runtime   | Complete |
-
 | Rule-only mode                  | Complete |
-
 | LLM-enabled mode                | Complete |
-
 | qwen3:32b backend support       | Complete |
-
 | deepseek-r1:32b backend support | Complete |
-
 | Structured state summarisation  | Complete |
-
 | LLM strategic decision module   | Complete |
-
 | Action planning                 | Complete |
-
 | Rule-based fallback             | Complete |
-
 | Strategy caching                | Complete |
-
 | Risk-aware action filtering     | Complete |
-
 | Decision trace logging          | Complete |
 
-
-
 ---
-
-
 
 ### 5.2 Evaluation Evidence
 
-
-
 | Deliverable                     | Status   |
-
 | ------------------------------- | -------- |
-
 | qwen3:32b 50-run evidence       | Complete |
-
 | DeepSeek-R1-32B 50-run evidence | Complete |
-
 | Model comparison summary        | Complete |
-
 | LLM error analysis              | Complete |
-
 | Latency analysis                | Complete |
-
 | Decision-source analysis        | Complete |
-
 | Fallback and cache analysis     | Complete |
-
 | Failure-case analysis           | Complete |
 
-
-
 ---
-
-
 
 ### 5.3 Viewer and Visualisation
 
-
-
 | Deliverable                               | Status   |
-
 | ----------------------------------------- | -------- |
-
 | Run008 isometric viewer                   | Complete |
-
 | LLM Decision Trace Overlay                | Complete |
-
 | Frame / step synchronisation              | Complete |
-
 | Overlay layout fix                        | Complete |
-
 | H-key overlay toggle                      | Complete |
-
 | Replay-grounded inspection data           | Complete |
-
 | Viewer ready for dissertation screenshots | Complete |
 
-
-
 ---
-
-
 
 ### 5.4 Technical Documentation
 
-
-
 | File                                                 | Status   |
-
 | ---------------------------------------------------- | -------- |
-
-| `docs/technical/system\_architecture.md`              | Complete |
-
-| `docs/technical/llm\_decision\_pipeline.md`            | Complete |
-
-| `docs/technical/action\_verification\_and\_fallback.md` | Complete |
-
-| `docs/technical/decision\_trace\_overlay.md`           | Complete |
-
-| `docs/technical/evaluation\_metrics.md`               | Complete |
-
-
+| `docs/technical/system_architecture.md`              | Complete |
+| `docs/technical/llm_decision_pipeline.md`            | Complete |
+| `docs/technical/action_verification_and_fallback.md` | Complete |
+| `docs/technical/decision_trace_overlay.md`           | Complete |
+| `docs/technical/evaluation_metrics.md`               | Complete |
 
 ---
-
-
 
 ### 5.5 Analysis Documentation
 
-
-
 | File                                          | Status   |
-
 | --------------------------------------------- | -------- |
-
-| `docs/analysis/qwen3\_vs\_deepseek\_analysis.md` | Complete |
-
-| `docs/analysis/failure\_case\_analysis.md`      | Complete |
-
-
+| `docs/analysis/qwen3_vs_deepseek_analysis.md` | Complete |
+| `docs/analysis/failure_case_analysis.md`      | Complete |
 
 ---
-
-
 
 ### 5.6 Dissertation Drafts
 
-
-
 | Chapter     | File                                                      | Status                                 |
-
 | ----------- | --------------------------------------------------------- | -------------------------------------- |
-
-| Chapter 1   | `docs/dissertation/chapter\_1\_introduction.md`             | Draft complete                         |
-
-| Chapter 2   | `docs/dissertation/chapter\_2\_background\_related\_work.md`  | Draft complete, citations still needed |
-
-| Chapter 3   | `docs/dissertation/chapter\_3\_requirements\_methodology.md` | Draft complete                         |
-
-| Chapter 4   | `docs/dissertation/chapter\_4\_system\_design.md`            | Draft complete                         |
-
-| Chapter 5   | `docs/dissertation/chapter\_5\_implementation.md`           | Draft complete                         |
-
-| Chapter 6   | `docs/dissertation/chapter\_6\_evaluation.md`               | Draft complete                         |
-
-| Chapter 7   | `docs/dissertation/chapter\_7\_discussion\_conclusion.md`    | Draft complete                         |
-
-| Draft index | `docs/dissertation/dissertation\_draft\_index.md`           | Complete                               |
-
-
+| Chapter 1   | `docs/dissertation/chapter_1_introduction.md`             | Draft complete                         |
+| Chapter 2   | `docs/dissertation/chapter_2_background_related_work.md`  | Draft complete, citations still needed |
+| Chapter 3   | `docs/dissertation/chapter_3_requirements_methodology.md` | Draft complete                         |
+| Chapter 4   | `docs/dissertation/chapter_4_system_design.md`            | Draft complete                         |
+| Chapter 5   | `docs/dissertation/chapter_5_implementation.md`           | Draft complete                         |
+| Chapter 6   | `docs/dissertation/chapter_6_evaluation.md`               | Draft complete                         |
+| Chapter 7   | `docs/dissertation/chapter_7_discussion_conclusion.md`    | Draft complete                         |
+| Draft index | `docs/dissertation/dissertation_draft_index.md`           | Complete                               |
 
 ---
 
-
-
 ## 6. Current Git Milestones
 
-
-
 Important completed commits:
-
-
 
 ```text
 
@@ -374,31 +212,17 @@ b9aea9a Add dissertation draft index
 
 ```
 
-
-
 These commits show that the project has reached a stable dissertation-draft stage.
-
-
 
 ---
 
-
-
 ## 7. What Is Now Frozen
-
-
 
 The following items are frozen and should not be changed unless there is a serious bug or supervisor request.
 
-
-
 ### 7.1 Research Direction
 
-
-
 Frozen:
-
-
 
 ```text
 
@@ -406,11 +230,7 @@ Decision-trace and action-verification framework for LLM-based agents in Lux AI 
 
 ```
 
-
-
 Do not change to a new topic such as:
-
-
 
 ```text
 
@@ -424,19 +244,11 @@ pure reinforcement learning project
 
 ```
 
-
-
 ---
-
-
 
 ### 7.2 Main Experiment Scope
 
-
-
 Frozen:
-
-
 
 ```text
 
@@ -450,11 +262,7 @@ Run008 replay-grounded inspection
 
 ```
 
-
-
 Do not add:
-
-
 
 ```text
 
@@ -470,23 +278,13 @@ new competition submission target
 
 ```
 
-
-
 unless the supervisor explicitly requests it.
-
-
 
 ---
 
-
-
 ### 7.3 Viewer Scope
 
-
-
 Frozen:
-
-
 
 ```text
 
@@ -494,11 +292,7 @@ Season 3 isometric replay viewer with LLM Decision Trace Overlay.
 
 ```
 
-
-
 Do not add major new viewer features such as:
-
-
 
 ```text
 
@@ -516,23 +310,13 @@ new animation pipeline
 
 ```
 
-
-
 unless needed for a serious issue.
-
-
 
 ---
 
-
-
 ### 7.4 Dissertation Structure
 
-
-
 Frozen:
-
-
 
 ```text
 
@@ -552,165 +336,107 @@ Chapter 7: Discussion and Conclusion
 
 ```
 
-
-
 Do not add more major chapters unless the university template requires it.
 
-
-
 ---
-
-
 
 ## 8. Allowed Changes After Freeze
 
-
-
 Only the following types of changes are allowed.
-
-
 
 ### 8.1 Bug Fixes
 
-
-
 Allowed if:
 
+* the viewer does not load;
 
+* a documented path is wrong;
 
-\* the viewer does not load;
+* a table contains incorrect values;
 
-\* a documented path is wrong;
+* a script has a clear error;
 
-\* a table contains incorrect values;
-
-\* a script has a clear error;
-
-\* a dissertation statement contradicts evidence.
-
-
+* a dissertation statement contradicts evidence.
 
 ---
-
-
 
 ### 8.2 Citation and Reference Improvements
 
-
-
 Allowed because Chapter 2 still needs stronger citation support.
-
-
 
 Allowed tasks:
 
+* add real references;
 
+* add BibTeX entries;
 
-\* add real references;
+* replace citation placeholders;
 
-\* add BibTeX entries;
+* improve related work comparison;
 
-\* replace citation placeholders;
-
-\* improve related work comparison;
-
-\* avoid overclaiming.
-
-
+* avoid overclaiming.
 
 ---
-
-
 
 ### 8.3 Figure and Table Preparation
 
-
-
 Allowed because the final dissertation needs visual evidence.
-
-
 
 Allowed tasks:
 
+* select final screenshots;
 
+* create architecture diagram;
 
-\* select final screenshots;
+* create pipeline diagram;
 
-\* create architecture diagram;
+* prepare result tables;
 
-\* create pipeline diagram;
+* create decision-source chart;
 
-\* prepare result tables;
-
-\* create decision-source chart;
-
-\* create figure/table list.
-
-
+* create figure/table list.
 
 ---
-
-
 
 ### 8.4 Writing Quality Improvements
 
-
-
 Allowed tasks:
 
+* improve clarity;
 
+* remove repetition;
 
-\* improve clarity;
+* unify terminology;
 
-\* remove repetition;
+* improve transitions;
 
-\* unify terminology;
+* correct grammar;
 
-\* improve transitions;
+* shorten overly long sections;
 
-\* correct grammar;
-
-\* shorten overly long sections;
-
-\* make claims more cautious.
-
-
+* make claims more cautious.
 
 ---
-
-
 
 ### 8.5 Final Assembly
 
-
-
 Allowed tasks:
 
+* assemble full dissertation draft;
 
+* create supervisor review summary;
 
-\* assemble full dissertation draft;
+* prepare final PDF or Word version;
 
-\* create supervisor review summary;
+* check structure and formatting;
 
-\* prepare final PDF or Word version;
-
-\* check structure and formatting;
-
-\* check references and appendix.
-
-
+* check references and appendix.
 
 ---
 
-
-
 ## 9. Disallowed Changes After Freeze
 
-
-
 The following should not be done unless there is a strong reason.
-
-
 
 ```text
 
@@ -736,153 +462,80 @@ Do not use git add docs without checking staged files.
 
 ```
 
-
-
 ---
-
-
 
 ## 10. Final Completion Criteria
 
-
-
 The project can be considered ready for supervisor review when the following are complete.
 
-
-
 | Item                             |    Required | Status   |
-
 | -------------------------------- | ----------: | -------- |
-
 | Agent runtime implemented        |         Yes | Complete |
-
 | qwen3:32b 50-run evidence        |         Yes | Complete |
-
 | DeepSeek-R1-32B 50-run evidence  |         Yes | Complete |
-
 | LLM Decision Trace Overlay       |         Yes | Complete |
-
 | Technical documentation          |         Yes | Complete |
-
 | Analysis documentation           |         Yes | Complete |
-
 | Dissertation Chapter 1-7 drafts  |         Yes | Complete |
-
 | Chapter 2 citation enhancement   |         Yes | Pending  |
-
 | Figure and table plan            |         Yes | Pending  |
-
 | Full dissertation draft assembly |         Yes | Pending  |
-
 | Supervisor review summary        | Recommended | Pending  |
-
 | Final Git safety check           |         Yes | Pending  |
-
-
 
 The project should stop major modification after these pending items are complete.
 
-
-
 ---
-
-
 
 ## 11. Evidence for 70+ Target
 
-
-
 The project supports a 70+ target because it includes:
-
-
 
 ### 11.1 Clear Research Question
 
-
-
 The project has a focused research question about structured decision tracing and rule-based action verification.
-
-
 
 ### 11.2 Non-trivial Technical Implementation
 
-
-
 The project includes an implemented agent, LLM decision module, action verifier, fallback system, cache, risk filter, logging, evaluation scripts, and viewer overlay.
-
-
 
 ### 11.3 Controlled Evaluation
 
-
-
 The project includes 50-run evidence for two LLM backends.
-
-
 
 ### 11.4 Multi-dimensional Metrics
 
-
-
 The evaluation includes win/loss, LLM errors, latency, decision-source distribution, fallback, caching, and replay alignment.
-
-
 
 ### 11.5 Critical Reflection
 
-
-
 The project includes failure-case analysis, limitations, threats to validity, and future work.
-
-
 
 ### 11.6 Demonstrable Artefact
 
-
-
 The project includes a replay-grounded visual interface with LLM Decision Trace Overlay.
-
-
 
 ### 11.7 Reproducible Documentation
 
-
-
 The project includes technical docs, analysis docs, evidence index, and dissertation chapters.
-
-
 
 ---
 
-
-
 ## 12. Remaining Tasks Before Supervisor Review
-
-
 
 Only the following tasks remain before preparing a supervisor review version.
 
-
-
 ### Task 1: Chapter 2 Citation Enhancement
-
-
 
 File:
 
-
-
 ```text
 
-docs/dissertation/chapter\_2\_background\_related\_work.md
+docs/dissertation/chapter_2_background_related_work.md
 
 ```
 
-
-
 Goal:
-
-
 
 ```text
 
@@ -890,11 +543,7 @@ Add real references and related-work comparisons.
 
 ```
 
-
-
 Completion standard:
-
-
 
 ```text
 
@@ -906,31 +555,19 @@ No fake references are used.
 
 ```
 
-
-
 ---
-
-
 
 ### Task 2: Figure and Table Plan
 
-
-
 File:
-
-
 
 ```text
 
-docs/dissertation/figures\_and\_tables\_plan.md
+docs/dissertation/figures_and_tables_plan.md
 
 ```
 
-
-
 Goal:
-
-
 
 ```text
 
@@ -938,11 +575,7 @@ Decide the final figures and tables.
 
 ```
 
-
-
 Completion standard:
-
-
 
 ```text
 
@@ -956,31 +589,19 @@ No unnecessary figures are added.
 
 ```
 
-
-
 ---
-
-
 
 ### Task 3: Full Dissertation Draft Assembly
 
-
-
 File:
-
-
 
 ```text
 
-docs/dissertation/full\_dissertation\_draft.md
+docs/dissertation/full_dissertation_draft.md
 
 ```
 
-
-
 Goal:
-
-
 
 ```text
 
@@ -988,11 +609,7 @@ Assemble Chapter 1-7 into one readable draft.
 
 ```
 
-
-
 Completion standard:
-
-
 
 ```text
 
@@ -1006,31 +623,19 @@ No obvious placeholders remain.
 
 ```
 
-
-
 ---
-
-
 
 ### Task 4: Supervisor Review Summary
 
-
-
 File:
-
-
 
 ```text
 
-docs/dissertation/supervisor\_review\_summary.md
+docs/dissertation/supervisor_review_summary.md
 
 ```
 
-
-
 Goal:
-
-
 
 ```text
 
@@ -1038,43 +643,31 @@ Create a short summary for supervisor feedback.
 
 ```
 
-
-
 Completion standard:
-
-
 
 ```text
 
 The summary explains:
 
-\- project aim;
+- project aim;
 
-\- research question;
+- research question;
 
-\- technical contribution;
+- technical contribution;
 
-\- current evidence;
+- current evidence;
 
-\- remaining revision tasks;
+- remaining revision tasks;
 
-\- feedback requested.
+- feedback requested.
 
 ```
 
-
-
 ---
-
-
 
 ### Task 5: Final Git Safety Check
 
-
-
 Goal:
-
-
 
 ```text
 
@@ -1082,15 +675,11 @@ Ensure important files are committed and dangerous files are not committed.
 
 ```
 
-
-
 Completion standard:
-
-
 
 ```text
 
-No mp4, pdf, zip, raw logs, frame\_log, or temporary files are staged.
+No mp4, pdf, zip, raw logs, frame_log, or temporary files are staged.
 
 All dissertation and evidence files are committed.
 
@@ -1098,19 +687,11 @@ Remote GitHub is up to date.
 
 ```
 
-
-
 ---
-
-
 
 ## 13. Stop Condition
 
-
-
 The project should stop active modification when the following are complete:
-
-
 
 ```text
 
@@ -1126,31 +707,17 @@ Final Git safety check passes.
 
 ```
 
-
-
 After this point, only supervisor-requested changes or final formatting corrections should be made.
-
-
 
 ---
 
-
-
 ## 14. Final Reminder
-
-
 
 The project does not need more features to be strong.
 
-
-
 The remaining work is not about adding complexity. It is about making the existing work clear, evidenced, well-cited, and professionally presented.
 
-
-
 The correct strategy from this point onward is:
-
-
 
 ```text
 
@@ -1165,7 +732,4 @@ Prepare supervisor review.
 Stop when completion criteria are met.
 
 ```
-
-
-
 

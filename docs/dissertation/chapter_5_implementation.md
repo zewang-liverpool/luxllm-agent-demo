@@ -1,152 +1,108 @@
-﻿# Chapter 5: Implementation
-
-
+# Chapter 5: Implementation
 
 ## 5.1 Introduction
 
-
-
 This chapter describes the implementation of LuxLLM-Agent, a decision-trace and action-verification framework for inspecting and evaluating LLM-based agents in Lux AI Season 3.
-
-
 
 Chapter 4 presented the system design. This chapter explains how the design was implemented in the project codebase, including the runtime agent, state summarisation, LLM decision pipeline, action verification, fallback behaviour, logging, evaluation scripts, replay generation, and the LLM Decision Trace Overlay viewer.
 
-
-
 The implementation follows the central design principle introduced earlier:
-
-
 
 > The LLM output is treated as a strategic proposal, not as a directly executable game action.
 
-
-
 This principle shaped the implementation choices throughout the project. The LLM is integrated as a high-level planner, while deterministic Python modules are responsible for parsing, verification, fallback, action generation, logging, and evaluation.
 
-
-
 ---
-
-
 
 ## 5.2 Project Structure
 
-
-
 The implementation is organised around a small set of core runtime files, evidence files, viewer files, and documentation files.
-
-
 
 Important runtime files include:
 
-
-
 ```text
 
 agent.py
 
-baseline\_agent.py
+baseline_agent.py
 
 main.py
 
 config.py
 
-lux\_state.py
+lux_state.py
 
-state\_summarizer.py
+state_summarizer.py
 
-llm\_decider.py
+llm_decider.py
 
-action\_planner.py
+action_planner.py
 
-rule\_policy.py
+rule_policy.py
 
-record\_match\_result\_from\_console.py
+record_match_result_from_console.py
 
 ```
-
-
 
 Important viewer and replay files include:
 
-
-
 ```text
 
-s3\_log\_driven\_gameview.html
+s3_log_driven_gameview.html
 
-docs/viewers/s3\_isometric\_battle\_viewer\_v09n12c3.html
+docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
 
-docs/viewers/s3\_isometric\_battle\_viewer\_v09n12d\_trace\_overlay.html
+data/isometric_replay_frames.json
 
-data/isometric\_replay\_frames\_run008.json
+data/run008_decision_trace_overlay.json
 
-data/run008\_decision\_trace\_overlay.json
+tools/build_run008_isometric_from_replay.py
 
-tools/build\_run008\_isometric\_from\_replay.py
+tools/build_run008_decision_trace_overlay.py
 
-tools/build\_run008\_decision\_trace\_overlay.py
-
-tools/build\_v09n12d\_trace\_overlay\_viewer.py
+tools/build_v09n12d_trace_overlay_viewer.py
 
 ```
-
-
 
 Important evaluation and evidence files include:
 
-
-
 ```text
 
-logs/match\_history.jsonl
+logs/match_history.jsonl
 
-logs/decision\_trace.jsonl
+logs/decision_trace.jsonl
 
-logs/decision\_log.jsonl
+logs/decision_log.jsonl
 
-logs/ablation\_metrics.jsonl
+logs/ablation_metrics.jsonl
 
-docs/demo\_evidence\_index.md
+docs/demo_evidence_index.md
 
-docs/demo\_evidence/llm\_model\_comparison\_summary.md
+docs/demo_evidence/llm_model_comparison_summary.md
 
-docs/demo\_evidence/hpc\_deepseek\_r1\_32b\_50run/
+docs/demo_evidence/hpc_deepseek_r1_32b_50run/
 
-docs/analysis/qwen3\_vs\_deepseek\_analysis.md
+docs/analysis/qwen3_vs_deepseek_analysis.md
 
-docs/analysis/failure\_case\_analysis.md
+docs/analysis/failure_case_analysis.md
 
 ```
 
-
-
 The project structure separates runtime logic, generated evidence, visualisation, and written analysis. This separation is useful for reproducibility because match execution, evaluation, and documentation are not mixed into a single script.
-
-
 
 ---
 
-
-
 ## 5.3 Agent Runtime Implementation
-
-
 
 The main runtime implementation is centred on the Lux AI Season 3 agent.
 
-
-
 Relevant files include:
-
-
 
 ```text
 
 agent.py
 
-baseline\_agent.py
+baseline_agent.py
 
 main.py
 
@@ -154,601 +110,413 @@ config.py
 
 ```
 
-
-
 The runtime receives observations from the Lux AI Season 3 environment and returns action arrays. It supports different operation modes, including rule-only execution and LLM-enabled execution.
-
-
 
 The runtime behaviour is controlled through environment variables. Important examples include:
 
-
-
 ```text
 
-LUX\_LLM\_ENABLED
+LUX_LLM_ENABLED
 
-LUX\_FORCE\_RULE\_ONLY
+LUX_FORCE_RULE_ONLY
 
-LUX\_LLM\_MODEL
+LUX_LLM_MODEL
 
-LUX\_EXPERIMENT\_TAG
+LUX_EXPERIMENT_TAG
 
-LUX\_ENABLE\_STRATEGY\_CACHE
+LUX_ENABLE_STRATEGY_CACHE
 
-LUX\_ENABLE\_RISK\_AWARE\_ACTION\_FILTER
+LUX_ENABLE_RISK_AWARE_ACTION_FILTER
 
 ```
-
-
 
 These environment variables make it possible to run controlled comparisons without rewriting the agent. For example, the same codebase can run:
 
+* a rule-only baseline;
 
+* qwen3:32b-backed LLM mode;
 
-\* a rule-only baseline;
+* deepseek-r1:32b-backed LLM mode;
 
-\* qwen3:32b-backed LLM mode;
+* strategy-cache-enabled mode;
 
-\* deepseek-r1:32b-backed LLM mode;
-
-\* strategy-cache-enabled mode;
-
-\* risk-aware-filter-enabled mode.
-
-
+* risk-aware-filter-enabled mode.
 
 This configuration approach was important during experimentation because it allowed the project to test different agent variants while keeping the core runtime consistent.
 
-
-
 ---
-
-
 
 ## 5.4 State Summarisation Implementation
 
-
-
 The state summarisation layer converts raw Lux AI Season 3 observations into compact structured information for the LLM.
-
-
 
 Relevant files include:
 
-
-
 ```text
 
-state\_summarizer.py
+state_summarizer.py
 
-lux\_state.py
+lux_state.py
 
 ```
-
-
 
 The implementation extracts information that is useful for strategic decision making, such as:
 
+* current step;
 
+* match phase;
 
-\* current step;
+* score context;
 
-\* match phase;
+* visible units;
 
-\* score context;
+* unit positions;
 
-\* visible units;
+* unit energy;
 
-\* unit positions;
+* known relic candidates;
 
-\* unit energy;
+* known scoring tiles;
 
-\* known relic candidates;
+* unexplored or stale areas;
 
-\* known scoring tiles;
+* nearby enemy information;
 
-\* unexplored or stale areas;
-
-\* nearby enemy information;
-
-\* current strategic context.
-
-
+* current strategic context.
 
 This is necessary because raw observations are not ideal for direct prompting. They are detailed, low-level, and may include unnecessary information. The summariser reduces this noise and creates a stable input format for the LLM.
 
-
-
 The summarised state also helps make the system easier to inspect. Since LLM decisions are based on a structured summary, the project can explain what information the LLM was expected to reason over.
-
-
 
 This implementation supports the first sub-research question:
 
-
-
 > How can raw Lux AI Season 3 observations be transformed into compact structured inputs for LLM-based strategic decision making?
 
-
-
 ---
-
-
 
 ## 5.5 LLM Decision Implementation
 
-
-
 The LLM decision logic is implemented as a high-level planning module.
-
-
 
 Relevant files include:
 
-
-
 ```text
 
-llm\_decider.py
+llm_decider.py
 
 agent.py
 
 ```
-
-
 
 The implementation uses the configured LLM backend to generate structured strategic decisions. The model can be changed using:
 
-
-
 ```text
 
-LUX\_LLM\_MODEL=qwen3:32b
+LUX_LLM_MODEL=qwen3:32b
 
-LUX\_LLM\_MODEL=deepseek-r1:32b
+LUX_LLM_MODEL=deepseek-r1:32b
 
 ```
-
-
 
 The LLM is expected to return a structured plan rather than raw Lux AI actions. The plan may include:
 
+* global game phase;
 
+* main objective;
 
-\* global game phase;
+* risk posture;
 
-\* main objective;
+* explanation or reason;
 
-\* risk posture;
+* unit-level intents;
 
-\* explanation or reason;
+* target positions;
 
-\* unit-level intents;
+* priorities;
 
-\* target positions;
+* expected value estimates;
 
-\* priorities;
-
-\* expected value estimates;
-
-\* unit-level reasons.
-
-
+* unit-level reasons.
 
 Example strategic intents include:
 
-
-
 ```text
 
-EXPLORE\_STALE\_TILE
+EXPLORE_STALE_TILE
 
-MOVE\_TO\_RELIC\_CANDIDATE
+MOVE_TO_RELIC_CANDIDATE
 
-SECURE\_SCORING\_TILE
+SECURE_SCORING_TILE
 
-HOLD\_POSITION
+HOLD_POSITION
 
 ```
-
-
 
 The important implementation choice is that these intents are not executed directly. They are passed through parsing, verification, fallback, caching, and action planning before any executable Lux AI action is produced.
 
-
-
 This reduces the risk of invalid LLM output causing invalid environment actions.
 
-
-
 ---
-
-
 
 ## 5.6 Structured Parsing Implementation
 
-
-
 After the LLM returns a response, the system attempts to parse it into structured internal data.
-
-
 
 The parser is responsible for:
 
+* detecting whether the response is valid;
 
+* extracting the global plan;
 
-\* detecting whether the response is valid;
+* extracting unit-level intents;
 
-\* extracting the global plan;
+* checking required fields;
 
-\* extracting unit-level intents;
+* handling missing or malformed values;
 
-\* checking required fields;
+* recording LLM validity;
 
-\* handling missing or malformed values;
+* reporting LLM errors;
 
-\* recording LLM validity;
-
-\* reporting LLM errors;
-
-\* triggering fallback when necessary.
-
-
+* triggering fallback when necessary.
 
 The implementation records fields such as:
 
-
-
 ```text
 
-llm\_valid
+llm_valid
 
-llm\_error
+llm_error
 
-timed\_out
+timed_out
 
-fallback\_used
+fallback_used
 
-fallback\_reason
+fallback_reason
 
 ```
 
-
-
 This stage is a key reliability boundary. Without parsing, the system would have to trust unstructured or semi-structured model output. With parsing, the system can reject invalid output and continue with fallback behaviour.
 
-
-
-This implementation supports the project鈥檚 broader goal of making LLM-agent behaviour inspectable and evaluable.
-
-
+This implementation supports the project’s broader goal of making LLM-agent behaviour inspectable and evaluable.
 
 ---
 
-
-
 ## 5.7 Action Verification Implementation
-
-
 
 Action verification checks whether the parsed LLM plan can be used in the current game state.
 
-
-
 Relevant files include:
-
-
 
 ```text
 
-action\_planner.py
+action_planner.py
 
-rule\_policy.py
+rule_policy.py
 
 agent.py
 
 ```
 
-
-
 The verifier and action-planning logic check whether:
 
+* the referenced unit exists;
 
+* the unit can act;
 
-\* the referenced unit exists;
+* the target is valid;
 
-\* the unit can act;
+* the target is inside the map;
 
-\* the target is valid;
+* the target is reachable;
 
-\* the target is inside the map;
+* the intent is recognised;
 
-\* the target is reachable;
+* the action is legal;
 
-\* the intent is recognised;
-
-\* the action is legal;
-
-\* the plan appears locally safe.
-
-
+* the plan appears locally safe.
 
 If the LLM plan is not usable, the system can repair the plan, ignore the intent, or use fallback behaviour.
 
-
-
 This implementation directly supports the second sub-research question:
-
-
 
 > How can rule-based verification, fallback mechanisms, and strategy caching reduce invalid or unstable LLM-generated decisions?
 
-
-
 The verification layer is one of the main reasons the project can use large LLMs without allowing arbitrary LLM output to directly control the environment.
 
-
-
 ---
-
-
 
 ## 5.8 Fallback Implementation
 
-
-
 Fallback behaviour is implemented to ensure that the agent can continue acting even when the LLM cannot provide a usable decision.
-
-
 
 Fallback may be used when:
 
+* rule-only mode is enabled;
 
+* LLM use is disabled;
 
-\* rule-only mode is enabled;
+* the LLM times out;
 
-\* LLM use is disabled;
+* the LLM response is invalid;
 
-\* the LLM times out;
+* the LLM output cannot be parsed;
 
-\* the LLM response is invalid;
+* the plan fails verification;
 
-\* the LLM output cannot be parsed;
+* no suitable cached plan is available;
 
-\* the plan fails verification;
-
-\* no suitable cached plan is available;
-
-\* rule-based behaviour is safer.
-
-
+* rule-based behaviour is safer.
 
 The system records fallback-related information using fields such as:
 
-
-
 ```text
 
-fallback\_used
+fallback_used
 
-fallback\_reason
+fallback_reason
 
-decision\_source
+decision_source
 
-rule\_fallback
+rule_fallback
 
 ```
-
-
 
 Fallback is not considered a simple failure case. In this project, fallback is implemented as a deliberate stability mechanism.
 
-
-
 This is important for evaluation because the system can later analyse when the LLM contributed to behaviour and when rule-based support took over.
 
-
-
 ---
-
-
 
 ## 5.9 Strategy Cache Implementation
 
-
-
 The strategy cache allows recent LLM plans to be reused across multiple game steps.
-
-
 
 This was necessary because large LLMs can be slow. For example, the DeepSeek-R1-32B 50-run evidence recorded an average LLM latency of approximately 4143.595 ms and a maximum latency of 10581.076 ms.
 
-
-
 Calling the LLM at every step would therefore be inefficient. The cache reduces:
 
+* repeated LLM calls;
 
+* runtime latency;
 
-\* repeated LLM calls;
+* unnecessary strategic changes;
 
-\* runtime latency;
-
-\* unnecessary strategic changes;
-
-\* inference cost.
-
-
+* inference cost.
 
 Cache-related fields include:
 
-
-
 ```text
 
-cached\_llm\_turn
+cached_llm_turn
 
-stale\_decision
+stale_decision
 
-last\_llm\_step
+last_llm_step
 
-llm\_step\_used
+llm_step_used
 
 ```
-
-
 
 The cache also creates an evaluation issue: a cached plan may become stale if the game state changes. The project addresses this by logging stale-decision information and discussing cached-plan limitations in the failure-case analysis.
 
-
-
 ---
-
-
 
 ## 5.10 Risk-aware Action Filter Implementation
 
-
-
 The risk-aware action filter adds another rule-based safety layer between LLM strategy and final action execution.
-
-
 
 The filter can detect potentially unsafe actions, such as:
 
+* moving near enemy units;
 
+* targeting risky locations;
 
-\* moving near enemy units;
+* sending low-energy units into dangerous areas;
 
-\* targeting risky locations;
-
-\* sending low-energy units into dangerous areas;
-
-\* following stale or locally unsuitable plans.
-
-
+* following stale or locally unsuitable plans.
 
 Relevant logged fields include:
 
-
-
 ```text
 
-risk\_filter\_enabled
+risk_filter_enabled
 
-risk\_filter\_changed
+risk_filter_changed
 
-risk\_filter\_reason
+risk_filter_reason
 
-risk\_filter\_changed\_targets
+risk_filter_changed_targets
 
-risk\_filter\_events\_count
+risk_filter_events_count
 
 ```
 
-
-
-This implementation supports the project鈥檚 argument that the LLM is not the only decision component. Instead, the final action emerges from a pipeline that combines LLM planning with rule-based verification and safety checks.
-
-
+This implementation supports the project’s argument that the LLM is not the only decision component. Instead, the final action emerges from a pipeline that combines LLM planning with rule-based verification and safety checks.
 
 ---
-
-
 
 ## 5.11 Action Planning Implementation
 
-
-
 The action planner converts verified strategic intents into executable Lux AI Season 3 actions.
-
-
 
 Relevant files include:
 
-
-
 ```text
 
-action\_planner.py
+action_planner.py
 
-rule\_policy.py
+rule_policy.py
 
 ```
-
-
 
 For example, a high-level intent such as:
 
-
-
 ```text
 
-MOVE\_TO\_RELIC\_CANDIDATE
+MOVE_TO_RELIC_CANDIDATE
 
 ```
-
-
 
 must be converted into a concrete movement action for a specific unit.
 
-
-
 The action planner considers:
 
+* unit position;
 
+* target position;
 
-\* unit position;
+* legal movement directions;
 
-\* target position;
+* available action slots;
 
-\* legal movement directions;
+* unit energy;
 
-\* available action slots;
-
-\* unit energy;
-
-\* fallback options.
-
-
+* fallback options.
 
 This component is important because it bridges the gap between strategic reasoning and environment execution. It ensures that high-level objectives become valid low-level actions.
 
-
-
 ---
-
-
 
 ## 5.12 Decision Trace Logging Implementation
 
-
-
 The implementation records decision-level information in JSONL logs.
-
-
 
 Important logs include:
 
-
-
 ```text
 
-logs/decision\_trace.jsonl
+logs/decision_trace.jsonl
 
-logs/decision\_log.jsonl
+logs/decision_log.jsonl
 
-logs/ablation\_metrics.jsonl
+logs/ablation_metrics.jsonl
 
-logs/match\_history.jsonl
+logs/match_history.jsonl
 
 ```
 
-
-
 The trace logs record fields such as:
-
-
 
 ```text
 
@@ -758,233 +526,164 @@ phase
 
 player
 
-team\_id
+team_id
 
-decision\_source
+decision_source
 
-llm\_mode
+llm_mode
 
-llm\_model
+llm_model
 
-llm\_called
+llm_called
 
-fresh\_llm\_call
+fresh_llm_call
 
-cached\_llm\_turn
+cached_llm_turn
 
-llm\_valid
+llm_valid
 
-llm\_error
+llm_error
 
-fallback\_used
+fallback_used
 
-fallback\_reason
+fallback_reason
 
-risk\_filter\_changed
+risk_filter_changed
 
-unit\_intent\_count
+unit_intent_count
 
-unit\_action\_count
+unit_action_count
 
-score\_player\_0
+score_player_0
 
-score\_player\_1
+score_player_1
 
 ```
-
-
 
 These logs allow the project to inspect:
 
+* when a fresh LLM call was used;
 
+* when cached LLM plans were reused;
 
-\* when a fresh LLM call was used;
+* when fallback was used;
 
-\* when cached LLM plans were reused;
+* when rule-based decisions were used;
 
-\* when fallback was used;
+* how often LLM errors occurred;
 
-\* when rule-based decisions were used;
-
-\* how often LLM errors occurred;
-
-\* how decision sources related to match outcomes.
-
-
+* how decision sources related to match outcomes.
 
 The JSONL format is practical because each line is a separate event. This makes the logs easy to append during execution and easy to process later with Python scripts.
 
-
-
 ---
-
-
 
 ## 5.13 Match Result Recording
 
-
-
 Match-level results are recorded using scripts such as:
-
-
 
 ```text
 
-record\_match\_result\_from\_console.py
+record_match_result_from_console.py
 
 ```
-
-
 
 The recorded match history supports aggregate evaluation. Important match-level fields include:
 
+* experiment tag;
 
+* model name;
 
-\* experiment tag;
+* match index;
 
-\* model name;
+* reward values;
 
-\* match index;
+* winner;
 
-\* reward values;
+* LLM call counts;
 
-\* winner;
+* fallback counts;
 
-\* LLM call counts;
+* LLM errors;
 
-\* fallback counts;
+* latency statistics;
 
-\* LLM errors;
-
-\* latency statistics;
-
-\* decision-source counts.
-
-
+* decision-source counts.
 
 The results are stored in files such as:
 
-
-
 ```text
 
-logs/match\_history.jsonl
+logs/match_history.jsonl
 
 ```
-
-
 
 and are later summarised into evidence files under:
 
-
-
 ```text
 
-docs/demo\_evidence/
+docs/demo_evidence/
 
 ```
-
-
 
 This implementation supports controlled multi-run evaluation, including the qwen3:32b and DeepSeek-R1-32B 50-run evidence.
 
-
-
 ---
-
-
 
 ## 5.14 Controlled-run Evidence Implementation
 
-
-
 The project includes controlled-run evidence for multiple LLM backends.
-
-
 
 Current main evidence includes:
 
-
-
-| Model           | Runs | player\_0 wins | player\_1 wins | player\_0 win rate | LLM errors |
-
+| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
 | --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-
 | qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-
 | deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
-
-
 
 DeepSeek-R1-32B evidence is stored in:
 
-
-
 ```text
 
-docs/demo\_evidence/hpc\_deepseek\_r1\_32b\_50run/
+docs/demo_evidence/hpc_deepseek_r1_32b_50run/
 
 ```
-
-
 
 Important files include:
 
-
-
 ```text
 
-deepseek\_r1\_32b\_50run\_summary.md
+deepseek_r1_32b_50run_summary.md
 
-summary\_50run.json
+summary_50run.json
 
-match\_history\_50run.jsonl
+match_history_50run.jsonl
 
 ```
-
-
 
 The implementation keeps summary evidence separate from raw run folders. This avoids overloading the repository with large or repetitive raw outputs while preserving the key reproducible results.
 
-
-
 ---
-
-
 
 ## 5.15 Replay Frame Generation
 
-
-
 The project includes replay-frame generation for the Season 3 isometric viewer.
-
-
 
 Relevant files include:
 
-
-
 ```text
 
-tools/build\_run008\_isometric\_from\_replay.py
+tools/build_run008_isometric_from_replay.py
 
-data/isometric\_replay\_frames\_run008.json
+data/isometric_replay_frames.json
 
 ```
 
-
-
 The generated replay-frame file contains visual frame data for Run008. It is used by the isometric HTML viewer to display the game state step by step.
-
-
 
 The replay-frame generation was important for demonstration because it allows the project to show agent behaviour without rerunning the match.
 
-
-
 The viewer can be served locally using:
-
-
 
 ```text
 
@@ -992,79 +691,53 @@ python -m http.server 8000
 
 ```
 
-
-
 and opened through a browser.
-
-
 
 ---
 
-
-
 ## 5.16 LLM Decision Trace Overlay Implementation
-
-
 
 The LLM Decision Trace Overlay was added to connect replay frames with decision trace data.
 
-
-
 Relevant files include:
-
-
 
 ```text
 
-tools/build\_run008\_decision\_trace\_overlay.py
+tools/build_run008_decision_trace_overlay.py
 
-tools/build\_v09n12d\_trace\_overlay\_viewer.py
+tools/build_v09n12d_trace_overlay_viewer.py
 
-tools/fix\_v09n12d\_trace\_overlay\_layout.py
+tools/fix_v09n12d_trace_overlay_layout.py
 
-data/run008\_decision\_trace\_overlay.json
+data/run008_decision_trace_overlay.json
 
-docs/viewers/s3\_isometric\_battle\_viewer\_v09n12d\_trace\_overlay.html
+docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
 
 ```
-
-
 
 The overlay data builder reads:
 
-
-
 ```text
 
-data/isometric\_replay\_frames\_run008.json
+data/isometric_replay_frames.json
 
-logs/decision\_trace.jsonl
+logs/decision_trace.jsonl
 
-logs/decision\_log.jsonl
+logs/decision_log.jsonl
 
 ```
-
-
 
 and writes:
 
-
-
 ```text
 
-data/run008\_decision\_trace\_overlay.json
+data/run008_decision_trace_overlay.json
 
 ```
 
-
-
 The generated overlay data aligns replay frames with decision trace information by step number.
 
-
-
 The current overlay generation reported:
-
-
 
 ```text
 
@@ -1082,87 +755,57 @@ matched recent LLM frames: 506
 
 ```
 
-
-
 This shows that nearly all replay frames can be matched with trace information, and every frame can be associated with the most recent LLM plan.
-
-
 
 The viewer displays:
 
+* frame and step;
 
+* phase;
 
-\* frame and step;
+* decision source;
 
-\* phase;
+* LLM model;
 
-\* decision source;
+* current objective;
 
-\* LLM model;
+* risk posture;
 
-\* current objective;
+* fallback status;
 
-\* risk posture;
+* risk filter status;
 
-\* fallback status;
+* score context;
 
-\* risk filter status;
-
-\* score context;
-
-\* unit intents.
-
-
+* unit intents.
 
 The overlay can be toggled with the `H` key. This supports both live demonstration and clean screenshot capture.
 
-
-
 This implementation directly supports the third sub-research question:
-
-
 
 > How can replay-grounded decision traces help analyse the relationship between LLM strategy, decision source, action execution, and game outcome?
 
-
-
 ---
-
-
 
 ## 5.17 Viewer Implementation
 
-
-
 The viewer is implemented as a browser-based HTML interface.
-
-
 
 Important viewer files include:
 
-
-
 ```text
 
-docs/viewers/s3\_isometric\_battle\_viewer\_v09n12c3.html
+docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
 
-docs/viewers/s3\_isometric\_battle\_viewer\_v09n12d\_trace\_overlay.html
+docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
 
 ```
 
-
-
 The viewer displays an isometric map, battle timeline, score information, match status, and playback controls.
-
-
 
 The v09n12d version extends the previous viewer by injecting an LLM Decision Trace Overlay panel. The overlay is positioned so that it does not cover the original match-status panel.
 
-
-
 The viewer can be opened locally using a simple HTTP server:
-
-
 
 ```text
 
@@ -1170,186 +813,113 @@ python -m http.server 8000
 
 ```
 
-
-
 Then the viewer can be opened in a browser:
-
-
 
 ```text
 
-http://localhost:8000/docs/viewers/s3\_isometric\_battle\_viewer\_v09n12d\_trace\_overlay.html
+http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
 
 ```
-
-
 
 This implementation makes the project easier to demonstrate and provides visual evidence for the dissertation.
 
-
-
 ---
-
-
 
 ## 5.18 Evidence and Documentation Implementation
 
-
-
 The project stores evidence and analysis under the `docs/` directory.
-
-
 
 Important documentation files include:
 
-
-
 ```text
 
-docs/technical/system\_architecture.md
+docs/technical/system_architecture.md
 
-docs/technical/llm\_decision\_pipeline.md
+docs/technical/llm_decision_pipeline.md
 
-docs/technical/action\_verification\_and\_fallback.md
+docs/technical/action_verification_and_fallback.md
 
-docs/technical/decision\_trace\_overlay.md
+docs/technical/decision_trace_overlay.md
 
-docs/technical/evaluation\_metrics.md
+docs/technical/evaluation_metrics.md
 
-docs/analysis/qwen3\_vs\_deepseek\_analysis.md
+docs/analysis/qwen3_vs_deepseek_analysis.md
 
-docs/analysis/failure\_case\_analysis.md
+docs/analysis/failure_case_analysis.md
 
 ```
-
-
 
 These files were created to support the dissertation and make the system easier to inspect.
 
-
-
 The documentation separates:
 
+* technical architecture;
 
+* LLM decision pipeline;
 
-\* technical architecture;
+* action verification and fallback;
 
-\* LLM decision pipeline;
+* overlay implementation;
 
-\* action verification and fallback;
+* evaluation metrics;
 
-\* overlay implementation;
+* model comparison;
 
-\* evaluation metrics;
-
-\* model comparison;
-
-\* failure analysis.
-
-
+* failure analysis.
 
 This structure helps convert the project from an engineering prototype into a dissertation-ready research artefact.
 
-
-
 ---
-
-
 
 ## 5.19 Implementation Challenges
 
-
-
 Several implementation challenges occurred during the project.
-
-
 
 ### 5.19.1 Integrating LLMs with a fast game loop
 
-
-
 Lux AI Season 3 requires agents to produce actions repeatedly. Large LLMs can take several seconds to respond, so direct step-by-step LLM control would be impractical.
-
-
 
 The implementation addresses this through strategy caching, controlled LLM call intervals, fallback behaviour, and deterministic action planning.
 
-
-
 ### 5.19.2 Handling invalid or unavailable LLM output
-
-
 
 The LLM may fail, time out, or produce invalid output. The system handles this through parsing, validation, and fallback.
 
-
-
 This reduces the risk of runtime failure.
-
-
 
 ### 5.19.3 Connecting logs to replay frames
 
-
-
 The decision trace overlay required matching replay frames with decision logs. This required careful step alignment between:
-
-
 
 ```text
 
-data/isometric\_replay\_frames\_run008.json
+data/isometric_replay_frames.json
 
-logs/decision\_trace.jsonl
+logs/decision_trace.jsonl
 
-logs/decision\_log.jsonl
+logs/decision_log.jsonl
 
 ```
 
-
-
 The resulting overlay makes the replay more informative, but it also introduces a need for clear labelling when logs and replays are generated from specific runs.
-
-
 
 ### 5.19.4 Managing evidence files
 
-
-
 Controlled runs can produce many files. The implementation therefore separates key summary evidence from raw run folders. This makes the repository easier to maintain while preserving important results.
-
-
 
 ### 5.19.5 Maintaining reproducibility
 
-
-
 The system uses scripts, JSON/JSONL evidence, and markdown documentation to make experiments reproducible. However, large videos, temporary files, and raw logs must be managed carefully to avoid bloating the repository.
-
-
 
 ---
 
-
-
 ## 5.20 Summary
-
-
 
 This chapter has described the implementation of LuxLLM-Agent.
 
-
-
 The implementation includes a Lux AI Season 3 runtime agent, structured state summarisation, configurable LLM decision making, structured parsing, rule-based action verification, fallback mechanisms, strategy caching, risk-aware filtering, action planning, decision trace logging, controlled-run evidence generation, replay frame generation, and a decision trace overlay viewer.
-
-
 
 The key implementation contribution is the controlled pipeline between LLM strategic reasoning and executable game actions. This pipeline makes the system more stable, inspectable, and evaluable.
 
-
-
 The next chapter evaluates the system using gameplay outcomes, LLM execution metrics, decision-source analysis, model comparison, replay-grounded inspection, and failure-case analysis.
-
-
-
 
