@@ -1,0 +1,8 @@
+name: luxllm-agent
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11.3
+  - pip=23.1.2
+  - pip:
+      - -r requirements-dev.txt

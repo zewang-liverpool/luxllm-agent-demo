@@ -1,0 +1,38 @@
+{
+  "schema": "luxllm_reported_metrics_v1",
+  "results": [
+    {
+      "model": "qwen3:32b",
+      "source": "docs/demo_evidence/hpc_qwen3_32b_50run/hpc_qwen3_32b_multirun_summary.json",
+      "llm_role": "player_0",
+      "matches": 50,
+      "llm_wins": 35,
+      "rule_wins": 15,
+      "draws": 0,
+      "llm_win_rate": 0.7,
+      "llm_win_rate_wilson_95_ci": [
+        0.562496495355466,
+        0.8089644649911906
+      ],
+      "exact_binomial_pvalue_vs_0_5": 0.006600447966810918,
+      "interpretation_limit": "Historical fixed-player evidence; not a matched-seed model comparison."
+    },
+    {
+      "model": "deepseek-r1:32b",
+      "source": "docs/demo_evidence/hpc_deepseek_r1_32b_50run/20260624_152843_deepseek_r1_32b_gpu_50run_job9189419/summary_50run.json",
+      "llm_role": "player_0",
+      "matches": 50,
+      "llm_wins": 26,
+      "rule_wins": 24,
+      "draws": 0,
+      "llm_win_rate": 0.52,
+      "llm_win_rate_wilson_95_ci": [
+        0.38511744890044614,
+        0.6520286471342196
+      ],
+      "exact_binomial_pvalue_vs_0_5": 0.887724827340783,
+      "interpretation_limit": "Historical fixed-player evidence; not a matched-seed model comparison."
+    }
+  ],
+  "comparison_warning": "The two historical runs were not matched by seed or swapped by player role. Their confidence intervals describe each fixed-player run and do not establish a causal model ranking."
+}

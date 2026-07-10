@@ -88,6 +88,8 @@ def build_gameview(
 
     gameview = {
         "agent_version": config.AGENT_VERSION,
+        "player": f"player_{int(team_id)}",
+        "team_id": int(team_id),
         "step": int(step),
         "match": {
             "match_idx": match_context.get("match_idx", 0),
@@ -193,7 +195,8 @@ def gameview_to_prompt(gameview: Dict) -> str:
 
     lines = []
 
-    lines.append("You control player_0 in Lux AI Season 3.")
+    player = str(gameview.get("player", f"player_{gameview.get('team_id', 0)}"))
+    lines.append(f"You control {player} in Lux AI Season 3.")
     lines.append("Return ONLY valid JSON. No markdown. No explanation outside JSON.")
     lines.append("")
     lines.append("Rules:")

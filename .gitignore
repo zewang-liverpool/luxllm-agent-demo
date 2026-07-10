@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 .venv/
+.venv*/
 venv/
 env/
 
@@ -45,6 +46,7 @@ paper/exports/
 logs/
 errorlogs/
 replays/
+results/
 archive/
 view/
 实验结果/

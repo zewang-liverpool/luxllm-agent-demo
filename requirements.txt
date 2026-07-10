@@ -1,0 +1,2 @@
+# Reproducible Lux AI Season 3 runtime used by the original experiments.
+luxai-s3==0.2.1

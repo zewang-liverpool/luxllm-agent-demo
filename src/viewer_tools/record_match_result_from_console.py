@@ -3,24 +3,11 @@ record_match_result_from_console.py
 
 Record Lux S3 match result from console log and decision logs.
 
-This script parses:
-- match_console_xxx.txt
-- latest_match_console.txt
-- decision_log.jsonl
-- llm_error_log.jsonl, if it exists
-
-It supports the v0.8-M decision log schema:
-{
-    "event": "llm_decision",
-    "fresh_llm_call": true,
-    "llm_strategy_used": true,
-    "cached_llm_turn": false,
-    "event_refresh": false,
-    "safety_override": false,
-    "fallback_used": false,
-    "timed_out": false,
-    "error": ""
-}
+v0.9-E1 focus:
+- Record qwen3:32b experiment metadata correctly.
+- Record ablation switches in match_history.jsonl.
+- Summarize both old decision_log.jsonl fields and new v0.9-E1 trace fields.
+- Avoid stale qwen2.5 default model metadata.
 """
 
 import argparse
@@ -40,11 +27,34 @@ DEFAULT_CONSOLE_LOG = os.path.join(LOG_DIR, "latest_match_console.txt")
 DEFAULT_DECISION_LOG = os.path.join(LOG_DIR, "decision_log.jsonl")
 DEFAULT_ERROR_LOG = os.path.join(LOG_DIR, "llm_error_log.jsonl")
 DEFAULT_HISTORY_LOG = os.path.join(LOG_DIR, "match_history.jsonl")
+DEFAULT_DECISION_TRACE_LOG = os.path.join(LOG_DIR, "decision_trace.jsonl")
+DEFAULT_ABLATION_METRICS_LOG = os.path.join(LOG_DIR, "ablation_metrics.jsonl")
 
 
 def ensure_dirs() -> None:
     os.makedirs(LOG_DIR, exist_ok=True)
     os.makedirs(REPLAY_DIR, exist_ok=True)
+
+
+def env_str(name: str, default: str) -> str:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    value = value.strip()
+    return value if value else default
+
+
+def parse_bool_value(value, default: bool = False) -> bool:
+    if value is None:
+        return bool(default)
+
+    text = str(value).strip().lower()
+    if text in ("1", "true", "yes", "y", "on"):
+        return True
+    if text in ("0", "false", "no", "n", "off"):
+        return False
+
+    return bool(default)
 
 
 def read_text(path: str) -> str:
@@ -103,7 +113,9 @@ def iter_jsonl(path: str) -> List[Dict]:
                 continue
 
             try:
-                records.append(json.loads(line))
+                item = json.loads(line)
+                if isinstance(item, dict):
+                    records.append(item)
             except Exception:
                 continue
 
@@ -124,7 +136,6 @@ def parse_rewards_from_console(console_text: str) -> Tuple[Optional[int], Option
     text = console_text.replace("\x00", "")
     text = re.sub(r"\x1b\[[0-9;]*m", "", text)
 
-    # Most robust direct regex: search across the whole file, not per-line only.
     player_0_patterns = [
         r"'player_0'\s*:\s*array\(\s*([-+]?\d+)",
         r'"player_0"\s*:\s*array\(\s*([-+]?\d+)',
@@ -157,7 +168,6 @@ def parse_rewards_from_console(console_text: str) -> Tuple[Optional[int], Option
     if player_0_reward is not None and player_1_reward is not None:
         return player_0_reward, player_1_reward, "console_rewards_line"
 
-    # Fallback: find the Rewards line and normalize array(...) into plain ints.
     reward_line = None
     for line in text.splitlines():
         if "Rewards:" in line:
@@ -246,6 +256,9 @@ def categorize_error(error_text: str, timed_out: bool = False) -> str:
 
 
 def summarize_decision_records(records: List[Dict]) -> Dict:
+    """
+    Summarize old compact LLM decision logs.
+    """
     fresh_llm_calls = 0
     llm_strategy_used = 0
     cached_llm_turns = 0
@@ -255,16 +268,18 @@ def summarize_decision_records(records: List[Dict]) -> Dict:
     llm_errors = 0
     error_categories: Dict[str, int] = {}
 
+    latency_values = []
+
     for record in records:
         event = record.get("event", "")
 
-        if bool(record.get("fresh_llm_call", False)):
+        if bool(record.get("fresh_llm_call", False)) or bool(record.get("llm_called", False)):
             fresh_llm_calls += 1
 
-        if bool(record.get("llm_strategy_used", False)):
+        if bool(record.get("llm_strategy_used", False)) or bool(record.get("llm_valid", False)):
             llm_strategy_used += 1
 
-        if bool(record.get("cached_llm_turn", False)):
+        if bool(record.get("cached_llm_turn", False)) or bool(record.get("cache_used", False)):
             cached_llm_turns += 1
 
         if bool(record.get("event_refresh", False)):
@@ -294,13 +309,24 @@ def summarize_decision_records(records: List[Dict]) -> Dict:
         if event in ("fallback", "fallback_used", "rule_fallback"):
             fallback_count += 1
 
-        error_text = str(record.get("error", "") or "")
+        try:
+            if record.get("llm_latency_ms") is not None:
+                latency_values.append(float(record.get("llm_latency_ms")))
+            elif record.get("elapsed") is not None:
+                latency_values.append(float(record.get("elapsed")) * 1000.0)
+        except Exception:
+            pass
+
+        error_text = str(record.get("error", "") or record.get("llm_error", "") or "")
         timed_out = bool(record.get("timed_out", False))
 
         if error_text or timed_out or event in ("llm_error", "error"):
             llm_errors += 1
             category = record.get("category") or categorize_error(error_text, timed_out)
             error_categories[category] = error_categories.get(category, 0) + 1
+
+    avg_latency = sum(latency_values) / len(latency_values) if latency_values else 0.0
+    max_latency = max(latency_values) if latency_values else 0.0
 
     return {
         "fresh_llm_calls": fresh_llm_calls,
@@ -311,6 +337,95 @@ def summarize_decision_records(records: List[Dict]) -> Dict:
         "fallback_count": fallback_count,
         "llm_errors": llm_errors,
         "error_categories": error_categories,
+        "avg_llm_latency_ms": round(avg_latency, 3),
+        "max_llm_latency_ms": round(max_latency, 3),
+    }
+
+
+def summarize_trace_records(records: List[Dict]) -> Dict:
+    """
+    Summarize v0.9-E1 step-level trace records.
+
+    This is more useful than decision_log.jsonl because it includes cached,
+    fallback, rule-only, no-cache, and risk-filter steps.
+    """
+    step_records = [
+        record for record in records
+        if record.get("event") in ("agent_step_trace", "agent_step_metrics")
+    ]
+
+    if not step_records:
+        return {
+            "trace_steps": 0,
+            "trace_players": [],
+            "decision_source_counts": {},
+            "fallback_count_trace": 0,
+            "cache_used_count": 0,
+            "stale_decision_count": 0,
+            "risk_filter_changed_count": 0,
+            "risk_filter_changed_targets": 0,
+            "avg_step_elapsed_ms": 0.0,
+            "max_step_elapsed_ms": 0.0,
+        }
+
+    decision_source_counts: Dict[str, int] = {}
+    players = set()
+    fallback_count = 0
+    cache_used_count = 0
+    stale_decision_count = 0
+    risk_filter_changed_count = 0
+    risk_filter_changed_targets = 0
+    step_elapsed_values = []
+
+    for record in step_records:
+        source = str(record.get("decision_source", "unknown"))
+        decision_source_counts[source] = decision_source_counts.get(source, 0) + 1
+
+        player = record.get("player")
+        if player is not None:
+            players.add(str(player))
+
+        if bool(record.get("fallback_used", False)):
+            fallback_count += 1
+
+        if bool(record.get("cache_used", False)):
+            cache_used_count += 1
+
+        if bool(record.get("stale_decision", False)):
+            stale_decision_count += 1
+
+        if bool(record.get("risk_filter_changed", False)):
+            risk_filter_changed_count += 1
+
+        try:
+            risk_filter_changed_targets += int(record.get("risk_filter_changed_targets", 0) or 0)
+        except Exception:
+            pass
+
+        try:
+            if record.get("elapsed_total_ms") is not None:
+                step_elapsed_values.append(float(record.get("elapsed_total_ms")))
+        except Exception:
+            pass
+
+    avg_step_elapsed = (
+        sum(step_elapsed_values) / len(step_elapsed_values)
+        if step_elapsed_values
+        else 0.0
+    )
+    max_step_elapsed = max(step_elapsed_values) if step_elapsed_values else 0.0
+
+    return {
+        "trace_steps": len(step_records),
+        "trace_players": sorted(players),
+        "decision_source_counts": decision_source_counts,
+        "fallback_count_trace": fallback_count,
+        "cache_used_count": cache_used_count,
+        "stale_decision_count": stale_decision_count,
+        "risk_filter_changed_count": risk_filter_changed_count,
+        "risk_filter_changed_targets": risk_filter_changed_targets,
+        "avg_step_elapsed_ms": round(avg_step_elapsed, 3),
+        "max_step_elapsed_ms": round(max_step_elapsed, 3),
     }
 
 
@@ -359,25 +474,61 @@ def build_history_record(
     replay_path: str,
     llm_player: str,
     llm_model: str,
+    experiment_tag: str,
+    force_rule_only: bool,
+    force_fallback: bool,
+    llm_enabled: bool,
+    enable_rule_fallback: bool,
+    enable_strategy_cache: bool,
+    enable_risk_filter: bool,
     decision_summary: Dict,
+    trace_summary: Dict,
 ) -> Dict:
     return {
         "time": datetime.now().isoformat(timespec="seconds"),
         "match_id": match_id,
+        "experiment_tag": experiment_tag,
         "score_source": score_source,
         "winner": winner,
         "player_0_reward": player_0_reward,
         "player_1_reward": player_1_reward,
         "llm_player": llm_player,
         "llm_model": llm_model,
+
+        "force_rule_only": bool(force_rule_only),
+        "force_fallback": bool(force_fallback),
+        "llm_enabled": bool(llm_enabled),
+        "enable_rule_fallback": bool(enable_rule_fallback),
+        "enable_strategy_cache": bool(enable_strategy_cache),
+        "enable_risk_filter": bool(enable_risk_filter),
+
         "fresh_llm_calls": decision_summary.get("fresh_llm_calls", 0),
         "llm_strategy_used": decision_summary.get("llm_strategy_used", 0),
-        "cached_llm_turns": decision_summary.get("cached_llm_turns", 0),
+        "cached_llm_turns": max(
+            int(decision_summary.get("cached_llm_turns", 0)),
+            int(trace_summary.get("cache_used_count", 0)),
+        ),
         "event_refresh": decision_summary.get("event_refresh", 0),
         "safety_override": decision_summary.get("safety_override", 0),
-        "fallback_count": decision_summary.get("fallback_count", 0),
+        "fallback_count": max(
+            int(decision_summary.get("fallback_count", 0)),
+            int(trace_summary.get("fallback_count_trace", 0)),
+        ),
         "llm_errors": decision_summary.get("llm_errors", 0),
         "error_categories": decision_summary.get("error_categories", {}),
+
+        "avg_llm_latency_ms": decision_summary.get("avg_llm_latency_ms", 0.0),
+        "max_llm_latency_ms": decision_summary.get("max_llm_latency_ms", 0.0),
+
+        "trace_steps": trace_summary.get("trace_steps", 0),
+        "trace_players": trace_summary.get("trace_players", []),
+        "decision_source_counts": trace_summary.get("decision_source_counts", {}),
+        "stale_decision_count": trace_summary.get("stale_decision_count", 0),
+        "risk_filter_changed_count": trace_summary.get("risk_filter_changed_count", 0),
+        "risk_filter_changed_targets": trace_summary.get("risk_filter_changed_targets", 0),
+        "avg_step_elapsed_ms": trace_summary.get("avg_step_elapsed_ms", 0.0),
+        "max_step_elapsed_ms": trace_summary.get("max_step_elapsed_ms", 0.0),
+
         "replay": replay_path,
     }
 
@@ -393,22 +544,33 @@ def print_summary(record: Dict) -> None:
     print("========================================================================")
     print("Match result recorded.")
     print("========================================================================")
-    print(f"Match ID          : {record.get('match_id')}")
-    print(f"Score source      : {record.get('score_source')}")
-    print(f"Winner            : {record.get('winner')}")
-    print(f"player_0 reward   : {record.get('player_0_reward')}")
-    print(f"player_1 reward   : {record.get('player_1_reward')}")
-    print(f"LLM player        : {record.get('llm_player')}")
-    print(f"LLM model         : {record.get('llm_model')}")
-    print(f"Fresh LLM calls   : {record.get('fresh_llm_calls')}")
-    print(f"LLM strategy used : {record.get('llm_strategy_used')}")
-    print(f"Cached LLM turns  : {record.get('cached_llm_turns')}")
-    print(f"Event refresh     : {record.get('event_refresh')}")
-    print(f"Safety override   : {record.get('safety_override')}")
-    print(f"Fallback count    : {record.get('fallback_count')}")
-    print(f"LLM errors        : {record.get('llm_errors')}")
-    print(f"Error categories  : {record.get('error_categories')}")
-    print(f"Replay            : {record.get('replay')}")
+    print(f"Match ID              : {record.get('match_id')}")
+    print(f"Experiment tag        : {record.get('experiment_tag')}")
+    print(f"Score source          : {record.get('score_source')}")
+    print(f"Winner                : {record.get('winner')}")
+    print(f"player_0 reward       : {record.get('player_0_reward')}")
+    print(f"player_1 reward       : {record.get('player_1_reward')}")
+    print(f"LLM player            : {record.get('llm_player')}")
+    print(f"LLM model             : {record.get('llm_model')}")
+    print(f"Force rule only       : {record.get('force_rule_only')}")
+    print(f"Force fallback        : {record.get('force_fallback')}")
+    print(f"Strategy cache        : {record.get('enable_strategy_cache')}")
+    print(f"Risk filter           : {record.get('enable_risk_filter')}")
+    print(f"Fresh LLM calls       : {record.get('fresh_llm_calls')}")
+    print(f"LLM strategy used     : {record.get('llm_strategy_used')}")
+    print(f"Cached LLM turns      : {record.get('cached_llm_turns')}")
+    print(f"Fallback count        : {record.get('fallback_count')}")
+    print(f"LLM errors            : {record.get('llm_errors')}")
+    print(f"Error categories      : {record.get('error_categories')}")
+    print(f"Avg LLM latency ms    : {record.get('avg_llm_latency_ms')}")
+    print(f"Max LLM latency ms    : {record.get('max_llm_latency_ms')}")
+    print(f"Trace steps           : {record.get('trace_steps')}")
+    print(f"Decision sources      : {record.get('decision_source_counts')}")
+    print(f"Stale decision count  : {record.get('stale_decision_count')}")
+    print(f"Risk changed count    : {record.get('risk_filter_changed_count')}")
+    print(f"Risk changed targets  : {record.get('risk_filter_changed_targets')}")
+    print(f"Avg step elapsed ms   : {record.get('avg_step_elapsed_ms')}")
+    print(f"Replay                : {record.get('replay')}")
     print("========================================================================")
 
 
@@ -418,11 +580,22 @@ def parse_args():
     parser.add_argument("--match-id", default="")
     parser.add_argument("--console-log", default=DEFAULT_CONSOLE_LOG)
     parser.add_argument("--decision-log", default=DEFAULT_DECISION_LOG)
+    parser.add_argument("--decision-trace-log", default=DEFAULT_DECISION_TRACE_LOG)
+    parser.add_argument("--ablation-metrics-log", default=DEFAULT_ABLATION_METRICS_LOG)
     parser.add_argument("--error-log", default=DEFAULT_ERROR_LOG)
     parser.add_argument("--history-log", default=DEFAULT_HISTORY_LOG)
     parser.add_argument("--replay", default="")
-    parser.add_argument("--llm-player", default="player_0")
-    parser.add_argument("--llm-model", default="qwen2.5:1.5b")
+
+    parser.add_argument("--llm-player", default=env_str("LUX_LLM_PLAYER", "player_0"))
+    parser.add_argument("--llm-model", default=env_str("LUX_LLM_MODEL", "qwen3:32b"))
+    parser.add_argument("--experiment-tag", default=env_str("LUX_EXPERIMENT_TAG", "qwen3_32b_full"))
+
+    parser.add_argument("--force-rule-only", default=env_str("LUX_FORCE_RULE_ONLY", "0"))
+    parser.add_argument("--force-fallback", default=env_str("LUX_FORCE_FALLBACK", "0"))
+    parser.add_argument("--llm-enabled", default=env_str("LUX_LLM_ENABLED", "1"))
+    parser.add_argument("--enable-rule-fallback", default=env_str("LUX_ENABLE_RULE_FALLBACK", "1"))
+    parser.add_argument("--enable-strategy-cache", default=env_str("LUX_ENABLE_STRATEGY_CACHE", "1"))
+    parser.add_argument("--enable-risk-filter", default=env_str("LUX_ENABLE_RISK_AWARE_ACTION_FILTER", "1"))
 
     return parser.parse_args()
 
@@ -442,9 +615,15 @@ def main() -> None:
     decision_records = iter_jsonl(args.decision_log)
     error_records = iter_jsonl(args.error_log)
 
+    trace_records = iter_jsonl(args.decision_trace_log)
+    if not trace_records:
+        trace_records = iter_jsonl(args.ablation_metrics_log)
+
     decision_summary = summarize_decision_records(decision_records)
     error_summary = summarize_error_records(error_records)
     decision_summary = merge_error_summaries(decision_summary, error_summary)
+
+    trace_summary = summarize_trace_records(trace_records)
 
     history_record = build_history_record(
         match_id=match_id,
@@ -455,7 +634,15 @@ def main() -> None:
         replay_path=replay_path,
         llm_player=args.llm_player,
         llm_model=args.llm_model,
+        experiment_tag=args.experiment_tag,
+        force_rule_only=parse_bool_value(args.force_rule_only, False),
+        force_fallback=parse_bool_value(args.force_fallback, False),
+        llm_enabled=parse_bool_value(args.llm_enabled, True),
+        enable_rule_fallback=parse_bool_value(args.enable_rule_fallback, True),
+        enable_strategy_cache=parse_bool_value(args.enable_strategy_cache, True),
+        enable_risk_filter=parse_bool_value(args.enable_risk_filter, True),
         decision_summary=decision_summary,
+        trace_summary=trace_summary,
     )
 
     append_history(args.history_log, history_record)

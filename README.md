@@ -309,9 +309,22 @@ data/run008_decision_trace_overlay.json
 
 ---
 
-## Agent Runtime Snapshot
+## Reproducible Agent Runtime
 
-The frozen source snapshot is provided under `src/agent/`, with supporting scripts under `src/scripts/` and viewer post-processing utilities under `src/viewer_tools/`. Re-running the full controlled experiments additionally requires a compatible Lux AI Season 3 environment, Ollama, the named local models, and the original local or Slurm runtime configuration. The tracked viewer and evidence summaries can be inspected without rerunning a match.
+The canonical runnable source is under `src/agent/`. Dependency manifests,
+unit tests, CI, a rule-only end-to-end smoke match, and a matched-seed
+role-swapped experiment runner are tracked in the repository.
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe scripts\smoke_test.py
+.\.venv\Scripts\python.exe scripts\run_rule_smoke.py --seed 42
+```
+
+For the full setup, 100-match paired protocol, Barkla2 instructions, generated
+files, and acceptance criteria, see
+[`docs/reproducibility_guide.md`](docs/reproducibility_guide.md).
 
 ---
 
@@ -353,12 +366,10 @@ LUX_FORCE_RULE_ONLY
 LUX_FORCE_FALLBACK
 LUX_LLM_MODEL
 LUX_LLM_BASE_URL
-LLM_BASE_URL
 LUX_EXPERIMENT_TAG
 LUX_ENABLE_RULE_FALLBACK
 LUX_ENABLE_STRATEGY_CACHE
 LUX_ENABLE_RISK_AWARE_ACTION_FILTER
-LUX_ENABLE_CANDIDATE_EXPLOITATION
 LUX_LLM_TIMEOUT_SECONDS
 LUX_LLM_CALL_INTERVAL
 LUX_LLM_NUM_PREDICT
@@ -438,6 +449,12 @@ The strongest dissertation angle is:
     <tr><td align="center">Evidence index update</td><td align="center">Complete</td></tr>
     <tr><td align="center">Failure analysis document</td><td align="center">Complete</td></tr>
     <tr><td align="center">Viewer LLM Decision Trace Overlay</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Clean environment dependency manifests</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Automated tests and GitHub Actions CI</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Rule-only end-to-end smoke test</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Matched-seed role-swap experiment pipeline</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Real-model paired 100-match evidence</td><td align="center">Pending Barkla2 run</td></tr>
+    <tr><td align="center">Historical confidence intervals and exact tests</td><td align="center">Complete</td></tr>
     <tr><td align="center">Dissertation chapter drafts</td><td align="center">Complete</td></tr>
     <tr><td align="center">Final 75-second demo screencast</td><td align="center">Complete</td></tr>
     <tr><td align="center">Supervisor feedback integration</td><td align="center">Pending</td></tr>
