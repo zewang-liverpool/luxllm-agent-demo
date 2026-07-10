@@ -6,6 +6,8 @@ The project combines a Lux AI Season 3 agent, structured game-state summarisatio
 
 The project is designed for an MSc dissertation and research-demo style artifact. Its main goal is not simply to build an agent that plays Lux AI, but to investigate how LLM-based game-agent decisions can be structured, verified, traced, and evaluated.
 
+> **Project status:** `LuxLLM-Agent COMP702 Submission Freeze v1`. The core system, controlled experiments, decision-trace viewer, and dissertation drafts are complete. Current work is limited to supervisor feedback, citations, figures, tables, screenshots, formatting, and final submission preparation.
+
 ---
 
 ## Project Focus
@@ -25,19 +27,14 @@ The system is built around three sub-questions:
 ## Demo Preview
 
 <p align="center">
-  <img src="assets/lux_s3_demo_run008.gif" alt="LuxLLM-Agent Season 3 Run008 demo" width="760">
+  <img src="assets/luxllm_agent_final_demo_run008.gif" alt="LuxLLM-Agent Season 3 Run008 demo" width="760">
 </p>
 
 <p align="center">
   <b>LuxLLM-Agent Season 3 Run008 isometric replay and evaluation demo.</b>
 </p>
 
-If the final demo GIF has been renamed locally, use the newest available file under `assets/`, for example:
-
-```text
-assets/luxllm_agent_final_demo_run008.gif
-assets/lux_s3_demo_run008.gif
-````
+The tracked preview asset is `assets/luxllm_agent_final_demo_run008.gif`.
 
 ---
 
@@ -110,7 +107,7 @@ The LLM does not directly execute arbitrary environment actions. Instead, it pro
 
 * Provides a Season 1-style visual replay interface for Lux AI Season 3.
 * Displays replay state, battle timeline, score context, and final evaluation summary.
-* Intended to support future LLM Decision Trace Overlay.
+* Includes the completed LLM Decision Trace Overlay for replay-grounded inspection.
 
 ### Controlled-run evaluation
 
@@ -124,10 +121,39 @@ The LLM does not directly execute arbitrary environment actions. Instead, it pro
 
 ### 50-run LLM backend comparison
 
-| Model             | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors | Notes                  |
-| ----------------- | ---: | ------------: | ------------: | ----------------: | ---------: | ---------------------- |
-| `qwen3:32b`       |   50 |            35 |            15 |               70% |          0 | Main LLM backend       |
-| `deepseek-r1:32b` |   50 |            26 |            24 |               52% |          0 | Comparison LLM backend |
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th align="center">Model</th>
+      <th align="center">Runs</th>
+      <th align="center">player_0 wins</th>
+      <th align="center">player_1 wins</th>
+      <th align="center">player_0 win rate</th>
+      <th align="center">LLM errors</th>
+      <th align="center">Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center"><code>qwen3:32b</code></td>
+      <td align="center">50</td>
+      <td align="center">35</td>
+      <td align="center">15</td>
+      <td align="center">70%</td>
+      <td align="center">0</td>
+      <td align="center">Main LLM backend</td>
+    </tr>
+    <tr>
+      <td align="center"><code>deepseek-r1:32b</code></td>
+      <td align="center">50</td>
+      <td align="center">26</td>
+      <td align="center">24</td>
+      <td align="center">52%</td>
+      <td align="center">0</td>
+      <td align="center">Comparison LLM backend</td>
+    </tr>
+  </tbody>
+</table>
 
 The model comparison is not intended as a general-purpose LLM leaderboard. Instead, it evaluates whether the LuxLLM-Agent decision-trace and rule-based action-verification framework can support different reasoning-oriented LLM backends under the same Lux AI Season 3 setting.
 
@@ -139,33 +165,49 @@ Both `qwen3:32b` and `deepseek-r1:32b` completed 50 controlled runs with zero LL
 
 The newly added DeepSeek-R1-32B experiment provides an additional model-level comparison.
 
-| Metric                    |             Value |
-| ------------------------- | ----------------: |
-| Model                     | `deepseek-r1:32b` |
-| Total runs                |                50 |
-| player_0 wins             |                26 |
-| player_1 wins             |                24 |
-| player_0 win rate         |               52% |
-| Average player_0 reward   |               2.7 |
-| Average player_1 reward   |               2.3 |
-| Average fresh LLM calls   |              33.2 |
-| Average LLM strategy used |             27.24 |
-| Average cached LLM turns  |            412.62 |
-| Average fallback count    |            570.14 |
-| Average LLM errors        |               0.0 |
-| Average LLM latency       |       4143.595 ms |
-| Maximum LLM latency       |      10581.076 ms |
-| Average trace steps       |            1010.0 |
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th align="center" width="65%">Metric</th>
+      <th align="center" width="35%">Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Model</td><td align="center"><code>deepseek-r1:32b</code></td></tr>
+    <tr><td align="center">Total runs</td><td align="center">50</td></tr>
+    <tr><td align="center">player_0 wins</td><td align="center">26</td></tr>
+    <tr><td align="center">player_1 wins</td><td align="center">24</td></tr>
+    <tr><td align="center">player_0 win rate</td><td align="center">52%</td></tr>
+    <tr><td align="center">Average player_0 reward</td><td align="center">2.7</td></tr>
+    <tr><td align="center">Average player_1 reward</td><td align="center">2.3</td></tr>
+    <tr><td align="center">Average fresh LLM calls</td><td align="center">33.2</td></tr>
+    <tr><td align="center">Average LLM strategy used</td><td align="center">27.24</td></tr>
+    <tr><td align="center">Average cached LLM turns</td><td align="center">412.62</td></tr>
+    <tr><td align="center">Average fallback count</td><td align="center">570.14</td></tr>
+    <tr><td align="center">Average LLM errors</td><td align="center">0.0</td></tr>
+    <tr><td align="center">Average LLM latency</td><td align="center">4143.595 ms</td></tr>
+    <tr><td align="center">Maximum LLM latency</td><td align="center">10581.076 ms</td></tr>
+    <tr><td align="center">Average trace steps</td><td align="center">1010.0</td></tr>
+  </tbody>
+</table>
 
 ### DeepSeek decision-source distribution
 
-| Decision source | Count |
-| --------------- | ----: |
-| `rule_player`   | 25250 |
-| `fallback`      |    94 |
-| `rule_fallback` |  3163 |
-| `llm_fresh`     |  1362 |
-| `cached_llm`    | 20631 |
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th align="center" width="65%">Decision source</th>
+      <th align="center" width="35%">Count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td align="center"><code>rule_player</code></td><td align="center">25250</td></tr>
+    <tr><td align="center"><code>fallback</code></td><td align="center">94</td></tr>
+    <tr><td align="center"><code>rule_fallback</code></td><td align="center">3163</td></tr>
+    <tr><td align="center"><code>llm_fresh</code></td><td align="center">1362</td></tr>
+    <tr><td align="center"><code>cached_llm</code></td><td align="center">20631</td></tr>
+  </tbody>
+</table>
 
 Derived rates:
 
@@ -174,11 +216,11 @@ Total decision-source events = 50500
 
 LLM-related events:
 llm_fresh + cached_llm = 1362 + 20631 = 21993
-LLM decision-source rate ?43.55%
+LLM decision-source rate ≈ 43.55%
 
 Fallback-related events:
 fallback + rule_fallback = 94 + 3163 = 3257
-Fallback decision-source rate ?6.45%
+Fallback decision-source rate ≈ 6.45%
 ```
 
 ---
@@ -190,10 +232,11 @@ Main evidence files and directories:
 ```text
 docs/demo_evidence_index.md
 docs/demo_evidence/llm_model_comparison_summary.md
-docs/demo_evidence/hpc_qwen3_32b_multirun/
+docs/demo_evidence/hpc_qwen3_32b_50run/
 docs/demo_evidence/hpc_deepseek_r1_32b_50run/
-docs/viewers/s3_isometric_battle_viewer_v09n12c3.html
-data/isometric_replay_frames_run008.json
+docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
+data/isometric_replay_frames.json
+data/run008_decision_trace_overlay.json
 ```
 
 DeepSeek-R1-32B raw evidence directory:
@@ -214,44 +257,28 @@ docs/demo_evidence/hpc_deepseek_r1_32b_50run/20260624_152843_deepseek_r1_32b_gpu
 
 ```text
 .
- agent.py
- baseline_agent.py
- action_planner.py
- rule_policy.py
- state_summarizer.py
- llm_decider.py
- game_memory.py
- config.py
- main.py
- record_match_result_from_console.py
- s3_log_driven_gameview.html
- assets/
-?   lux_s3_demo_run008.gif
-?   luxllm_agent_final_demo_run008.gif
-?   lux_s1_official_game_replay.gif
-?   lux_s1_official_daynightshift.gif
-?   lux_s1_local_run_generated.gif
- data/
-?   isometric_replay_frames_run008.json
- docs/
-?   demo_evidence_index.md
-?   demo_evidence/
-?  ?   llm_model_comparison_summary.md
-?  ?   hpc_qwen3_32b_multirun/
-?  ?   hpc_deepseek_r1_32b_50run/
-?   viewers/
-?  ?   s3_isometric_battle_viewer_v09n12c3.html
-?   demo_videos/
- logs/
- replays/
- paper/
-?   main.tex
-?   acl.sty
-?   acl_natbib.bst
-?   anthology.bib
-?   custom.bib
-?   figures/
- README.md
+├── assets/
+│   └── luxllm_agent_final_demo_run008.gif
+├── data/
+│   ├── isometric_replay_frames.json
+│   └── run008_decision_trace_overlay.json
+├── docs/
+│   ├── analysis/
+│   ├── demo_evidence/
+│   ├── dissertation/
+│   ├── technical/
+│   └── viewers/
+│       └── s3_isometric_battle_viewer_v09n12d_trace_overlay.html
+├── paper/
+├── reports/
+├── src/
+│   ├── agent/
+│   ├── scripts/
+│   └── viewer_tools/
+├── tools/
+├── viewer/
+├── LICENSE
+└── README.md
 ```
 
 Some generated or local-only folders may not be tracked in Git if they contain large raw logs, videos, temporary output, or generated PDFs.
@@ -270,45 +297,21 @@ python -m http.server 8000
 Open the Season 3 viewer:
 
 ```text
-http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12c3.html
+http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
 ```
 
 The viewer reads replay frame data from:
 
 ```text
-data/isometric_replay_frames_run008.json
+data/isometric_replay_frames.json
+data/run008_decision_trace_overlay.json
 ```
 
 ---
 
-## Quick Start: Local Match Run
+## Agent Runtime Snapshot
 
-Activate the local Python environment:
-
-```powershell
-cd D:\PythonProject\lux_llm_agent
-.\.venv\Scripts\activate
-```
-
-Run a local LLM-assisted match:
-
-```powershell
-$env:LUX_LLM_ENABLED="1"
-$env:LUX_FORCE_RULE_ONLY="0"
-$env:LUX_LLM_MODEL="qwen3:32b"
-$env:LUX_EXPERIMENT_TAG="local_qwen3_test"
-
-.\run_match_llm.bat
-```
-
-For DeepSeek-R1-32B local testing, use:
-
-```powershell
-$env:LUX_LLM_MODEL="deepseek-r1:32b"
-$env:LUX_EXPERIMENT_TAG="local_deepseek_r1_32b_test"
-
-.\run_match_llm.bat
-```
+The frozen source snapshot is provided under `src/agent/`, with supporting scripts under `src/scripts/` and viewer post-processing utilities under `src/viewer_tools/`. Re-running the full controlled experiments additionally requires a compatible Lux AI Season 3 environment, Ollama, the named local models, and the original local or Slurm runtime configuration. The tracked viewer and evidence summaries can be inspected without rerunning a match.
 
 ---
 
@@ -413,34 +416,46 @@ The strongest dissertation angle is:
 
 ## Current Project Status
 
-| Component                         | Status    |
-| --------------------------------- | --------- |
-| Lux AI Season 3 agent runtime     | Complete  |
-| Rule-based baseline               | Complete  |
-| qwen3:32b integration             | Complete  |
-| DeepSeek-R1-32B comparison        | Complete  |
-| 50-run qwen3 evidence             | Complete  |
-| 50-run DeepSeek evidence          | Complete  |
-| Match history logging             | Complete  |
-| Decision trace logging            | Complete  |
-| Isometric Season 3 viewer         | Complete  |
-| Final Run008 demo visualisation   | Complete  |
-| README evaluation update          | Complete  |
-| Evidence index update             | Complete  |
-| Failure analysis document         | Next step |
-| Viewer LLM Decision Trace Overlay | Next step |
-| Dissertation evaluation write-up  | Next step |
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th align="center" width="70%">Component</th>
+      <th align="center" width="30%">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Lux AI Season 3 agent runtime</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Rule-based baseline</td><td align="center">Complete</td></tr>
+    <tr><td align="center">qwen3:32b integration</td><td align="center">Complete</td></tr>
+    <tr><td align="center">DeepSeek-R1-32B comparison</td><td align="center">Complete</td></tr>
+    <tr><td align="center">50-run qwen3 evidence</td><td align="center">Complete</td></tr>
+    <tr><td align="center">50-run DeepSeek evidence</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Match history logging</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Decision trace logging</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Isometric Season 3 viewer</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Final Run008 demo visualisation</td><td align="center">Complete</td></tr>
+    <tr><td align="center">README evaluation update</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Evidence index update</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Failure analysis document</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Viewer LLM Decision Trace Overlay</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Dissertation chapter drafts</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Final 75-second demo screencast</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Supervisor feedback integration</td><td align="center">Pending</td></tr>
+    <tr><td align="center">Citation and bibliography review</td><td align="center">Pending</td></tr>
+    <tr><td align="center">Final figures, tables, and format</td><td align="center">Pending</td></tr>
+  </tbody>
+</table>
 
 ---
 
-## Recommended Next Steps
+## Submission-Freeze Next Steps
 
-1. Add the DeepSeek-R1-32B 50-run evidence to Git.
-2. Add `llm_model_comparison_summary.md`.
-3. Add failure-case analysis based on selected `decision_trace.jsonl` examples.
-4. Extend the viewer with an LLM Decision Trace Overlay.
-5. Update the dissertation proposal and evaluation chapter.
-6. Keep generated PDFs, raw videos, and extremely large logs out of the repository unless explicitly required.
+1. Incorporate supervisor feedback without expanding the project scope.
+2. Finalise citations and bibliography entries.
+3. Verify that figures, tables, captions, and reported metrics agree across all documents.
+4. Verify the final Run008 screenshots and upload the prepared 75-second screencast if a public URL is required.
+5. Complete author, repository, licensing, and submission metadata.
+6. Keep generated PDFs, raw videos, large logs, archives, and per-run directories out of normal Git history.
 
 ---
 
@@ -456,7 +471,7 @@ generated PDFs
 temporary archives
 ```
 
-Recommended evidence to commit:
+Recommended compact evidence to commit:
 
 ```text
 summary_50run.json
@@ -469,14 +484,11 @@ latest_match_console.txt
 small markdown summaries
 ```
 
-Generated PDFs should generally remain untracked unless required for submission.
+Generated PDFs should generally remain untracked unless required for submission. The `run01/` to `run50/` raw directories and local demo videos should remain outside normal Git history.
 
 ---
 
 ## License
 
 This project is developed for academic research and MSc dissertation purposes. External dependencies, Lux AI components, LLM backends, and viewer assets should follow their respective licenses.
-
-```
-```
 

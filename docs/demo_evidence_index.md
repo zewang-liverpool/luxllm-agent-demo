@@ -65,7 +65,7 @@ This evidence demonstrates the main LLM-assisted setting for LuxLLM-Agent. It sh
 **Evidence location:**
 
 ```text
-docs/demo_evidence/hpc_qwen3_32b_multirun/
+docs/demo_evidence/hpc_qwen3_32b_50run/
 ````
 
 If the exact local directory differs, use the directory containing the qwen3:32b 50-run summary and controlled-run logs.
@@ -117,10 +117,10 @@ This is the newly added comparison LLM backend evidence. The purpose is not to b
 ```text
 Total decision-source events = 50500
 LLM-related events = llm_fresh + cached_llm = 1362 + 20631 = 21993
-LLM decision-source rate ?43.55%
+LLM decision-source rate approximately 43.55%
 
 Fallback-related events = fallback + rule_fallback = 94 + 3163 = 3257
-Fallback decision-source rate ?6.45%
+Fallback decision-source rate approximately 6.45%
 ```
 
 **Evidence location:**
@@ -174,13 +174,13 @@ The Season 3 viewer provides an isometric replay interface for inspecting Lux AI
 **Main viewer file:**
 
 ```text
-docs/viewers/s3_isometric_battle_viewer_v09n12c3.html
+docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
 ```
 
 **Main Run008 replay frame data:**
 
 ```text
-data/isometric_replay_frames_run008.json
+data/isometric_replay_frames.json
 ```
 
 **Purpose:**
@@ -196,8 +196,8 @@ Run008 is used as the main visual demonstration run for the project.
 
 ```text
 replays/
-data/isometric_replay_frames_run008.json
-docs/viewers/s3_isometric_battle_viewer_v09n12c3.html
+data/isometric_replay_frames.json
+docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
 ```
 
 **Purpose:**

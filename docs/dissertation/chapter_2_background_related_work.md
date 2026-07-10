@@ -159,7 +159,7 @@ The core principle is:
 
 This principle reduces the risk of invalid LLM output affecting the environment. It also makes the system easier to evaluate because the pipeline records when a plan is accepted, cached, replaced, or supported by fallback.
 
-Action verification is therefore not only a reliability mechanism. It is also part of the project鈥檚 evaluation framework.
+Action verification is therefore not only a reliability mechanism. It is also part of the project’s evaluation framework.
 
 ---
 
@@ -222,7 +222,7 @@ LuxLLM-Agent uses a broader evaluation approach, including:
 
 This evaluation approach supports the dissertation research question because it focuses on inspection and evaluation rather than only performance.
 
-The project鈥檚 controlled-run evidence includes 50-run results for qwen3:32b and DeepSeek-R1-32B. Both models completed 50 controlled runs with zero LLM errors in the current evidence, while producing different gameplay outcomes.
+The project’s controlled-run evidence includes 50-run results for qwen3:32b and DeepSeek-R1-32B. Both models completed 50 controlled runs with zero LLM errors in the current evidence, while producing different gameplay outcomes.
 
 This shows why evaluation should distinguish between execution stability, strategic quality, and final outcome.
 
@@ -276,7 +276,7 @@ These properties make Lux AI Season 3 suitable for this project because it inclu
 
 The environment also exposes the limitations of direct LLM control. Since actions must be legal and timely, the LLM cannot simply output arbitrary text. It must be integrated into a controlled action pipeline.
 
-This makes Lux AI Season 3 a suitable environment for investigating the project鈥檚 research question.
+This makes Lux AI Season 3 a suitable environment for investigating the project’s research question.
 
 ---
 
@@ -295,7 +295,7 @@ Its main distinguishing features are:
 * controlled multi-run evaluation;
 * replay-grounded decision trace overlay.
 
-This positioning is important because the project鈥檚 contribution is not only that an LLM can be connected to Lux AI Season 3. The contribution is that LLM decisions can be structured, verified, traced, evaluated, and visually inspected.
+This positioning is important because the project’s contribution is not only that an LLM can be connected to Lux AI Season 3. The contribution is that LLM decisions can be structured, verified, traced, evaluated, and visually inspected.
 
 This distinguishes the project from a simple LLM wrapper around an existing rule-based agent.
 
@@ -320,7 +320,7 @@ The following references should be added to the final bibliography or BibTeX fil
 * Ahn et al. (2022), *Do As I Can, Not As I Say: Grounding Language in Robotic Affordances*.
 * Berner et al. (2019), *Dota 2 with Large Scale Deep Reinforcement Learning*.
 * Browne et al. (2012), *A Survey of Monte Carlo Tree Search Methods*.
-* Li et al. (2023), *CAMEL: Communicative Agents for 鈥淢ind鈥?Exploration of Large Language Model Society*.
+* Li et al. (2023), *CAMEL: Communicative Agents for “Mind” Exploration of Large Language Model Society*.
 * Mnih et al. (2015), *Human-level Control through Deep Reinforcement Learning*.
 * Park et al. (2023), *Generative Agents: Interactive Simulacra of Human Behavior*.
 * Schick et al. (2023), *Toolformer: Language Models Can Teach Themselves to Use Tools*.

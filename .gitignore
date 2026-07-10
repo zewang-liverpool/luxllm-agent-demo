@@ -23,6 +23,11 @@ env/
 *.tar
 *.gz
 
+# Local recordings and generated documents
+*.mp4
+*.mhtml
+*.pdf
+
 # OS / editor
 .DS_Store
 Thumbs.db
@@ -33,9 +38,18 @@ Thumbs.db
 docs/hpc_qwen3_gpu_e4_50run/
 docs/hpc_qwen3_gpu_e52_50run/
 docs/hpc_qwen3_32b_multirun/
+docs/demo_backups/
+docs/demo_videos/
+docs/demo_evidence/**/run[0-9][0-9]/
+paper/exports/
+logs/
+errorlogs/
 replays/
-# Generated paper PDFs
-paper/*.pdf
+archive/
+view/
+实验结果/
 
-# Generated paper PDFs
-paper/*.pdf
+# Large local validation outputs
+docs/v09b_validation/
+docs/v09c_validation/
+docs/v09d1_validation/
