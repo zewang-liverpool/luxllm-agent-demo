@@ -17,6 +17,7 @@ Branch: `codex/reproducibility-hardening`
 | No statistical uncertainty | Added Wilson intervals, exact binomial tests, exact McNemar analysis, and paired bootstrap role-effect intervals | Statistics unit tests passed |
 | Historical results not mechanically recomputable | Added `tools/recompute_reported_metrics.py` | Reproduced 70% and 52% from tracked JSON |
 | Output/environment provenance incomplete | Every new experiment writes Git commit, Python/platform, package versions, Ollama models, temperature, seed policy, and per-run results | Verified in mock experiment `environment.json` and `summary.json` |
+| Local workspace contained many untracked legacy files | Archived 100 legacy files under ignored `archive/legacy-untracked-20260711/` with a manifest | `git status` is clean after archival |
 
 ## Local Validation Results
 

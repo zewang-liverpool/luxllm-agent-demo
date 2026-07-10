@@ -481,7 +481,7 @@ The project can be considered ready for supervisor review when the following are
 | Figure and table plan            |         Yes | Pending  |
 | Full dissertation draft assembly |         Yes | Complete |
 | Supervisor review summary        | Recommended | Complete |
-| Final Git safety check           |         Yes | Pending  |
+| Final Git safety check           |         Yes | Complete |
 
 The project should stop major modification after these pending items are complete.
 
