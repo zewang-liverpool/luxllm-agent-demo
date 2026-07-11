@@ -58,26 +58,43 @@ def winner_from_rewards(player_0: int, player_1: int) -> str:
     return "draw"
 
 
-def ollama_models(base_url: str) -> List[str]:
+def ollama_inventory(base_url: str) -> List[Dict]:
     url = base_url.rstrip("/") + "/api/tags"
     with urllib.request.urlopen(url, timeout=5) as response:
         payload = json.loads(response.read().decode("utf-8"))
-    return [str(item.get("name")) for item in payload.get("models", [])]
+    return [item for item in payload.get("models", []) if isinstance(item, dict)]
 
 
-def runtime_metadata(args: argparse.Namespace, models: List[str]) -> Dict:
+def resolve_source_commit() -> str:
     try:
-        commit = subprocess.check_output(
+        return subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, stderr=subprocess.DEVNULL
         ).strip()
     except Exception:
-        commit = "unknown"
+        return os.environ.get("LUX_SOURCE_COMMIT", "unknown").strip() or "unknown"
+
+
+def env_flag(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def runtime_metadata(args: argparse.Namespace, inventory: List[Dict]) -> Dict:
+    commit = resolve_source_commit()
     try:
         freeze = subprocess.check_output(
             [sys.executable, "-m", "pip", "freeze"], text=True, stderr=subprocess.DEVNULL
         ).splitlines()
     except Exception:
         freeze = []
+    try:
+        ollama_version = subprocess.check_output(
+            ["ollama", "--version"], text=True, stderr=subprocess.STDOUT
+        ).strip()
+    except Exception:
+        ollama_version = "unavailable"
     return {
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "git_commit": commit,
@@ -86,11 +103,16 @@ def runtime_metadata(args: argparse.Namespace, models: List[str]) -> Dict:
         "platform": platform.platform(),
         "model": args.model,
         "ollama_base_url": args.ollama_base_url,
-        "ollama_models": models,
+        "ollama_version": ollama_version,
+        "ollama_models": [str(item.get("name")) for item in inventory],
+        "ollama_model_inventory": inventory,
         "seed_start": args.seed_start,
         "seed_pairs": args.pairs,
         "planned_matches": args.pairs * 2,
         "temperature": args.temperature,
+        "llm_num_predict": int(os.environ.get("LUX_LLM_NUM_PREDICT", "384")),
+        "llm_think": env_flag("LUX_LLM_THINK", False),
+        "llm_json_mode": env_flag("LUX_LLM_JSON_MODE", True),
         "llm_seed_policy": "same integer as the paired Lux environment seed",
         "pip_freeze": freeze,
     }
@@ -244,7 +266,8 @@ def main() -> int:
         raise SystemExit(f"Agent entry point is missing: {AGENT_PATH}")
 
     try:
-        models = ollama_models(args.ollama_base_url)
+        inventory = ollama_inventory(args.ollama_base_url)
+        models = [str(item.get("name")) for item in inventory]
     except Exception as exc:
         raise SystemExit(f"Ollama preflight failed at {args.ollama_base_url}: {exc}") from exc
     if args.model not in models and not any(name.startswith(args.model + ":") for name in models):
@@ -256,7 +279,7 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
     history_path = output_dir / "match_history.jsonl"
     metadata_path = output_dir / "environment.json"
-    metadata = runtime_metadata(args, models)
+    metadata = runtime_metadata(args, inventory)
     if not metadata_path.exists():
         metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
     else:

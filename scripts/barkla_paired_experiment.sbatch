@@ -23,8 +23,12 @@ SEED_START="${SEED_START:-20260701}"
 OLLAMA_BASE_URL="${OLLAMA_BASE_URL:-http://127.0.0.1:11434}"
 PYTHON_BIN="${PYTHON_BIN:-$PWD/.venv/bin/python}"
 OUTPUT_DIR="${OUTPUT_DIR:-$PWD/results/${SLURM_JOB_ID}_${MODEL//:/_}_paired}"
+: "${LUX_SOURCE_COMMIT:?Submit with LUX_SOURCE_COMMIT set to the tested source commit}"
 
 export PYTHONNOUSERSITE=1
+export LUX_LLM_NUM_PREDICT="${LUX_LLM_NUM_PREDICT:-384}"
+export LUX_LLM_THINK="${LUX_LLM_THINK:-0}"
+export LUX_LLM_JSON_MODE="${LUX_LLM_JSON_MODE:-1}"
 export OLLAMA_HOST="$OLLAMA_BASE_URL"
 export OLLAMA_HOME="$HOME/fastscratch/.ollama"
 export OLLAMA_MODELS="$OLLAMA_HOME/models"
@@ -47,6 +51,10 @@ echo "Host: $(hostname)"
 echo "Job: $SLURM_JOB_ID"
 echo "Model: $MODEL"
 echo "Pairs: $PAIRS"
+echo "Source commit: $LUX_SOURCE_COMMIT"
+echo "LLM num_predict: $LUX_LLM_NUM_PREDICT"
+echo "LLM think: $LUX_LLM_THINK"
+echo "LLM JSON mode: $LUX_LLM_JSON_MODE"
 echo "Output: $OUTPUT_DIR"
 "$PYTHON_BIN" --version
 nvidia-smi

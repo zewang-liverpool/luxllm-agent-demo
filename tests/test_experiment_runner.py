@@ -1,12 +1,13 @@
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from run_paired_experiment import parse_rewards, winner_from_rewards
+from run_paired_experiment import parse_rewards, resolve_source_commit, winner_from_rewards
 
 
 class ExperimentRunnerTests(unittest.TestCase):
@@ -18,6 +19,11 @@ class ExperimentRunnerTests(unittest.TestCase):
     def test_parse_scalar_rewards(self):
         text = 'Rewards: {"player_0": 1, "player_1": 4}'
         self.assertEqual(parse_rewards(text), (1, 4))
+
+    @mock.patch("run_paired_experiment.subprocess.check_output", side_effect=OSError("no git"))
+    @mock.patch.dict("run_paired_experiment.os.environ", {"LUX_SOURCE_COMMIT": "67c2a3b"})
+    def test_source_commit_falls_back_to_transfer_manifest(self, _check_output):
+        self.assertEqual(resolve_source_commit(), "67c2a3b")
 
 
 if __name__ == "__main__":
