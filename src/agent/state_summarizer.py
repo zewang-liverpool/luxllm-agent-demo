@@ -215,7 +215,9 @@ def gameview_to_prompt(gameview: Dict) -> str:
     )
     lines.append("")
     lines.append("Output format:")
-    lines.append('{"unit_intents":{"0":{"intent":"EXPLORE_STALE_TILE","reason":"short reason"}}}')
+    lines.append('{"unit_intents":{"0":{"intent":"EXPLORE_STALE_TILE","reason":"nearest stale"}}}')
+    lines.append("Use numeric unit IDs exactly as shown; never prefix an ID with u.")
+    lines.append("Include every visible unit and keep each reason to at most four words.")
     lines.append("")
     lines.append("State:")
     lines.append(

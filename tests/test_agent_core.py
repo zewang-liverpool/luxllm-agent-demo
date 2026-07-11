@@ -15,6 +15,7 @@ from llm_decider import (
     extract_json_object,
     extract_ollama_response,
     infer_fallback_reason,
+    normalize_unit_intent_keys,
 )
 from lux_state import parse_units
 from state_summarizer import gameview_to_prompt
@@ -68,6 +69,15 @@ class AgentCoreTests(unittest.TestCase):
                     "eval_count": 120,
                 }
             )
+
+    def test_prefixed_unit_keys_are_normalized_for_the_planner(self):
+        parsed = normalize_unit_intent_keys(
+            {"unit_intents": {"u3": {"intent": "HOLD_POSITION"}}}
+        )
+        self.assertEqual(
+            parsed,
+            {"unit_intents": {"3": {"intent": "HOLD_POSITION"}}},
+        )
 
     def test_timeout_has_explicit_fallback_reason(self):
         reason = infer_fallback_reason(True, False, False, True, "timed out", {})

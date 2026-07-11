@@ -109,6 +109,25 @@ def extract_ollama_response(result: Dict) -> str:
     )
 
 
+def normalize_unit_intent_keys(parsed: Dict) -> Dict:
+    """Normalize model keys such as ``u3`` to the planner's canonical ``3``."""
+    if not isinstance(parsed, dict):
+        return parsed
+
+    unit_intents = parsed.get("unit_intents")
+    if not isinstance(unit_intents, dict):
+        return parsed
+
+    normalized = {}
+    for raw_key, item in unit_intents.items():
+        key = str(raw_key).strip()
+        if len(key) > 1 and key[0].lower() == "u" and key[1:].isdigit():
+            key = key[1:]
+        normalized[key] = item
+    parsed["unit_intents"] = normalized
+    return parsed
+
+
 def count_unit_intents(parsed: Dict) -> int:
     if not isinstance(parsed, dict):
         return 0
@@ -242,7 +261,7 @@ class LLMDecider:
             self.last_llm_called = True
             raw_text = self._call_ollama(prompt)
             self.last_raw_text = raw_text
-            parsed = extract_json_object(raw_text)
+            parsed = normalize_unit_intent_keys(extract_json_object(raw_text))
 
         except Exception as exc:
             error_text = str(exc)

@@ -249,6 +249,10 @@ class Agent:
         if not self.llm_enabled_for_this_player:
             return {"unit_intents": {}}, "fallback_rule_player"
 
+        my_units = gameview.get("my_units", []) if isinstance(gameview, dict) else []
+        if not isinstance(my_units, list) or not my_units:
+            return {"unit_intents": {}}, "skip_llm_rule_fallback:no_active_units"
+
         cache_enabled = bool(getattr(config, "ENABLE_STRATEGY_CACHE", True))
         reuse_enabled = bool(getattr(config, "LLM_REUSE_LAST_INTENTS", True))
 

@@ -140,7 +140,7 @@ LLM_BASE_URL = get_env_str("LUX_LLM_BASE_URL", "http://127.0.0.1:11434")
 LLM_TIMEOUT_SECONDS = get_env_float("LUX_LLM_TIMEOUT_SECONDS", 12.0)
 LLM_TEMPERATURE = get_env_float("LUX_LLM_TEMPERATURE", 0.1)
 LLM_SEED = get_env_int("LUX_LLM_SEED", 42)
-LLM_NUM_PREDICT = get_env_int("LUX_LLM_NUM_PREDICT", 120)
+LLM_NUM_PREDICT = get_env_int("LUX_LLM_NUM_PREDICT", 384)
 # Qwen3 enables a separate reasoning trace by default in Ollama.  Strategic
 # decisions need a short machine-readable answer, so reproducible experiments
 # disable that trace and request JSON output explicitly.
