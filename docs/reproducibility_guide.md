@@ -174,9 +174,10 @@ Important controls:
 
 ## 8. Barkla2 Slurm Submission
 
-The supplied Slurm file does not assume a site-specific module name.  Prepare
-the Python environment and Ollama service first, then submit from the repository
-root:
+The supplied Slurm file is configured for Barkla2's `gpu-h100` partition,
+`miniforge3/25.3.0-python3.12.10`, and `ollama/0.12.11`. It starts and stops an
+isolated Ollama server inside the allocation. Prepare the shared Python virtual
+environment first, then submit from the repository root:
 
 ```bash
 sbatch --export=ALL,MODEL=qwen3:32b,PAIRS=50,SEED_START=20260701 \
