@@ -123,6 +123,11 @@ def normalize_unit_intent_keys(parsed: Dict) -> Dict:
         key = str(raw_key).strip()
         if len(key) > 1 and key[0].lower() == "u" and key[1:].isdigit():
             key = key[1:]
+        if isinstance(item, str) and item.strip():
+            item = {
+                "intent": item.strip(),
+                "reason": "normalized model shorthand",
+            }
         normalized[key] = item
     parsed["unit_intents"] = normalized
     return parsed

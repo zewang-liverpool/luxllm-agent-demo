@@ -79,6 +79,15 @@ class AgentCoreTests(unittest.TestCase):
             {"unit_intents": {"3": {"intent": "HOLD_POSITION"}}},
         )
 
+    def test_string_intent_shorthand_is_normalized_for_the_planner(self):
+        parsed = normalize_unit_intent_keys(
+            {"unit_intents": {"0": "EXPLORE_STALE_TILE"}}
+        )
+        self.assertEqual(
+            parsed["unit_intents"]["0"]["intent"],
+            "EXPLORE_STALE_TILE",
+        )
+
     def test_timeout_has_explicit_fallback_reason(self):
         reason = infer_fallback_reason(True, False, False, True, "timed out", {})
         self.assertEqual(reason, "llm_timeout")
