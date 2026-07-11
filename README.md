@@ -16,6 +16,8 @@ This project investigates the following research question:
 
 > **How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?**
 
+Model backends and match outcomes are evaluated as controlled case studies of this framework, not as a general-purpose model leaderboard. Win rate is therefore a secondary outcome measure. The primary evidence concerns trace completeness, decision provenance, structured-output validity, rule-based verification and fallback behaviour, and the ability to connect recorded decisions with executed actions and replay outcomes.
+
 The system is built around three sub-questions:
 
 1. How can raw Lux AI Season 3 game states be transformed into compact structured inputs for LLM-based strategic decision making?

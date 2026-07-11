@@ -21,7 +21,7 @@
 
 % Single-blind demo review allows author names to remain visible.
 % Keep the simple ACL/EMNLP author-block style.
-\title{LuxLLM-Agent: An Inspectable LLM-Assisted Agent and Replay Viewer for Lux AI Season 3}
+\title{LuxLLM-Agent: A Decision-Trace and Action-Verification Framework for Inspecting and Evaluating LLM-based Agents in Lux AI Season 3}
 
 \author{
   Ze Wang \\
@@ -50,7 +50,7 @@ This paper presents LuxLLM-Agent, a system demonstration focused on making LLM-a
 
 The central idea is to treat the LLM as a high-level strategy component rather than as a direct controller for every individual unit action. The agent records structured decision traces, reuses cached strategy decisions between fresh LLM calls, and falls back to deterministic rules when the LLM is unavailable, too slow, or unsuitable for direct execution. The replay viewer then makes these decisions visible alongside the game state, helping users inspect how the agent combines LLM strategy, cached decisions, rule fallback, and match outcomes.
 
-This setting raises a different research question from simply maximising leaderboard performance: how can an LLM-assisted game agent be made observable enough for users to inspect its decisions after a match? In many agent demonstrations, the LLM component is only visible through a final action or through a natural-language explanation generated after the fact. LuxLLM-Agent instead records decision-source metadata during execution and binds these records to replay frames. This makes it possible to distinguish between fresh LLM decisions, cached LLM decisions, deterministic fallback actions, and rule-controlled opponent actions.
+This setting raises a different research question from simply maximising leaderboard performance: \emph{How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?} In many agent demonstrations, the LLM component is only visible through a final action or through a natural-language explanation generated after the fact. LuxLLM-Agent instead records decision-source metadata during execution, binds these records to replay frames, and verifies proposed strategies before converting them into environment actions. This makes it possible to distinguish between fresh LLM decisions, cached LLM decisions, verified actions, deterministic fallback actions, and rule-controlled opponent actions.
 
 The contribution of this demo is system-oriented. First, it provides a fallback-safe LLM-agent runtime for Lux AI Season 3, where high-level LLM strategy generation is separated from low-level action validation. Second, it introduces replay-grounded decision traceability, allowing users to inspect how decisions were produced during the match rather than relying only on final scores. Third, it reports controlled \texttt{qwen3:32b} evaluation results together with trace coverage, fallback behaviour, latency, and cached-decision statistics. Finally, it includes a lightweight scalability simulation showing how sparse LLM-generated policy templates can be reused by many cheaper worker agents.
 
