@@ -57,6 +57,27 @@ def bootstrap_role_difference(
     return (estimate, samples[low_index], samples[high_index])
 
 
+def bootstrap_clustered_win_rate(
+    pairs: Sequence[Tuple[float, float]],
+    iterations: int = 10000,
+    seed: int = 42,
+) -> Tuple[float, float, float]:
+    """Bootstrap the overall win rate while resampling matched seeds as clusters."""
+    if not pairs:
+        return (0.0, 0.0, 0.0)
+    seed_rates = [(left + right) / 2.0 for left, right in pairs]
+    estimate = sum(seed_rates) / len(seed_rates)
+    rng = random.Random(seed)
+    samples: List[float] = []
+    for _ in range(iterations):
+        sample = [seed_rates[rng.randrange(len(seed_rates))] for _ in seed_rates]
+        samples.append(sum(sample) / len(sample))
+    samples.sort()
+    low_index = int(0.025 * (len(samples) - 1))
+    high_index = int(0.975 * (len(samples) - 1))
+    return (estimate, samples[low_index], samples[high_index])
+
+
 def summarise_records(records: Iterable[Dict]) -> Dict:
     records = list(records)
     valid = [record for record in records if record.get("status") == "complete"]
@@ -104,6 +125,12 @@ def summarise_records(records: Iterable[Dict]) -> Dict:
 
     discordant_total = discordant_player_0_only + discordant_player_1_only
     role_diff, role_diff_low, role_diff_high = bootstrap_role_difference(matched_pairs)
+    clustered_rate, clustered_low, clustered_high = bootstrap_clustered_win_rate(matched_pairs)
+    seed_rates = [(left + right) / 2.0 for left, right in matched_pairs]
+    seeds_above_half = sum(rate > 0.5 for rate in seed_rates)
+    seeds_equal_half = sum(rate == 0.5 for rate in seed_rates)
+    seeds_below_half = sum(rate < 0.5 for rate in seed_rates)
+    non_tied_seed_total = seeds_above_half + seeds_below_half
 
     return {
         "total_records": len(records),
@@ -117,6 +144,19 @@ def summarise_records(records: Iterable[Dict]) -> Dict:
         "llm_win_rate_wilson_95_ci": [ci_low, ci_high],
         "exact_binomial_pvalue_vs_0_5": exact_binomial_pvalue(llm_wins, len(valid)),
         "by_llm_role": by_role,
+        "matched_seed_performance": {
+            "seeds_above_0_5": seeds_above_half,
+            "seeds_equal_0_5": seeds_equal_half,
+            "seeds_below_0_5": seeds_below_half,
+            "clustered_win_rate": clustered_rate,
+            "cluster_bootstrap_95_ci": [clustered_low, clustered_high],
+            "exact_sign_pvalue_vs_0_5": exact_binomial_pvalue(
+                seeds_above_half, non_tied_seed_total
+            ),
+            "bootstrap_iterations": 10000,
+            "bootstrap_seed": 42,
+            "independence_unit": "matched Lux environment seed",
+        },
         "matched_role_analysis": {
             "player_0_only_wins": discordant_player_0_only,
             "player_1_only_wins": discordant_player_1_only,

@@ -32,6 +32,35 @@ class EvaluationStatsTests(unittest.TestCase):
         self.assertEqual(summary["matched_role_analysis"]["player_0_only_wins"], 1)
         self.assertEqual(summary["matched_role_analysis"]["player_1_only_wins"], 1)
 
+    def test_clustered_performance_resamples_seed_pairs(self):
+        records = []
+        for seed in range(1, 15):
+            records.extend(
+                [
+                    {"status": "complete", "seed": seed, "llm_player": "player_0", "winner": "player_0", "llm_won": True},
+                    {"status": "complete", "seed": seed, "llm_player": "player_1", "winner": "player_1", "llm_won": True},
+                ]
+            )
+        for seed in range(15, 50):
+            records.extend(
+                [
+                    {"status": "complete", "seed": seed, "llm_player": "player_0", "winner": "player_0", "llm_won": True},
+                    {"status": "complete", "seed": seed, "llm_player": "player_1", "winner": "player_0", "llm_won": False},
+                ]
+            )
+        records.extend(
+            [
+                {"status": "complete", "seed": 50, "llm_player": "player_0", "winner": "player_1", "llm_won": False},
+                {"status": "complete", "seed": 50, "llm_player": "player_1", "winner": "player_0", "llm_won": False},
+            ]
+        )
+        paired = summarise_records(records)["matched_seed_performance"]
+        self.assertEqual(paired["seeds_above_0_5"], 14)
+        self.assertEqual(paired["seeds_equal_0_5"], 35)
+        self.assertEqual(paired["seeds_below_0_5"], 1)
+        self.assertAlmostEqual(paired["clustered_win_rate"], 0.63)
+        self.assertAlmostEqual(paired["exact_sign_pvalue_vs_0_5"], 0.0009765625)
+
     def test_paired_model_comparison_matches_seed_and_role(self):
         left = {
             (1, "player_0"): {"llm_won": True, "winner": "player_0"},
