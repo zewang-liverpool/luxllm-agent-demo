@@ -66,6 +66,49 @@ def extract_json_object(text: str) -> Dict:
         return {}
 
 
+def build_ollama_payload(model: str, prompt: str) -> Dict:
+    """Build a deterministic Ollama request for a short strategic decision."""
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "stream": False,
+        "think": bool(config.LLM_THINK),
+        "options": {
+            "temperature": float(config.LLM_TEMPERATURE),
+            "seed": int(config.LLM_SEED),
+            "num_predict": int(config.LLM_NUM_PREDICT),
+        },
+    }
+    if bool(config.LLM_JSON_MODE):
+        payload["format"] = "json"
+    return payload
+
+
+def extract_ollama_response(result: Dict) -> str:
+    """Return the final answer and reject reasoning-only Ollama responses."""
+    if not isinstance(result, dict):
+        raise RuntimeError("Ollama returned a non-object response")
+
+    response = result.get("response", "")
+    if isinstance(response, str) and response.strip():
+        return response
+
+    thinking = result.get("thinking", "")
+    done_reason = result.get("done_reason", "unknown")
+    eval_count = result.get("eval_count", "unknown")
+    if isinstance(thinking, str) and thinking.strip():
+        raise RuntimeError(
+            "Ollama returned thinking but no final response "
+            f"(done_reason={done_reason}, eval_count={eval_count}); "
+            "set LUX_LLM_THINK=0 or increase LUX_LLM_NUM_PREDICT"
+        )
+
+    raise RuntimeError(
+        "Ollama returned an empty final response "
+        f"(done_reason={done_reason}, eval_count={eval_count})"
+    )
+
+
 def count_unit_intents(parsed: Dict) -> int:
     if not isinstance(parsed, dict):
         return 0
@@ -416,16 +459,7 @@ class LLMDecider:
         """
         url = self.base_url.rstrip("/") + "/api/generate"
 
-        payload = {
-            "model": self.model,
-            "prompt": prompt,
-            "stream": False,
-            "options": {
-                "temperature": float(config.LLM_TEMPERATURE),
-                "seed": int(config.LLM_SEED),
-                "num_predict": int(config.LLM_NUM_PREDICT),
-            },
-        }
+        payload = build_ollama_payload(self.model, prompt)
 
         data = json.dumps(payload).encode("utf-8")
 
@@ -443,7 +477,7 @@ class LLMDecider:
             body = response.read().decode("utf-8", errors="replace")
 
         result = json.loads(body)
-        return result.get("response", "")
+        return extract_ollama_response(result)
 
     def _is_timeout_error(self, error_text: str) -> bool:
         if not error_text:

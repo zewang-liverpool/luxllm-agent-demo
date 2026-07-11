@@ -141,6 +141,11 @@ LLM_TIMEOUT_SECONDS = get_env_float("LUX_LLM_TIMEOUT_SECONDS", 12.0)
 LLM_TEMPERATURE = get_env_float("LUX_LLM_TEMPERATURE", 0.1)
 LLM_SEED = get_env_int("LUX_LLM_SEED", 42)
 LLM_NUM_PREDICT = get_env_int("LUX_LLM_NUM_PREDICT", 120)
+# Qwen3 enables a separate reasoning trace by default in Ollama.  Strategic
+# decisions need a short machine-readable answer, so reproducible experiments
+# disable that trace and request JSON output explicitly.
+LLM_THINK = get_env_bool("LUX_LLM_THINK", False)
+LLM_JSON_MODE = get_env_bool("LUX_LLM_JSON_MODE", True)
 
 # If the LLM fails or returns invalid JSON, rule policy takes over.
 ENABLE_RULE_FALLBACK = get_env_bool("LUX_ENABLE_RULE_FALLBACK", True)

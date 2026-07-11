@@ -10,7 +10,12 @@ sys.path.insert(0, str(ROOT / "src" / "agent"))
 os.environ.setdefault("LUX_RUN_DIR", str(ROOT / "results" / "test-runtime"))
 
 from action_planner import make_empty_actions
-from llm_decider import extract_json_object, infer_fallback_reason
+from llm_decider import (
+    build_ollama_payload,
+    extract_json_object,
+    extract_ollama_response,
+    infer_fallback_reason,
+)
 from lux_state import parse_units
 from state_summarizer import gameview_to_prompt
 
@@ -46,6 +51,23 @@ class AgentCoreTests(unittest.TestCase):
     def test_llm_json_extraction_handles_markdown_wrapper(self):
         parsed = extract_json_object('answer: {"unit_intents":{"0":{"intent":"HOLD_POSITION"}}}')
         self.assertEqual(parsed["unit_intents"]["0"]["intent"], "HOLD_POSITION")
+
+    def test_ollama_payload_disables_thinking_and_requests_json(self):
+        payload = build_ollama_payload("qwen3:32b", "choose an intent")
+        self.assertFalse(payload["think"])
+        self.assertEqual(payload["format"], "json")
+        self.assertFalse(payload["stream"])
+
+    def test_reasoning_only_ollama_response_is_an_explicit_error(self):
+        with self.assertRaisesRegex(RuntimeError, "thinking but no final response"):
+            extract_ollama_response(
+                {
+                    "response": "",
+                    "thinking": "still reasoning",
+                    "done_reason": "length",
+                    "eval_count": 120,
+                }
+            )
 
     def test_timeout_has_explicit_fallback_reason(self):
         reason = infer_fallback_reason(True, False, False, True, "timed out", {})
