@@ -16,6 +16,8 @@ This project investigates the following research question:
 
 > **How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?**
 
+Model backends and match outcomes are evaluated as controlled case studies of this framework, not as a general-purpose model leaderboard. Win rate is therefore a secondary outcome measure. The primary evidence concerns trace completeness, decision provenance, structured-output validity, rule-based verification and fallback behaviour, and the ability to connect recorded decisions with executed actions and replay outcomes.
+
 The system is built around three sub-questions:
 
 1. How can raw Lux AI Season 3 game states be transformed into compact structured inputs for LLM-based strategic decision making?
@@ -111,13 +113,66 @@ The LLM does not directly execute arbitrary environment actions. Instead, it pro
 
 ### Controlled-run evaluation
 
-* Includes 50-run evidence for `qwen3:32b`.
-* Includes 50-run comparison evidence for `deepseek-r1:32b`.
-* Reports win/loss, LLM errors, latency, fallback behaviour, and decision-source distribution.
+* Includes 50 matched seeds with role swapping for each backend: 100 matches for `qwen3:32b` and 100 for `deepseek-r1:32b`.
+* Measures trace completeness, replay linkage, output normalization, action verification, risk filtering, fallback observability, latency, and secondary match outcomes.
+* Preserves exact runtime provenance, model inventory, seeds, dependency versions, and analysis-code versions.
 
 ---
 
-## Main Evaluation Results
+## Main Evaluation Results: Framework Evidence
+
+The primary evaluation asks whether the framework makes LLM-agent behaviour inspectable and supports reliable post-run evaluation. Backend win rate is a secondary outcome rather than the main contribution.
+
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th align="center">Framework metric</th>
+      <th align="center"><code>qwen3:32b</code></th>
+      <th align="center"><code>deepseek-r1:32b</code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Completed matched-role matches</td><td align="center">100 / 100</td><td align="center">100 / 100</td></tr>
+    <tr><td align="center">Agent-step / LLM-call trace completeness</td><td align="center">100% / 100%</td><td align="center">100% / 100%</td></tr>
+    <tr><td align="center">Replay-linkage coverage</td><td align="center">100%</td><td align="center">100%</td></tr>
+    <tr><td align="center">Structured-valid LLM calls after normalization</td><td align="center">2286 / 2286</td><td align="center">2305 / 2305</td></tr>
+    <tr><td align="center">Deterministic normalization interventions</td><td align="center">520 (22.7%)</td><td align="center">0 (0%)</td></tr>
+    <tr><td align="center">Risk-filter changed steps</td><td align="center">5590 (11.1%)</td><td align="center">7090 (14.0%)</td></tr>
+    <tr><td align="center">Action-array shape validity</td><td align="center">100%</td><td align="center">100%</td></tr>
+    <tr><td align="center">Timeouts / LLM errors / action fallbacks</td><td align="center">0 / 0 / 0</td><td align="center">0 / 0 / 0</td></tr>
+  </tbody>
+</table>
+
+<p align="center">
+  <img src="reports/figures/framework_evidence_rates.png" alt="Decision-trace coverage, structured-output validity, and verification intervention rates" width="820">
+</p>
+
+Across each backend's 50,500 LLM-agent steps, structured provenance distinguished fresh LLM decisions, cached decisions, and observable rule fallback. Qwen used 2,286 fresh decisions, 45,399 cached steps, and 2,815 rule-fallback steps; DeepSeek used 2,305, 45,380, and 2,815 respectively. The 520 Qwen shorthand responses are especially relevant to the research question: they were not discarded or executed directly, but were deterministically normalized into the bounded strategy schema before action planning.
+
+### Secondary controlled outcomes
+
+<table align="center" width="100%">
+  <thead>
+    <tr><th align="center">Backend</th><th align="center">Matches</th><th align="center">LLM wins</th><th align="center">Win rate</th><th align="center">Seed-clustered 95% CI</th><th align="center">Seed-level exact p-value</th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center"><code>qwen3:32b</code></td><td align="center">100</td><td align="center">63</td><td align="center">63%</td><td align="center">[57%, 70%]</td><td align="center">0.00098</td></tr>
+    <tr><td align="center"><code>deepseek-r1:32b</code></td><td align="center">100</td><td align="center">60</td><td align="center">60%</td><td align="center">[51%, 69%]</td><td align="center">0.05248</td></tr>
+  </tbody>
+</table>
+
+The paired backend comparison matched all 100 seed-role strata. Qwen was the sole winner in 14 strata and DeepSeek in 11; the difference was not significant (McNemar exact `p = 0.6900`, paired mean difference `0.03`, 95% CI `[-0.07, 0.13]`). This supports backend portability of the trace-and-verification framework, not a hardware-independent model ranking.
+
+Full research-question-aligned analysis is available in [`reports/final_trace_evaluation.md`](reports/final_trace_evaluation.md), with machine-readable JSON/CSV and figures in `reports/figures/`.
+
+---
+
+## Historical Development Results (Superseded)
+
+<details>
+<summary>Show earlier fixed-role 50-run development evidence</summary>
+
+The following results are retained only as development history. They are superseded by the matched-seed, role-swapped 100-match experiments above and must not be used as the current main conclusion.
 
 ### 50-run LLM backend comparison
 
@@ -225,6 +280,8 @@ Fallback decision-source rate ≈ 6.45%
 
 ---
 
+</details>
+
 ## Evidence
 
 Main evidence files and directories:
@@ -232,6 +289,11 @@ Main evidence files and directories:
 ```text
 docs/demo_evidence_index.md
 docs/demo_evidence/llm_model_comparison_summary.md
+reports/final_trace_evaluation.md
+reports/final_trace_evaluation.json
+reports/final_trace_metrics.csv
+reports/figures/framework_evidence_rates.png
+reports/figures/decision_source_distribution.png
 docs/demo_evidence/hpc_qwen3_32b_50run/
 docs/demo_evidence/hpc_deepseek_r1_32b_50run/
 docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
@@ -309,9 +371,22 @@ data/run008_decision_trace_overlay.json
 
 ---
 
-## Agent Runtime Snapshot
+## Reproducible Agent Runtime
 
-The frozen source snapshot is provided under `src/agent/`, with supporting scripts under `src/scripts/` and viewer post-processing utilities under `src/viewer_tools/`. Re-running the full controlled experiments additionally requires a compatible Lux AI Season 3 environment, Ollama, the named local models, and the original local or Slurm runtime configuration. The tracked viewer and evidence summaries can be inspected without rerunning a match.
+The canonical runnable source is under `src/agent/`. Dependency manifests,
+unit tests, CI, a rule-only end-to-end smoke match, and a matched-seed
+role-swapped experiment runner are tracked in the repository.
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe scripts\smoke_test.py
+.\.venv\Scripts\python.exe scripts\run_rule_smoke.py --seed 42
+```
+
+For the full setup, 100-match paired protocol, Barkla2 instructions, generated
+files, and acceptance criteria, see
+[`docs/reproducibility_guide.md`](docs/reproducibility_guide.md).
 
 ---
 
@@ -353,12 +428,10 @@ LUX_FORCE_RULE_ONLY
 LUX_FORCE_FALLBACK
 LUX_LLM_MODEL
 LUX_LLM_BASE_URL
-LLM_BASE_URL
 LUX_EXPERIMENT_TAG
 LUX_ENABLE_RULE_FALLBACK
 LUX_ENABLE_STRATEGY_CACHE
 LUX_ENABLE_RISK_AWARE_ACTION_FILTER
-LUX_ENABLE_CANDIDATE_EXPLOITATION
 LUX_LLM_TIMEOUT_SECONDS
 LUX_LLM_CALL_INTERVAL
 LUX_LLM_NUM_PREDICT
@@ -438,6 +511,12 @@ The strongest dissertation angle is:
     <tr><td align="center">Evidence index update</td><td align="center">Complete</td></tr>
     <tr><td align="center">Failure analysis document</td><td align="center">Complete</td></tr>
     <tr><td align="center">Viewer LLM Decision Trace Overlay</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Clean environment dependency manifests</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Automated tests and GitHub Actions CI</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Rule-only end-to-end smoke test</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Matched-seed role-swap experiment pipeline</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Real-model paired 100-match evidence</td><td align="center">Pending Barkla2 run</td></tr>
+    <tr><td align="center">Historical confidence intervals and exact tests</td><td align="center">Complete</td></tr>
     <tr><td align="center">Dissertation chapter drafts</td><td align="center">Complete</td></tr>
     <tr><td align="center">Final 75-second demo screencast</td><td align="center">Complete</td></tr>
     <tr><td align="center">Supervisor feedback integration</td><td align="center">Pending</td></tr>

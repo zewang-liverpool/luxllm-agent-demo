@@ -21,7 +21,7 @@
 
 % Single-blind demo review allows author names to remain visible.
 % Keep the simple ACL/EMNLP author-block style.
-\title{LuxLLM-Agent: An Inspectable LLM-Assisted Agent and Replay Viewer for Lux AI Season 3}
+\title{LuxLLM-Agent: A Decision-Trace and Action-Verification Framework for Inspecting and Evaluating LLM-based Agents in Lux AI Season 3}
 
 \author{
   Ze Wang \\
@@ -39,7 +39,7 @@
 \maketitle
 
 \begin{abstract}
-We present LuxLLM-Agent, an inspectable LLM-assisted agent system for Lux AI Season 3. The system combines a local game-playing agent, rule-based fallback policies, structured decision logs, and an isometric battle replay viewer for analysing agent behaviour. Unlike a standard replay viewer, our interface connects game states with decision traces, cached LLM decisions, fallback events, match-level scores, and final result summaries. In separate 50-match controlled runs on Barkla2, a target-aware \texttt{qwen3:32b} planner achieved a descriptive win rate of 70\%, compared with 56\% for a previous basic planner, while both configurations recorded zero LLM errors. The system also includes a lightweight scalability simulation with up to 1000 worker agents. The demo package includes a replay viewer, screenshots, replay JSON, evaluation reports, and screencast material for research and educational use.
+We present LuxLLM-Agent, a decision-trace and action-verification framework for inspecting and evaluating LLM-based agents in Lux AI Season 3. The framework constrains LLMs to structured strategic proposals, applies deterministic normalization and rule-based action checks, records decision provenance during execution, and links these records to replay state and outcome evidence. We evaluate two reasoning-oriented backends over 50 matched seeds with role swapping, yielding 100 matches per backend. Across 206,591 structured trace records, both the agent-step and LLM-call schemas achieved 100\% field completeness and replay-linkage coverage. All 4,591 LLM calls were valid after deterministic checks; 520 Qwen shorthand responses required normalization, while risk filtering changed proposed targets in 5,590 Qwen and 7,090 DeepSeek decision steps. All 200 matches completed with no timeout, LLM error, or downstream action fallback. Match outcomes are reported as secondary evidence that the same framework supports controlled backend evaluation, rather than as a general-purpose model ranking.
 \end{abstract}
 
 \section{Introduction}
@@ -50,9 +50,9 @@ This paper presents LuxLLM-Agent, a system demonstration focused on making LLM-a
 
 The central idea is to treat the LLM as a high-level strategy component rather than as a direct controller for every individual unit action. The agent records structured decision traces, reuses cached strategy decisions between fresh LLM calls, and falls back to deterministic rules when the LLM is unavailable, too slow, or unsuitable for direct execution. The replay viewer then makes these decisions visible alongside the game state, helping users inspect how the agent combines LLM strategy, cached decisions, rule fallback, and match outcomes.
 
-This setting raises a different research question from simply maximising leaderboard performance: how can an LLM-assisted game agent be made observable enough for users to inspect its decisions after a match? In many agent demonstrations, the LLM component is only visible through a final action or through a natural-language explanation generated after the fact. LuxLLM-Agent instead records decision-source metadata during execution and binds these records to replay frames. This makes it possible to distinguish between fresh LLM decisions, cached LLM decisions, deterministic fallback actions, and rule-controlled opponent actions.
+This setting raises a different research question from simply maximising leaderboard performance: \emph{How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?} In many agent demonstrations, the LLM component is only visible through a final action or through a natural-language explanation generated after the fact. LuxLLM-Agent instead records decision-source metadata during execution, binds these records to replay frames, and verifies proposed strategies before converting them into environment actions. This makes it possible to distinguish between fresh LLM decisions, cached LLM decisions, verified actions, deterministic fallback actions, and rule-controlled opponent actions.
 
-The contribution of this demo is system-oriented. First, it provides a fallback-safe LLM-agent runtime for Lux AI Season 3, where high-level LLM strategy generation is separated from low-level action validation. Second, it introduces replay-grounded decision traceability, allowing users to inspect how decisions were produced during the match rather than relying only on final scores. Third, it reports controlled \texttt{qwen3:32b} evaluation results together with trace coverage, fallback behaviour, latency, and cached-decision statistics. Finally, it includes a lightweight scalability simulation showing how sparse LLM-generated policy templates can be reused by many cheaper worker agents.
+The contribution is system-oriented. First, LuxLLM-Agent separates bounded high-level LLM proposals from rule-checked low-level action construction. Second, it records two linked trace schemas: LLM-call evidence and per-step execution provenance. Third, its replay-grounded viewer supports inspection of fresh, cached, and fallback decisions alongside state and score context. Finally, a reproducible matched-seed evaluation shows how the resulting traces support quantitative audits of completeness, normalization, verification interventions, latency, role effects, and outcomes across two LLM backends.
 
 \section{System Overview}
 
@@ -87,7 +87,7 @@ This separation is important because LLM-based agents can otherwise be difficult
 
 \subsection{LLM-Assisted Strategy Layer}
 
-The current controlled experiments use a local Ollama backend~\citep{ollama2024} with \texttt{qwen3:32b}~\citep{yang2025qwen3} served on Barkla2 GPU resources. The LLM is queried sparsely rather than on every frame. Fresh LLM decisions are recorded as structured JSON-like decisions, while cached LLM decisions are reused across later turns when appropriate. This design reduces repeated model calls and makes it possible to compare fresh model decisions, cached decisions, and fallback events in the same replay trace.
+The controlled experiments use a local Ollama backend~\citep{ollama2024} with \texttt{qwen3:32b}~\citep{yang2025qwen3} and \texttt{deepseek-r1:32b} served on Barkla2 GPU resources. The LLM is queried sparsely rather than on every frame. Fresh LLM decisions are recorded as structured JSON decisions, while cached decisions are reused across later turns when appropriate. This design reduces repeated model calls and makes it possible to compare fresh model decisions, cached decisions, verification events, and fallback events in the same replay trace.
 
 The strategy layer is deliberately constrained. It receives a compact state summary rather than the full raw game state, and it returns a bounded decision object rather than free-form executable code. This reduces parsing ambiguity and allows the downstream runtime to validate decisions before execution. The design also makes the decision trace easier to inspect because the output categories are stable across matches.
 
@@ -130,7 +130,7 @@ Figure~\ref{fig:presentation-mode} shows the presentation-oriented interface use
 
 \section{Implementation}
 
-The prototype is implemented in Python and JavaScript. The Lux AI Season 3 agent runs locally through the competition environment, while LLM inference is served by a local Ollama backend. Controlled experiments use \texttt{qwen3:32b} on Barkla2 GPU resources. The implementation records console logs, structured JSONL frame logs, LLM decision traces, evaluation JSON files, replay frames, screenshots, and Markdown summaries.
+The prototype is implemented in Python and JavaScript. The Lux AI Season 3 agent runs through the competition environment, while LLM inference is served by a local Ollama backend. Controlled experiments use \texttt{qwen3:32b} and \texttt{deepseek-r1:32b} on Barkla2 L40S GPU resources. The implementation records console logs, structured JSONL frame logs, LLM-call traces, agent-step traces, evaluation JSON files, replay frames, screenshots, and Markdown summaries.
 
 The viewer is implemented as a standalone HTML interface that can be opened through a local HTTP server. It is intended for both live demonstration and video recording. The system keeps the replay artefacts separate from the agent runtime so that recorded matches can be inspected after execution without rerunning the game.
 
@@ -140,7 +140,7 @@ The runtime also separates evidence generation from presentation. Match executio
 
 \section{Evaluation}
 
-We evaluate LuxLLM-Agent from three perspectives: controlled match outcome, replay-grounded decision traceability, and architecture-level scalability. The purpose of this evaluation is not to claim state-of-the-art Lux AI performance, but to validate the stability and inspectability of the proposed LLM-assisted agent pipeline. We therefore report match outcomes together with decision-source statistics, fallback behaviour, cached-decision reuse, LLM latency, and trace coverage.
+We evaluate LuxLLM-Agent from the perspective of the research question: whether structured traces support inspection, whether deterministic verification supports executable behaviour, and whether the resulting evidence supports controlled evaluation. Match outcomes and the existing scalability simulation are secondary system-level observations; neither is used to claim state-of-the-art Lux AI performance.
 
 \subsection{Controlled Match Evaluation}
 
@@ -148,34 +148,36 @@ All controlled matches use the same local agent interface, the same replay loggi
 
 The win count measures how often the LLM-assisted player obtains the better final match result under the controlled setting. The LLM error count measures failed or unusable model interactions after parsing and runtime checks. Trace steps measure how many frame-level records are available for replay-grounded inspection. Fresh LLM decisions count newly generated model responses, while cached LLM decisions count turns where the system reuses a previous strategy. These metrics are important for a system demonstration because they show whether the agent is merely producing occasional successful matches or whether it consistently generates complete, inspectable execution records.
 
-The previous basic \texttt{qwen3:32b} planner uses compact structured JSON decisions and deterministic fallback. In a 50-match controlled evaluation, the LLM-assisted player won 28 matches against 22 wins for the rule-controlled opponent. This run achieved a strategy-use rate of 92.7\%, a fallback rate of 7.3\%, and zero LLM errors.
-
-The current target-aware \texttt{qwen3:32b} strategic planner extends the basic interface with target coordinates, priority scores, risk labels, expected-value estimates, and lightweight rule-based arbitration. In a separate 50-match controlled evaluation, the LLM-assisted player won 35 matches against 15 wins for the rule-controlled opponent. This corresponds to a descriptive win rate of 70\%, with a strategy-use rate of 96.0\%, a fallback rate of 4.0\%, and zero LLM errors.
-
-In all reported controlled runs, the LLM-assisted configuration occupied the \texttt{player\_0} role and the rule-controlled opponent occupied \texttt{player\_1}. The roles were not swapped under matched seeds, and the study does not report confidence intervals or hypothesis tests. The win rates are therefore descriptive outcomes for these configurations and should not be interpreted as statistically significant or as isolating a causal effect of the planner from possible player-side and environment effects.
-
-Earlier strategy-diverse prompting and candidate-exploitation configurations are retained as development evidence and ablation context. They show that the same evaluation pipeline can compare design variants, but they are no longer treated as the final main result.
+For each backend, we use 50 environment seeds and swap the LLM between \texttt{player\_0} and \texttt{player\_1}, producing 100 matches. Temperature is zero, the environment seed is also supplied to the model request, and both backends use the same structured prompt, parser, verifier, rule opponent, and action planner. Qwen produced 2,286 fresh calls and DeepSeek 2,305. All calls were valid after deterministic checks, with no timeout or LLM error.
 
 \begin{table*}[t]
 \centering
 \small
-\begin{tabular}{lcccccc}
+\begin{tabular}{lrr}
 \hline
-Configuration & Runs & LLM wins & Rule wins & Win rate & Strategy use & Fallback \\
+Framework evidence & Qwen3-32B & DeepSeek-R1-32B \\
 \hline
-Basic qwen3 planner & 50 & 28 & 22 & 56\% & 92.7\% & 7.3\% \\
-Target-aware qwen3 strategic planner & 50 & 35 & 15 & 70\% & 96.0\% & 4.0\% \\
-Strategy-diverse prompting & 50 & 29 & 21 & 58\% & -- & -- \\
-Candidate-exploitation ablation & 50 & 26 & 24 & 52\% & -- & -- \\
+Completed matches & 100/100 & 100/100 \\
+Agent-step / LLM-call trace completeness & 100\% / 100\% & 100\% / 100\% \\
+Replay-linkage coverage & 100\% & 100\% \\
+Structured-valid calls after normalization & 2,286/2,286 & 2,305/2,305 \\
+Raw schema-valid calls & 1,766 (77.3\%) & 2,305 (100\%) \\
+Normalization interventions & 520 (22.7\%) & 0 \\
+Cached-decision steps & 45,399 (89.9\%) & 45,380 (89.9\%) \\
+Observable rule-fallback steps & 2,815 (5.6\%) & 2,815 (5.6\%) \\
+Risk-filter changed steps & 5,590 (11.1\%) & 7,090 (14.0\%) \\
+Action-array shape validity & 100\% & 100\% \\
+Timeouts / LLM errors / action fallbacks & 0 / 0 / 0 & 0 / 0 / 0 \\
+Median / P95 LLM latency (ms) & 3,785.7 / 4,293.3 & 3,508.6 / 3,856.6 \\
 \hline
 \end{tabular}
-\caption{Controlled \texttt{qwen3:32b} evaluation on Barkla2. The target-aware strategic planner is the current main controlled result, while earlier prompting variants are retained as development evidence and ablation context. All reported qwen3 runs completed with zero LLM errors.}
-\label{tab:qwen3-controlled-eval}
+\caption{Primary evidence for decision traceability and rule-based verification across 50 matched seeds with role swapping per backend.}
+\label{tab:framework-evidence}
 \end{table*}
 
-For the current target-aware strategic planner, the decision logs contain 1249 fresh LLM calls, 1199 strategy-used decisions, and 50 fallback events across the 50-match run. These statistics show that the system is not merely calling an LLM once for a static plan. Instead, it combines structured LLM planning, schema validation, rule-based arbitration, and fallback-safe execution.
+The Qwen raw-schema rate demonstrates why verification must be measured separately from model-call success. In 520 calls, Qwen returned a compact string shorthand rather than the required nested intent object. Deterministic normalization converted these proposals into the bounded schema before action planning, raising the structured-valid rate from 77.3\% to 100\%. The risk filter subsequently changed targets in 5,590 Qwen and 7,090 DeepSeek steps. These interventions are retained in the trace rather than hidden behind the final action.
 
-The results should be interpreted as evidence of controlled runtime stability and inspectability rather than as proof of optimal game-playing strength. The target-aware strategic planner achieved the strongest 50-match controlled result in the current project state, while earlier prompting variants remain useful for understanding the design space.
+As secondary outcomes, Qwen won 63 of 100 matches and DeepSeek won 60. Seed-clustered bootstrap intervals were [57\%, 70\%] and [51\%, 69\%], respectively. A direct comparison matched all 100 seed-role strata: Qwen alone won 14, DeepSeek alone won 11, and the difference was not significant (McNemar exact $p=0.6900$; mean difference $0.03$, paired 95\% interval $[-0.07,0.13]$). These outcomes demonstrate controlled evaluation through a shared framework; they do not establish a general backend ranking.
 
 Figure~\ref{fig:score-summary} summarises match-level score and result information from the replay artefacts.
 
@@ -188,7 +190,7 @@ Figure~\ref{fig:score-summary} summarises match-level score and result informati
 
 \subsection{Replay-Grounded Decision Traceability}
 
-The replay viewer provides qualitative evidence that the decision trace can be inspected after a match has completed. Each replay frame can be connected to decision-source metadata, including fresh LLM decisions, cached LLM decisions, fallback actions, and rule-player actions. This supports debugging and teaching because users can follow how a high-level decision is reused across multiple turns and how fallback prevents failed model calls from breaking match execution.
+The replay viewer provides qualitative inspection on top of quantitatively complete trace evidence. Across both experiments, all 200 completed matches contained trace files. The agent-step and LLM-call schemas each achieved 100\% required-field completeness, and every agent-step trace contained the step, match, player, decision source, and score fields required for replay linkage. Each replay frame can therefore be connected to fresh LLM decisions, cached LLM decisions, fallback actions, and rule-player actions. This supports debugging and teaching because users can follow how a high-level decision is reused across multiple turns and where deterministic checks modified execution.
 
 This evaluation does not claim that the viewer fully explains all causes of agent behaviour. Instead, it provides replay-grounded decision traceability: the user can inspect recorded decision sources, selected strategies, fallback status, and match outcomes in a single interface.
 
@@ -214,13 +216,13 @@ The frozen artefact is available at \url{https://github.com/zewang-liverpool/lux
 
 \section{Conclusion}
 
-LuxLLM-Agent demonstrates an inspectable LLM-assisted agent pipeline for Lux AI Season 3. The system combines local LLM strategy generation, rule-based fallback, structured decision logging, replay-driven visualisation, controlled evaluation, and lightweight scalability evidence. In the reported separate \texttt{qwen3:32b} evaluations, the target-aware planner achieved a descriptive win rate of 70\%, compared with 56\% for the previous basic planner, while both configurations maintained zero LLM errors; the scalability simulation additionally illustrates how sparse LLM-generated policy templates can be reused across many lightweight worker agents. The demonstration is intended to help researchers and students inspect, reproduce, and discuss LLM-assisted game-agent behaviour.
+LuxLLM-Agent demonstrates how structured decision tracing and rule-based action verification can make an LLM-assisted Lux AI Season 3 agent more inspectable and evaluable. Runtime traces distinguish fresh, cached, and fallback decisions; replay-link fields connect those decisions to state and outcome context; and deterministic normalization and risk filtering expose how model proposals are transformed before execution. In 200 matched-role matches across two backends, both trace schemas and replay linkage were complete, all 4,591 calls were structurally valid after checks, 520 non-conforming proposals were normalized, thousands of risk-filter interventions were recorded, and no match failed because of an LLM or downstream action fallback. Secondary outcomes show that the same evidence pipeline supports controlled statistical evaluation without turning the project into a model leaderboard. The framework provides operational provenance rather than a complete causal explanation, but gives researchers and students a reproducible basis for inspecting, debugging, and evaluating LLM-agent behaviour.
 
 % The ethics / broader-impact statement does not count towards the page limit.
 % The ACL style hides the section number for this section.
 \section*{Ethics Statement}
 
-This system is developed for research and educational use in a game AI environment. It does not use personal data and does not make decisions about real users. The main risks are overclaiming system capability and misinterpreting synthetic scalability results as full-game multi-agent performance. We mitigate these risks by clearly separating controlled match evaluation, replay-viewer evidence, and architecture-level scalability simulation. The system should be presented as a research prototype rather than a deployed autonomous decision system.
+This system is developed for research and educational use in a game AI environment. It does not use personal data and does not make decisions about real users. The main risks are overclaiming system capability, interpreting operational traces as complete causal explanations, treating controlled backend outcomes as a general model ranking, or misinterpreting synthetic scalability results as full-game multi-agent performance. We mitigate these risks by separating trace coverage, verification evidence, qualitative replay inspection, controlled match outcomes, and architecture-level simulation. The system should be presented as a research prototype rather than a deployed autonomous decision system.
 
 \section*{Acknowledgements}
 
@@ -238,12 +240,12 @@ The authors thank the Lux AI Challenge community for providing the competition e
 
 The local development artefacts include replay JSON, Markdown reports, screenshots, demo video material, and LaTeX integration files. The final replay viewer was verified with replay-frame artefacts and result-overlay screenshots. The scalability simulation was verified up to 1000 lightweight worker agents and 100000 synthetic decisions.
 
-Figure~\ref{fig:final-overlay} shows the final result overlay used in the replay viewer.
+Figure~\ref{fig:final-overlay} shows a historical single-run result overlay used to demonstrate the replay interface; it is not the aggregate outcome of the matched-seed evaluation.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/figure_s3_final_result_overlay.png}
-\caption{Final result overlay used by the replay viewer.}
+\caption{Historical single-run result overlay used by the replay viewer demonstration. Aggregate framework evidence is reported in Table~\ref{tab:framework-evidence}.}
 \label{fig:final-overlay}
 \end{figure}
 

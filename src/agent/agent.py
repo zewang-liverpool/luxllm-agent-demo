@@ -1,23 +1,3 @@
-"""
-agent.py
-
-Main Lux S3 Agent.
-
-Version focus:
-- Official-compatible no-numpy action output
-- Stable rule-only switch for replay validation
-- One-player LLM mode:
-    player_0 -> LLM strategic planner
-    player_1 -> fallback rule policy
-- Round-aware memory
-- Stale tile guard
-- Fast LLM cache to avoid calling LLM every step
-- Robust timeout handling
-- v0.9-A frame logging baseline
-- v0.9-B memory overlay coordinates
-- v0.9-C sensor / energy overlay coordinates
-"""
-
 import json
 import os
 import sys
@@ -53,12 +33,14 @@ class Agent:
 
         self.llm_enabled_for_this_player = bool(
             (not config.FORCE_RULE_ONLY)
+            and (not getattr(config, "FORCE_FALLBACK", False))
             and config.LLM_ENABLED
             and self.player == config.LLM_PLAYER
         )
 
         self.is_fallback_player = bool(
             config.FORCE_RULE_ONLY
+            or getattr(config, "FORCE_FALLBACK", False)
             or self.player == config.FALLBACK_PLAYER
             or not self.llm_enabled_for_this_player
         )
@@ -80,10 +62,14 @@ class Agent:
             {
                 "event": "agent_initialized",
                 "version": config.AGENT_VERSION,
+                "experiment_tag": getattr(config, "EXPERIMENT_TAG", "unknown"),
                 "player": self.player,
                 "team_id": self.team_id,
                 "env_cfg": self.env_cfg,
                 "force_rule_only": config.FORCE_RULE_ONLY,
+                "force_fallback": bool(getattr(config, "FORCE_FALLBACK", False)),
+                "enable_strategy_cache": bool(getattr(config, "ENABLE_STRATEGY_CACHE", True)),
+                "enable_risk_filter": bool(getattr(config, "ENABLE_RISK_AWARE_ACTION_FILTER", True)),
                 "llm_enabled_for_this_player": self.llm_enabled_for_this_player,
                 "is_fallback_player": self.is_fallback_player,
                 "llm_player": config.LLM_PLAYER,
@@ -91,13 +77,17 @@ class Agent:
                 "llm_model": config.LLM_MODEL,
                 "frame_logging": bool(getattr(config, "ENABLE_FRAME_LOGGING", False)),
                 "frame_log_path": getattr(config, "FRAME_LOG_PATH", ""),
+                "decision_trace_log": getattr(config, "DECISION_TRACE_LOG", ""),
+                "ablation_metrics_log": getattr(config, "ABLATION_METRICS_LOG", ""),
             }
         )
 
         print(
             f"[Lux LLM Agent {config.AGENT_VERSION}] "
             f"Agent initialized. player={self.player}, team_id={self.team_id}, "
+            f"experiment_tag={getattr(config, 'EXPERIMENT_TAG', 'unknown')}, "
             f"force_rule_only={config.FORCE_RULE_ONLY}, "
+            f"force_fallback={getattr(config, 'FORCE_FALLBACK', False)}, "
             f"llm_enabled_for_this_player={self.llm_enabled_for_this_player}, "
             f"is_fallback_player={self.is_fallback_player}, "
             f"llm_player={config.LLM_PLAYER}, fallback_player={config.FALLBACK_PLAYER}, "
@@ -165,6 +155,17 @@ class Agent:
 
             self._update_event_tracking(gameview, match_context)
 
+            decision_trace = self._build_step_decision_trace(
+                step=step,
+                gameview=gameview,
+                match_context=match_context,
+                llm_intents=llm_intents,
+                llm_mode=llm_mode,
+                actions=actions,
+                elapsed=elapsed,
+                action_fallback_used=action_fallback_used,
+            )
+
             self._log_debug(
                 {
                     "event": "act",
@@ -172,8 +173,11 @@ class Agent:
                     "elapsed": elapsed,
                     "player": self.player,
                     "team_id": self.team_id,
+                    "experiment_tag": getattr(config, "EXPERIMENT_TAG", "unknown"),
                     "force_rule_only": config.FORCE_RULE_ONLY,
+                    "force_fallback": bool(getattr(config, "FORCE_FALLBACK", False)),
                     "llm_mode": llm_mode,
+                    "decision_trace": decision_trace,
                     "llm_enabled_for_this_player": self.llm_enabled_for_this_player,
                     "is_fallback_player": self.is_fallback_player,
                     "action_fallback_used": action_fallback_used,
@@ -196,7 +200,10 @@ class Agent:
                 actions=actions,
                 elapsed=elapsed,
                 action_fallback_used=action_fallback_used,
+                decision_trace=decision_trace,
             )
+
+            self._write_step_trace_logs(decision_trace)
 
             return actions
 
@@ -207,6 +214,7 @@ class Agent:
                     "step": int(step),
                     "player": self.player,
                     "force_rule_only": config.FORCE_RULE_ONLY,
+                    "force_fallback": bool(getattr(config, "FORCE_FALLBACK", False)),
                     "error": repr(exc),
                 }
             )
@@ -228,15 +236,30 @@ class Agent:
     ) -> Tuple[Dict, str]:
         """
         Decide whether to call LLM or reuse cached intents.
+
+        The returned llm_mode is intentionally explicit because it becomes part
+        of the paper-facing decision provenance trace.
         """
         if config.FORCE_RULE_ONLY:
             return {"unit_intents": {}}, "force_rule_only"
 
+        if bool(getattr(config, "FORCE_FALLBACK", False)):
+            return {"unit_intents": {}}, "forced_fallback"
+
         if not self.llm_enabled_for_this_player:
             return {"unit_intents": {}}, "fallback_rule_player"
 
+        my_units = gameview.get("my_units", []) if isinstance(gameview, dict) else []
+        if not isinstance(my_units, list) or not my_units:
+            return {"unit_intents": {}}, "skip_llm_rule_fallback:no_active_units"
+
+        cache_enabled = bool(getattr(config, "ENABLE_STRATEGY_CACHE", True))
+        reuse_enabled = bool(getattr(config, "LLM_REUSE_LAST_INTENTS", True))
+
         if self.llm_temporarily_disabled:
-            return self.last_llm_intents, "llm_disabled_after_timeouts"
+            if cache_enabled and reuse_enabled:
+                return self.last_llm_intents, "llm_disabled_after_timeouts_reuse_cache"
+            return {"unit_intents": {}}, "llm_disabled_after_timeouts_rule_fallback"
 
         should_call, reason = self._should_call_llm(
             step=step,
@@ -245,8 +268,12 @@ class Agent:
         )
 
         if not should_call:
-            if config.LLM_REUSE_LAST_INTENTS:
+            if cache_enabled and reuse_enabled and self._has_cached_llm_intents():
                 return self.last_llm_intents, f"reuse_cached_llm_intents:{reason}"
+
+            if not cache_enabled:
+                return {"unit_intents": {}}, f"skip_llm_no_cache_rule_fallback:{reason}"
+
             return {"unit_intents": {}}, f"skip_llm_rule_fallback:{reason}"
 
         intents = self.llm_decider.decide(gameview)
@@ -257,7 +284,7 @@ class Agent:
         if isinstance(intents, dict):
             error_text += " " + str(intents.get("error", ""))
 
-        if "timed out" in error_text.lower():
+        if "timed out" in error_text.lower() or "timeout" in error_text.lower():
             timed_out = True
 
         if timed_out:
@@ -267,7 +294,11 @@ class Agent:
 
         if self.consecutive_llm_timeouts >= config.LLM_DISABLE_AFTER_TIMEOUTS:
             self.llm_temporarily_disabled = True
-            return self.last_llm_intents, "llm_disabled_after_timeout_limit"
+
+            if cache_enabled and reuse_enabled and self._has_cached_llm_intents():
+                return self.last_llm_intents, "llm_disabled_after_timeout_limit_reuse_cache"
+
+            return {"unit_intents": {}}, "llm_disabled_after_timeout_limit_rule_fallback"
 
         if isinstance(intents, dict) and isinstance(intents.get("unit_intents"), dict):
             if intents.get("unit_intents"):
@@ -275,7 +306,20 @@ class Agent:
                 self.last_llm_step = int(step)
                 return intents, f"fresh_llm_call:{reason}"
 
-        return self.last_llm_intents, f"fresh_llm_empty_reuse_cache:{reason}"
+        if cache_enabled and reuse_enabled and self._has_cached_llm_intents():
+            return self.last_llm_intents, f"fresh_llm_empty_reuse_cache:{reason}"
+
+        return {"unit_intents": {}}, f"fresh_llm_empty_rule_fallback:{reason}"
+
+    def _has_cached_llm_intents(self) -> bool:
+        try:
+            if not isinstance(self.last_llm_intents, dict):
+                return False
+
+            unit_intents = self.last_llm_intents.get("unit_intents", {})
+            return isinstance(unit_intents, dict) and bool(unit_intents)
+        except Exception:
+            return False
 
     def _should_call_llm(
         self,
@@ -404,6 +448,348 @@ class Agent:
         except Exception:
             pass
 
+    def _append_jsonl(self, path: str, data: Dict) -> None:
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(data, ensure_ascii=False) + "\n")
+        except Exception:
+            pass
+
+    def _build_step_decision_trace(
+        self,
+        step: int,
+        gameview: Dict,
+        match_context: Dict,
+        llm_intents: Dict,
+        llm_mode: str,
+        actions: List[List[int]],
+        elapsed: float,
+        action_fallback_used: bool,
+    ) -> Dict:
+        """
+        Build a per-frame decision provenance record.
+
+        This is the main evidence object for:
+        - ablation statistics,
+        - LLM latency analysis,
+        - fallback analysis,
+        - trace/replay alignment,
+        - paper case studies.
+        """
+        score = gameview.get("score", {}) if isinstance(gameview, dict) else {}
+        my_points = int(score.get("my_points", 0))
+        opp_points = int(score.get("opp_points", 0))
+
+        if self.team_id == 0:
+            score_player_0 = my_points
+            score_player_1 = opp_points
+        else:
+            score_player_0 = opp_points
+            score_player_1 = my_points
+
+        risk_summary = self._build_frame_risk_filter()
+        risk_events = risk_summary.get("events", [])
+        if not isinstance(risk_events, list):
+            risk_events = []
+
+        risk_filter_changed = int(risk_summary.get("changed_targets", 0)) > 0
+        risk_filter_reason = self._risk_filter_reason_from_summary(risk_summary)
+
+        unit_intents = {}
+        if isinstance(llm_intents, dict) and isinstance(llm_intents.get("unit_intents"), dict):
+            unit_intents = llm_intents.get("unit_intents", {})
+
+        llm_called = self._mode_has_fresh_llm_call(llm_mode)
+        cache_used = self._mode_uses_cache(llm_mode)
+        stale_decision = self._mode_is_stale_or_cached(step=step, llm_mode=llm_mode)
+        decision_source = self._infer_step_decision_source(
+            llm_mode=llm_mode,
+            action_fallback_used=action_fallback_used,
+            cache_used=cache_used,
+        )
+
+        fallback_reason = self._infer_step_fallback_reason(
+            llm_mode=llm_mode,
+            action_fallback_used=action_fallback_used,
+        )
+
+        llm_latency_seconds = 0.0
+        llm_latency_ms = 0.0
+        llm_valid = False
+        llm_error = None
+        timed_out = False
+
+        if llm_called:
+            llm_latency_seconds = float(getattr(self.llm_decider, "last_elapsed", 0.0))
+            llm_latency_ms = round(llm_latency_seconds * 1000.0, 3)
+            llm_valid = bool(getattr(self.llm_decider, "last_valid", False))
+            llm_error_text = str(getattr(self.llm_decider, "last_error", ""))
+            llm_error = llm_error_text or None
+            timed_out = bool(getattr(self.llm_decider, "last_timed_out", False))
+        elif cache_used:
+            llm_valid = True
+
+        active_action_count = self._count_active_actions(actions)
+
+        return {
+            "time": time.time(),
+            "event": "agent_step_trace",
+            "agent_version": config.AGENT_VERSION,
+            "experiment_tag": getattr(config, "EXPERIMENT_TAG", "unknown"),
+            "step": int(step),
+            "match_idx": int(match_context.get("match_idx", 0)),
+            "step_in_match": int(match_context.get("step_in_match", 0)),
+            "phase": str(match_context.get("phase", "unknown")),
+            "player": self.player,
+            "team_id": int(self.team_id),
+
+            "decision_source": decision_source,
+            "llm_mode": str(llm_mode),
+            "llm_enabled": bool(self.llm_enabled_for_this_player),
+            "llm_model": config.LLM_MODEL,
+            "llm_called": bool(llm_called),
+            "llm_latency_ms": float(llm_latency_ms),
+            "llm_latency_seconds": float(llm_latency_seconds),
+            "llm_valid": bool(llm_valid),
+            "llm_error": llm_error,
+            "timed_out": bool(timed_out),
+
+            "fallback_used": bool(self._mode_implies_fallback(llm_mode) or action_fallback_used),
+            "fallback_reason": fallback_reason,
+            "action_fallback_used": bool(action_fallback_used),
+
+            "cache_enabled": bool(getattr(config, "ENABLE_STRATEGY_CACHE", True)),
+            "cache_used": bool(cache_used),
+            "stale_decision": bool(stale_decision),
+            "last_llm_step": int(self.last_llm_step),
+
+            "risk_filter_enabled": bool(risk_summary.get("enabled", False)),
+            "risk_filter_changed": bool(risk_filter_changed),
+            "risk_filter_reason": risk_filter_reason,
+            "risk_filter_changed_targets": int(risk_summary.get("changed_targets", 0)),
+            "risk_filter_evaluated_units": int(risk_summary.get("evaluated_units", 0)),
+            "risk_filter_visible_enemy_units": int(risk_summary.get("visible_enemy_units", 0)),
+            "risk_filter_events_count": int(len(risk_events)),
+
+            "unit_intent_count": int(len(unit_intents)),
+            "unit_action_count": int(len(actions)) if isinstance(actions, list) else 0,
+            "active_action_count": int(active_action_count),
+
+            "score_player_0": int(score_player_0),
+            "score_player_1": int(score_player_1),
+            "score_diff_player_0_minus_player_1": int(score_player_0 - score_player_1),
+            "my_points": int(my_points),
+            "opp_points": int(opp_points),
+
+            "elapsed_total_ms": round(float(elapsed) * 1000.0, 3),
+            "remaining_overage_note": (
+                "remainingOverageTime is not logged here because the official "
+                "act() call does not require it for paper-level trace analysis."
+            ),
+        }
+
+    def _write_step_trace_logs(self, decision_trace: Dict) -> None:
+        """
+        Write per-action-step trace and ablation metrics.
+
+        llm_decider.py writes LLM-call-level records. This method writes
+        frame/action-step-level records, including cached and fallback steps.
+        """
+        if bool(getattr(config, "LOG_DECISION_TRACE", True)):
+            self._append_jsonl(config.DECISION_TRACE_LOG, decision_trace)
+
+        if bool(getattr(config, "LOG_ABLATION_METRICS", True)):
+            metrics_record = {
+                "time": decision_trace.get("time", time.time()),
+                "event": "agent_step_metrics",
+                "agent_version": decision_trace.get("agent_version"),
+                "experiment_tag": decision_trace.get("experiment_tag"),
+                "step": decision_trace.get("step"),
+                "match_idx": decision_trace.get("match_idx"),
+                "step_in_match": decision_trace.get("step_in_match"),
+                "player": decision_trace.get("player"),
+                "decision_source": decision_trace.get("decision_source"),
+                "llm_model": decision_trace.get("llm_model"),
+                "llm_called": decision_trace.get("llm_called"),
+                "llm_latency_ms": decision_trace.get("llm_latency_ms"),
+                "llm_valid": decision_trace.get("llm_valid"),
+                "timed_out": decision_trace.get("timed_out"),
+                "fallback_used": decision_trace.get("fallback_used"),
+                "fallback_reason": decision_trace.get("fallback_reason"),
+                "cache_used": decision_trace.get("cache_used"),
+                "stale_decision": decision_trace.get("stale_decision"),
+                "risk_filter_enabled": decision_trace.get("risk_filter_enabled"),
+                "risk_filter_changed": decision_trace.get("risk_filter_changed"),
+                "risk_filter_changed_targets": decision_trace.get("risk_filter_changed_targets"),
+                "unit_intent_count": decision_trace.get("unit_intent_count"),
+                "unit_action_count": decision_trace.get("unit_action_count"),
+                "active_action_count": decision_trace.get("active_action_count"),
+                "score_player_0": decision_trace.get("score_player_0"),
+                "score_player_1": decision_trace.get("score_player_1"),
+                "elapsed_total_ms": decision_trace.get("elapsed_total_ms"),
+            }
+            self._append_jsonl(config.ABLATION_METRICS_LOG, metrics_record)
+
+    def _mode_has_fresh_llm_call(self, llm_mode: str) -> bool:
+        text = str(llm_mode).lower()
+        return text.startswith("fresh_llm_call") or text.startswith("fresh_llm_empty")
+
+    def _mode_uses_cache(self, llm_mode: str) -> bool:
+        text = str(llm_mode).lower()
+        cache_tokens = [
+            "reuse_cached_llm_intents",
+            "fresh_llm_empty_reuse_cache",
+            "llm_disabled_after_timeouts_reuse_cache",
+            "llm_disabled_after_timeout_limit_reuse_cache",
+        ]
+        return any(token in text for token in cache_tokens)
+
+    def _mode_is_stale_or_cached(self, step: int, llm_mode: str) -> bool:
+        if not self._mode_uses_cache(llm_mode):
+            return False
+
+        try:
+            return int(step) > int(self.last_llm_step)
+        except Exception:
+            return True
+
+    def _infer_step_decision_source(
+        self,
+        llm_mode: str,
+        action_fallback_used: bool,
+        cache_used: bool,
+    ) -> str:
+        text = str(llm_mode).lower()
+
+        if config.FORCE_RULE_ONLY:
+            return "rule_only"
+
+        if bool(getattr(config, "FORCE_FALLBACK", False)):
+            return "forced_fallback"
+
+        if action_fallback_used:
+            return "action_fallback"
+
+        if cache_used:
+            return "cached_llm"
+
+        if text.startswith("fresh_llm_call"):
+            return "llm_fresh"
+
+        if text.startswith("fresh_llm_empty"):
+            return "fallback"
+
+        if "fallback_rule_player" in text:
+            return "rule_player"
+
+        if "skip_llm_no_cache_rule_fallback" in text:
+            return "rule_fallback_no_cache"
+
+        if "skip_llm_rule_fallback" in text:
+            return "rule_fallback"
+
+        if "llm_disabled" in text:
+            return "fallback"
+
+        if "force_rule_only" in text:
+            return "rule_only"
+
+        if "forced_fallback" in text:
+            return "forced_fallback"
+
+        return "unknown"
+
+    def _infer_step_fallback_reason(
+        self,
+        llm_mode: str,
+        action_fallback_used: bool,
+    ) -> Optional[str]:
+        text = str(llm_mode)
+
+        if action_fallback_used:
+            return "invalid_action_output"
+
+        if config.FORCE_RULE_ONLY:
+            return "force_rule_only"
+
+        if bool(getattr(config, "FORCE_FALLBACK", False)):
+            return "force_fallback"
+
+        if text.startswith("fallback_rule_player"):
+            return "configured_fallback_player"
+
+        if text.startswith("skip_llm_no_cache_rule_fallback"):
+            return "llm_not_called_cache_disabled"
+
+        if text.startswith("skip_llm_rule_fallback"):
+            return "llm_not_called_no_valid_cache"
+
+        if text.startswith("fresh_llm_empty_rule_fallback"):
+            reason = getattr(self.llm_decider, "last_fallback_reason", None)
+            return reason or "fresh_llm_empty_or_invalid"
+
+        if text.startswith("fresh_llm_empty_reuse_cache"):
+            reason = getattr(self.llm_decider, "last_fallback_reason", None)
+            return reason or "fresh_llm_empty_reused_cache"
+
+        if "llm_disabled_after_timeout" in text:
+            return "llm_disabled_after_timeouts"
+
+        if self._mode_implies_fallback(text):
+            return text
+
+        return None
+
+    def _count_active_actions(self, actions: List[List[int]]) -> int:
+        if not isinstance(actions, list):
+            return 0
+
+        count = 0
+        for action in actions:
+            try:
+                if not isinstance(action, list) or len(action) != 3:
+                    continue
+
+                action_type = int(action[0])
+                dx = int(action[1])
+                dy = int(action[2])
+
+                if action_type != config.ACTION_STAY or dx != 0 or dy != 0:
+                    count += 1
+            except Exception:
+                continue
+
+        return count
+
+    def _risk_filter_reason_from_summary(self, risk_summary: Dict) -> Optional[str]:
+        try:
+            if not isinstance(risk_summary, dict):
+                return None
+
+            events = risk_summary.get("events", [])
+            if not isinstance(events, list):
+                return None
+
+            changed_reasons = []
+            for event in events:
+                if not isinstance(event, dict):
+                    continue
+
+                if bool(event.get("changed", False)):
+                    reason = str(event.get("reason", "")).strip()
+                    if reason:
+                        changed_reasons.append(reason)
+
+            if changed_reasons:
+                return "; ".join(changed_reasons[:3])
+
+            if int(risk_summary.get("evaluated_units", 0)) > 0:
+                return "risk filter evaluated targets without changing them"
+
+            return None
+        except Exception:
+            return None
 
     def _build_frame_enemy_units(self, obs: Dict) -> List[Dict]:
         """
@@ -509,6 +895,7 @@ class Agent:
         actions: List[List[int]],
         elapsed: float,
         action_fallback_used: bool,
+        decision_trace: Optional[Dict] = None,
     ) -> None:
         """
         Write one compact explanation frame for the log-driven viewer.
@@ -557,6 +944,20 @@ class Agent:
             if isinstance(llm_intents, dict) and isinstance(llm_intents.get("unit_intents"), dict):
                 unit_intents = llm_intents.get("unit_intents", {})
 
+            risk_filter = self._build_frame_risk_filter()
+
+            if decision_trace is None:
+                decision_trace = self._build_step_decision_trace(
+                    step=step,
+                    gameview=gameview,
+                    match_context=match_context,
+                    llm_intents=llm_intents,
+                    llm_mode=llm_mode,
+                    actions=actions,
+                    elapsed=elapsed,
+                    action_fallback_used=action_fallback_used,
+                )
+
             frame = {
                 "schema_version": getattr(
                     config,
@@ -564,6 +965,7 @@ class Agent:
                     "lux_s3_viewer_frames_v1",
                 ),
                 "agent_version": config.AGENT_VERSION,
+                "experiment_tag": getattr(config, "EXPERIMENT_TAG", "unknown"),
                 "event": "frame",
                 "time": time.time(),
                 "step": int(step),
@@ -584,16 +986,22 @@ class Agent:
                     "my_diff": int(my_points - opp_points),
                 },
                 "llm_mode": str(llm_mode),
+                "decision_trace": decision_trace,
                 "llm": {
                     "enabled_for_player": bool(self.llm_enabled_for_this_player),
                     "is_fallback_player": bool(self.is_fallback_player),
                     "model": config.LLM_MODEL,
-                    "elapsed": float(getattr(self.llm_decider, "last_elapsed", 0.0)),
-                    "timed_out": bool(getattr(self.llm_decider, "last_timed_out", False)),
-                    "error": str(getattr(self.llm_decider, "last_error", "")),
-                    "fallback_used": bool(
-                        self._mode_implies_fallback(llm_mode) or action_fallback_used
-                    ),
+                    "called": bool(decision_trace.get("llm_called", False)),
+                    "elapsed": float(decision_trace.get("llm_latency_seconds", 0.0)),
+                    "latency_ms": float(decision_trace.get("llm_latency_ms", 0.0)),
+                    "valid": bool(decision_trace.get("llm_valid", False)),
+                    "timed_out": bool(decision_trace.get("timed_out", False)),
+                    "error": decision_trace.get("llm_error") or "",
+                    "fallback_used": bool(decision_trace.get("fallback_used", False)),
+                    "fallback_reason": decision_trace.get("fallback_reason"),
+                    "decision_source": decision_trace.get("decision_source"),
+                    "cache_used": bool(decision_trace.get("cache_used", False)),
+                    "stale_decision": bool(decision_trace.get("stale_decision", False)),
                     "fresh_strategy_used": bool(
                         getattr(self.llm_decider, "last_strategy_used", False)
                     ),
@@ -604,7 +1012,7 @@ class Agent:
                 },
                 "units": units,
                 "enemy_units": enemy_units,
-                "risk_filter": self._build_frame_risk_filter(),
+                "risk_filter": risk_filter,
                 "opponent_awareness": {
                     "enemy_units_logged": int(len(enemy_units)),
                     "enemy_unit_source": "obs.units.position",
@@ -826,7 +1234,6 @@ class Agent:
             ),
         }
 
-
     def _build_frame_risk_filter(self) -> Dict:
         """
         Build frame-level risk filter metadata for the explanation viewer.
@@ -844,6 +1251,7 @@ class Agent:
             "visible_enemy_units": 0,
             "risk_radius": int(getattr(config, "RISK_AWARE_TARGET_ENEMY_RADIUS", 4)),
             "events": [],
+            "events_count": 0,
             "note": "No risk-filter events were recorded for this frame.",
         }
 
@@ -970,6 +1378,9 @@ class Agent:
         if config.FORCE_RULE_ONLY:
             warnings.append("FORCE_RULE_ONLY is enabled; this frame uses rule logic only.")
 
+        if bool(getattr(config, "FORCE_FALLBACK", False)):
+            warnings.append("FORCE_FALLBACK is enabled; this frame skips LLM decisions.")
+
         if self.is_fallback_player:
             warnings.append(f"{self.player} is configured as a fallback/rule player.")
 
@@ -990,6 +1401,15 @@ class Agent:
 
         if self._mode_implies_fallback(mode_text):
             warnings.append(f"LLM mode indicates fallback or non-fresh strategy: {mode_text}")
+
+        if self._mode_uses_cache(mode_text):
+            warnings.append(f"Cached LLM strategy is reused: {mode_text}")
+
+        if not bool(getattr(config, "ENABLE_STRATEGY_CACHE", True)):
+            warnings.append("Strategy cache is disabled for this ablation run.")
+
+        if not bool(getattr(config, "ENABLE_RISK_AWARE_ACTION_FILTER", True)):
+            warnings.append("Risk-aware action filter is disabled for this ablation run.")
 
         if not units:
             warnings.append("No visible friendly units in this frame.")
@@ -1109,9 +1529,11 @@ class Agent:
         text = str(llm_mode).lower()
         fallback_tokens = [
             "force_rule_only",
+            "forced_fallback",
             "fallback_rule_player",
             "skip_llm_rule_fallback",
-            "fresh_llm_empty_reuse_cache",
+            "skip_llm_no_cache_rule_fallback",
+            "fresh_llm_empty_rule_fallback",
             "llm_disabled",
         ]
         return any(token in text for token in fallback_tokens)

@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 .venv/
+.venv*/
 venv/
 env/
 
@@ -33,6 +34,7 @@ env/
 Thumbs.db
 .vscode/
 .idea/
+tmp/
 
 # Large generated experiment outputs
 docs/hpc_qwen3_gpu_e4_50run/
@@ -45,6 +47,7 @@ paper/exports/
 logs/
 errorlogs/
 replays/
+results/
 archive/
 view/
 实验结果/

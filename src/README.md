@@ -1,26 +1,25 @@
-# Source Code Snapshot
+# Reproducible Source Code
 
-This directory contains the frozen source-code snapshot used to document the LuxLLM-Agent implementation. It exposes the main agent, fallback policy, LLM decision layer, replay summarisation utilities, and development scripts without including large local logs, models, replays, or environment files.
-
-## Structure
+`src/agent/` is the canonical LuxLLM-Agent runtime.  It is no longer a partial
+documentation snapshot: the state parser, prompt builder, planner, rule
+fallback, decision logger, and official Lux entry point are all tracked.
 
 ```text
-src/
-├── agent/
-│   ├── main.py
-│   ├── agent.py
-│   ├── baseline_agent.py
-│   ├── rule_policy.py
-│   ├── llm_decider.py
-│   ├── action_planner.py
-│   ├── game_memory.py
-│   └── config.py
-├── viewer_tools/
-│   ├── state_summarizer.py
-│   └── record_match_result_from_console.py
-└── scripts/
-    ├── run_match_llm.bat
-    └── run_v09c_pipeline.bat
+src/agent/
+├── main.py
+├── agent.py
+├── baseline_agent.py
+├── action_planner.py
+├── config.py
+├── game_memory.py
+├── llm_decider.py
+├── lux_state.py
+├── rule_policy.py
+└── state_summarizer.py
 ```
 
-The tracked Run008 viewer can be inspected without executing this runtime. Full match re-execution additionally depends on the compatible Lux AI Season 3 environment, Ollama, the named model, and the original local or Slurm configuration. The scripts are retained as development evidence rather than presented as a clean-install, one-command runner.
+Supporting result parsing utilities remain under `src/viewer_tools/`.  Current
+installation, smoke-test, single-match, paired 100-match, and Slurm entry points
+are under the top-level `scripts/` directory.
+
+See `docs/reproducibility_guide.md` for exact commands and acceptance criteria.

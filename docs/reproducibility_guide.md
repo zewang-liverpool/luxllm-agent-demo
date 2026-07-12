@@ -1,0 +1,228 @@
+# Reproducibility Guide
+
+Version: `LuxLLM-Agent reproducibility-hardening v1`
+
+Verified locally on 11 July 2026 with Windows 11, Python 3.12.13,
+`luxai-s3==0.2.1`, and seed 42.  The original Barkla2 experiments used a
+Python 3.11 environment; both the direct dependency and the verified Windows
+lock file are included.
+
+## 1. Reproducibility Levels
+
+The repository supports three independent workflows:
+
+1. **Viewer reproduction** — no Lux environment or LLM is required.
+2. **Rule-only runtime reproduction** — requires Python and `luxai-s3`, but no Ollama.
+3. **LLM evaluation reproduction** — additionally requires Ollama and the named model.
+
+Generated logs, replays, model weights, and `results/` are intentionally not
+committed. Machine-readable summaries intended as dissertation evidence may be
+copied into `docs/demo_evidence/` after review.
+
+## 2. Clean Installation
+
+### Windows PowerShell
+
+```powershell
+git clone https://github.com/zewang-liverpool/luxllm-agent-demo.git
+cd luxllm-agent-demo
+py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip==23.1.2
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+```
+
+Alternatively, after confirming that `py -3.11` is installed:
+
+```powershell
+.\scripts\setup.ps1
+```
+
+### Linux / Barkla2
+
+```bash
+git clone https://github.com/zewang-liverpool/luxllm-agent-demo.git
+cd luxllm-agent-demo
+PYTHON_BIN=python3.11 bash scripts/setup.sh
+```
+
+Runtime dependencies are declared in `requirements.txt`; development/test
+dependencies are in `requirements-dev.txt`; the exact verified Windows Python
+3.12 environment is in `requirements-lock-py312-win.txt`.
+
+## 3. Repository and Unit Tests
+
+The smoke test compiles every tracked Python utility without creating
+`__pycache__`, validates the frozen viewer JSON, and runs the unit tests:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\smoke_test.py
+.\.venv\Scripts\python.exe -m pytest
+```
+
+Expected result:
+
+```text
+11 tests passed
+```
+
+GitHub Actions runs the same checks on Python 3.10 and 3.11 for pushes and pull
+requests.  CI intentionally avoids LLM inference because model weights and GPU
+availability are external resources.
+
+## 4. Rule-Only End-to-End Smoke Match
+
+This checks the real Lux runner and agent subprocess protocol without Ollama:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_rule_smoke.py --seed 42
+```
+
+Verified local result on 11 July 2026:
+
+```json
+{
+  "status": "complete",
+  "seed": 42,
+  "return_code": 0,
+  "player_0_reward": 3,
+  "player_1_reward": 2,
+  "winner": "player_0"
+}
+```
+
+The exact score is seed- and dependency-sensitive; the required acceptance
+condition is `status=complete`, return code zero, and two parsed rewards.
+
+## 5. Viewer Reproduction
+
+From the repository root:
+
+```powershell
+python -m http.server 8000
+```
+
+Open:
+
+```text
+http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html
+```
+
+The viewer uses only these tracked artefacts:
+
+```text
+data/isometric_replay_frames.json
+data/run008_decision_trace_overlay.json
+```
+
+## 6. Ollama Preflight
+
+Start Ollama and confirm the model before an LLM experiment:
+
+```bash
+ollama serve
+ollama list
+```
+
+Supported experiment examples:
+
+```text
+qwen3:32b
+deepseek-r1:32b
+```
+
+The runner stops before launching matches when Ollama is unreachable or the
+requested model is absent.  Each run records the Git commit, Python version,
+platform, installed packages, available Ollama model names, seed protocol, and
+temperature in `environment.json`.
+
+## 7. Matched-Seed, Role-Swapped Evaluation
+
+The previous evaluation always assigned the LLM to `player_0`.  The new
+protocol uses every seed twice: once with the LLM as `player_0`, and once as
+`player_1`.  Fifty paired seeds therefore produce 100 matches.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_paired_experiment.py `
+  --model qwen3:32b `
+  --pairs 50 `
+  --seed-start 20260701 `
+  --temperature 0.0 `
+  --output-dir results\qwen3_32b_paired_100 `
+  --resume
+```
+
+Run DeepSeek with the same seeds:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_paired_experiment.py `
+  --model deepseek-r1:32b `
+  --pairs 50 `
+  --seed-start 20260701 `
+  --temperature 0.0 `
+  --output-dir results\deepseek_r1_32b_paired_100 `
+  --resume
+```
+
+Important controls:
+
+- Lux environment seed: `20260701` through `20260750`.
+- The same seed is passed to Ollama for both roles.
+- Temperature is `0.0`.
+- Role order alternates between seed pairs to reduce time-order bias.
+- `--resume` skips completed `(seed, role)` combinations.
+- A separate output directory is used for every match.
+
+## 8. Barkla2 Slurm Submission
+
+The supplied Slurm file is configured for Barkla2's `gpu-h100` partition,
+`miniforge3/25.3.0-python3.12.10`, and `ollama/0.12.11`. It starts and stops an
+isolated Ollama server inside the allocation. Prepare the shared Python virtual
+environment first, then submit from the repository root:
+
+```bash
+sbatch --export=ALL,MODEL=qwen3:32b,PAIRS=50,SEED_START=20260701 \
+  scripts/barkla_paired_experiment.sbatch
+```
+
+If Python or Ollama is in a non-default location, additionally export
+`PYTHON_BIN` or `OLLAMA_BASE_URL`.
+
+## 9. Generated Evidence
+
+Every paired experiment produces:
+
+```text
+results/<experiment>/
+├── environment.json
+├── match_history.jsonl
+├── summary.json
+└── runs/
+    └── seed_<seed>_<role>/
+        ├── result.json
+        ├── logs/
+        └── console.txt        # failures, or all runs with --keep-console
+```
+
+`summary.json` contains:
+
+- overall and per-role win rates;
+- Wilson 95% confidence intervals;
+- an exact binomial test against 0.5;
+- exact McNemar analysis for role-discordant seed pairs;
+- a deterministic paired bootstrap interval for the player-role effect.
+
+These statistics improve reporting but do not make the two LLM configurations
+causally identical.  Hardware, model build, Ollama version, prompt, source
+commit, and seed metadata must be reported alongside the result.
+
+## 10. Reproducibility Acceptance Checklist
+
+- [ ] A new environment installs from a tracked dependency file.
+- [ ] `scripts/smoke_test.py` passes.
+- [ ] `pytest` passes.
+- [ ] The rule-only Lux match exits successfully.
+- [ ] The viewer loads both tracked JSON files.
+- [ ] Ollama preflight reports the requested model.
+- [ ] All planned seed/role pairs are complete.
+- [ ] `environment.json`, `match_history.jsonl`, and `summary.json` exist.
+- [ ] Only reviewed summaries are committed; raw large runs remain ignored.
