@@ -261,7 +261,7 @@ def summarise_experiment(label: str, root: Path) -> Dict:
     metadata = summary.get("metadata", {})
     return {
         "label": label,
-        "experiment_directory": str(root),
+        "experiment_directory": root.name,
         "model": metadata.get("model"),
         "source_commit": metadata.get("git_commit"),
         "completed_matches": len(completed),
@@ -448,24 +448,33 @@ def write_figures(output_dir: Path, results: Sequence[Dict]) -> List[str]:
     written = []
 
     fig, ax = plt.subplots(figsize=(8.4, 4.8))
-    metric_names = ["Trace fields", "Replay linkage", "LLM validity", "Action shape"]
+    metric_names = [
+        "Step trace",
+        "Call trace",
+        "Replay link",
+        "Post-check",
+        "Raw schema",
+        "Risk filter",
+    ]
     x = list(range(len(metric_names)))
     width = 0.34
     for index, result in enumerate(results):
         values = [
             result["agent_step_trace_completeness_rate"],
+            result["decision_call_trace_completeness_rate"],
             result["replay_linkage_rate"],
             result["decision_log_validity_rate"],
-            result["action_shape_valid_rate"],
+            result["raw_schema_valid_rate"],
+            result["risk_filter_changed_step_rate"],
         ]
         positions = [value + (index - 0.5) * width for value in x]
         ax.bar(positions, values, width=width, label=labels[index], color=colours[index % len(colours)])
     ax.set_ylim(0.0, 1.08)
-    ax.set_ylabel("Coverage / validity rate")
+    ax.set_ylabel("Coverage / validity / intervention rate")
     ax.set_xticks(x, metric_names)
-    ax.legend(frameon=False)
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, 1.14), ncol=2)
     ax.grid(axis="y", alpha=0.25)
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
     path = output_dir / "framework_evidence_rates.png"
     fig.savefig(path, dpi=200)
     plt.close(fig)
