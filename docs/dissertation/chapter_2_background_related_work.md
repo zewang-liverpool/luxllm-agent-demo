@@ -43,7 +43,7 @@ Environment update
 
 This loop is different from ordinary text generation because the model must respond to a changing environment over time. In a sequential decision-making task, each decision may affect future states.
 
-Recent work has explored several forms of LLM-based agents. ReAct shows that language models can interleave reasoning traces with task-specific actions in interactive decision-making settings (Yao et al., 2023). Reflexion studies language agents that use verbal feedback and memory to improve future decisions (Shinn et al., 2023). Toolformer explores how language models can be extended through external tool use (Schick et al., 2023). Generative Agents demonstrates how LLMs can be integrated into architectures involving memory, reflection, and planning in interactive environments (Park et al., 2023). CAMEL studies communicative LLM-based agents in multi-agent settings (Li et al., 2023).
+Recent work has explored several forms of LLM-based agents. ReAct shows that language models can interleave reasoning traces with task-specific actions in interactive decision-making settings (Yao et al., 2023a). Reflexion studies language agents that use verbal feedback and memory to improve future decisions (Shinn et al., 2023). Toolformer explores how language models can be extended through external tool use (Schick et al., 2023). Generative Agents demonstrates how LLMs can be integrated into architectures involving memory, reflection, and planning in interactive environments (Park et al., 2023). CAMEL studies communicative LLM-based agents in multi-agent settings (Li et al., 2023).
 
 These works show that LLMs can be useful beyond single-turn text generation. They can support interaction, reasoning, planning, memory, and external system use. However, they also show that LLM-based agents usually require surrounding system structures. The model output often needs to be interpreted, constrained, checked, or connected to external tools and environments.
 
@@ -67,7 +67,7 @@ Third, LLM decisions may be unstable across steps. If the model is called repeat
 
 Fourth, LLM calls may be slow, especially when using large local or HPC-hosted models.
 
-Prior work supports the idea that LLM planning needs grounding and control. SayCan argues that language-model knowledge should be grounded in feasible actions or affordances before execution (Ahn et al., 2022). Voyager shows that an LLM-powered embodied agent can combine environment feedback, executable skills, and self-verification (Wang et al., 2023). Tree of Thoughts suggests that LLM reasoning can be improved by considering and evaluating multiple reasoning paths rather than relying only on a single left-to-right generation (Yao et al., 2023).
+Prior work supports the idea that LLM planning needs grounding and control. SayCan argues that language-model knowledge should be grounded in feasible actions or affordances before execution (Ahn et al., 2022). Voyager shows that an LLM-powered embodied agent can combine environment feedback, executable skills, and self-verification (Wang et al., 2023). Tree of Thoughts suggests that LLM reasoning can be improved by considering and evaluating multiple reasoning paths rather than relying only on a single left-to-right generation (Yao et al., 2023b).
 
 LuxLLM-Agent applies a related principle in Lux AI Season 3. The LLM does not directly output final game actions. Instead, it proposes a structured strategic plan. This plan is parsed, checked, cached when appropriate, and converted into executable actions by rule-based and planning components.
 
@@ -124,7 +124,7 @@ Rule-based components may handle:
 * safety filtering;
 * environment-specific execution.
 
-This type of design is related to prior work where LLMs are embedded inside larger systems rather than used alone. Toolformer studies LLMs that use external APIs and tools (Schick et al., 2023). SayCan combines high-level language-model reasoning with executable skill constraints (Ahn et al., 2022). Voyager connects LLM planning with executable code skills, feedback, and self-verification in Minecraft (Wang et al., 2023). ReAct connects reasoning and acting in interactive tasks (Yao et al., 2023).
+This type of design is related to prior work where LLMs are embedded inside larger systems rather than used alone. Toolformer studies LLMs that use external APIs and tools (Schick et al., 2023). SayCan combines high-level language-model reasoning with executable skill constraints (Ahn et al., 2022). Voyager connects LLM planning with executable code skills, feedback, and self-verification in Minecraft (Wang et al., 2023). ReAct connects reasoning and acting in interactive tasks (Yao et al., 2023a).
 
 LuxLLM-Agent is also a hybrid system, but its focus is different. It does not train a new language model, create a general-purpose tool-using model, or implement a lifelong-learning agent. Instead, it builds a practical framework for using LLM strategic proposals inside Lux AI Season 3 with verification, fallback, caching, and decision trace logging.
 
@@ -169,7 +169,7 @@ Explainability is important for systems where users need to understand how decis
 
 For LLM-based agents, explainability can be difficult. A final action may be influenced by a model response, cached strategy, fallback rule, local verifier, or action planner. Without logs, it is difficult to know which component produced the final behaviour.
 
-Prior work has shown the value of recording or exposing intermediate agent information. ReAct uses reasoning traces alongside actions, which can make agent trajectories easier to interpret (Yao et al., 2023). Generative Agents uses memory, reflection, and planning as part of an agent architecture (Park et al., 2023). Reflexion uses verbal reflections and feedback records to improve later decisions (Shinn et al., 2023).
+Prior work has shown the value of recording or exposing intermediate agent information. ReAct uses reasoning traces alongside actions, which can make agent trajectories easier to interpret (Yao et al., 2023a). Generative Agents uses memory, reflection, and planning as part of an agent architecture (Park et al., 2023). Reflexion uses verbal reflections and feedback records to improve later decisions (Shinn et al., 2023).
 
 LuxLLM-Agent focuses on decision traceability and decision provenance.
 
@@ -222,7 +222,7 @@ LuxLLM-Agent uses a broader evaluation approach, including:
 
 This evaluation approach supports the dissertation research question because it focuses on inspection and evaluation rather than only performance.
 
-The project’s controlled-run evidence includes 50-run results for qwen3:32b and DeepSeek-R1-32B. Both models completed 50 controlled runs with zero LLM errors in the current evidence, while producing different gameplay outcomes.
+The project’s primary controlled evidence uses 50 matched environment seeds with role swapping for qwen3:32b and DeepSeek-R1-32B (Yang et al., 2025; DeepSeek-AI et al., 2025). Each backend completed 100 matches. The design makes role effects and seed effects visible and supports paired comparison without treating the outcome as a hardware-independent model ranking.
 
 This shows why evaluation should distinguish between execution stability, strategic quality, and final outcome.
 
@@ -261,7 +261,7 @@ The overlay is important for the project because it connects implementation, eva
 
 Lux AI Season 3 was selected because it provides a structured but challenging environment for agent evaluation.
 
-The official Kaggle competition page describes Lux AI Season 3 as a NeurIPS 2024 competition where participants create or train AI bots for a novel multi-agent 1v1 game. The official Season 3 specification describes a two-team game on a 2D map, arranged as a best-of-5 match sequence, with each match lasting 100 time steps. The official Lux-Design-S3 repository describes the task as involving multi-variable optimisation, resource gathering, allocation, and opponent-aware policy development.
+The official competition description presents Lux AI Season 3 as a NeurIPS 2024 multi-agent 1v1 competition designed around adaptation to changing game dynamics (Tao et al., 2024). The official Season 3 specification describes a two-team game on a 2D map, arranged as a best-of-5 match sequence, with each match lasting 100 time steps. The official Lux-Design-S3 repository provides the environment, kits, and specifications used by this project (Lux AI Challenge, 2024).
 
 These properties make Lux AI Season 3 suitable for this project because it includes:
 
@@ -309,26 +309,5 @@ LLMs can support high-level planning, but they are difficult to use as direct co
 
 LuxLLM-Agent addresses this by combining LLM strategic planning with rule-based verification, fallback, strategy caching, risk-aware filtering, decision trace logging, controlled evaluation, and replay-grounded inspection.
 
-The next chapter presents the project requirements and methodology in more detail.
-
----
-
-## References to Add to Bibliography Later
-
-The following references should be added to the final bibliography or BibTeX file in the next pass:
-
-* Ahn et al. (2022), *Do As I Can, Not As I Say: Grounding Language in Robotic Affordances*.
-* Berner et al. (2019), *Dota 2 with Large Scale Deep Reinforcement Learning*.
-* Browne et al. (2012), *A Survey of Monte Carlo Tree Search Methods*.
-* Li et al. (2023), *CAMEL: Communicative Agents for “Mind” Exploration of Large Language Model Society*.
-* Mnih et al. (2015), *Human-level Control through Deep Reinforcement Learning*.
-* Park et al. (2023), *Generative Agents: Interactive Simulacra of Human Behavior*.
-* Schick et al. (2023), *Toolformer: Language Models Can Teach Themselves to Use Tools*.
-* Shinn et al. (2023), *Reflexion: Language Agents with Verbal Reinforcement Learning*.
-* Vinyals et al. (2019), *Grandmaster Level in StarCraft II Using Multi-agent Reinforcement Learning*.
-* Wang et al. (2023), *Voyager: An Open-Ended Embodied Agent with Large Language Models*.
-* Yao et al. (2023), *ReAct: Synergizing Reasoning and Acting in Language Models*.
-* Yao et al. (2023), *Tree of Thoughts: Deliberate Problem Solving with Large Language Models*.
-* Kaggle, *NeurIPS 2024 - Lux AI Season 3*.
-* Lux AI Challenge, *Lux-Design-S3 official repository and specifications*.
+The next chapter presents the project requirements and methodology in more detail. The consolidated reference list appears after Chapter 7.
 

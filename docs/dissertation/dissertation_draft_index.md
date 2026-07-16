@@ -38,17 +38,18 @@ The dissertation is positioned as an artefact-based computer science project. It
 
 ## Dissertation Chapter Drafts
 
-The current dissertation draft consists of seven chapters.
+The current dissertation draft consists of front matter and seven chapters. Run `python tools/assemble_dissertation.py` after editing a component to regenerate `docs/dissertation/full_dissertation_draft.md` deterministically.
 
 | Chapter   | File                                                      | Status                           | Purpose                                                                                                                |
 | --------- | --------------------------------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Chapter 1 | `docs/dissertation/chapter_1_introduction.md`             | Draft complete                   | Introduces the project, motivation, problem, aim, RQ, contributions, and dissertation structure                        |
-| Chapter 2 | `docs/dissertation/chapter_2_background_related_work.md`  | Draft complete, citations needed | Provides background on LLM agents, game AI, hybrid LLM-rule systems, action verification, traceability, and evaluation |
+| Chapter 2 | `docs/dissertation/chapter_2_background_related_work.md`  | References integrated            | Provides background on LLM agents, game AI, hybrid LLM-rule systems, action verification, traceability, and evaluation |
 | Chapter 3 | `docs/dissertation/chapter_3_requirements_methodology.md` | Draft complete                   | Defines requirements and methodology                                                                                   |
 | Chapter 4 | `docs/dissertation/chapter_4_system_design.md`            | Draft complete                   | Explains the system architecture and design rationale                                                                  |
 | Chapter 5 | `docs/dissertation/chapter_5_implementation.md`           | Draft complete                   | Describes implementation details and project files                                                                     |
-| Chapter 6 | `docs/dissertation/chapter_6_evaluation.md`               | Draft complete                   | Evaluates gameplay outcomes, LLM stability, decision sources, fallback, latency, overlay inspection, and failure cases |
-| Chapter 7 | `docs/dissertation/chapter_7_discussion_conclusion.md`    | Draft complete                   | Discusses findings, contributions, limitations, threats to validity, future work, and conclusion                       |
+| Chapter 6 | `docs/dissertation/chapter_6_evaluation.md`               | Formal evidence integrated       | Evaluates 200 matched role-swapped matches, trace coverage, verification interventions, outcomes, and limitations       |
+| Chapter 7 | `docs/dissertation/chapter_7_discussion_conclusion.md`    | Formal evidence integrated       | Answers the RQ using trace, verification, reproducibility, outcome, limitation, and threat-to-validity evidence          |
+| Full draft | `docs/dissertation/full_dissertation_draft.md`           | Deterministically assembled      | Combines front matter and the seven canonical chapter files                                                             |
 
 ---
 

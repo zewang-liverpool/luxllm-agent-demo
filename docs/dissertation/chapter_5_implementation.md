@@ -196,7 +196,7 @@ This implementation supports the first sub-research question:
 
 ## 5.5 LLM Decision Implementation
 
-The LLM decision logic is implemented as a high-level planning module.
+The LLM decision logic is implemented as a high-level planning module. The formal experiments use Qwen3-32B and DeepSeek-R1-32B through a local Ollama server (Yang et al., 2025; DeepSeek-AI et al., 2025; Ollama, 2024).
 
 Relevant files include:
 
@@ -255,6 +255,25 @@ HOLD_POSITION
 The important implementation choice is that these intents are not executed directly. They are passed through parsing, verification, fallback, caching, and action planning before any executable Lux AI action is produced.
 
 This reduces the risk of invalid LLM output causing invalid environment actions.
+
+Figure 5.1 summarises the implemented decision path.
+
+```mermaid
+flowchart LR
+    A["Structured game state"] --> B["Prompt and model request"]
+    B --> C["Raw JSON response"]
+    C --> D{"Schema valid?"}
+    D -- "No" --> E["Deterministic normalization or explicit fallback"]
+    D -- "Yes" --> F["Bounded strategic intents"]
+    E --> F
+    F --> G["Risk and rule verification"]
+    G --> H["Action planner"]
+    H --> I["Legal Lux action array"]
+    G --> J["Verifier and provenance trace"]
+    I --> J
+```
+
+**Figure 5.1:** Implemented LLM decision pipeline. Raw responses cannot enter the environment directly; they pass through schema checks, normalization or fallback, verifier logic, and deterministic action construction.
 
 ---
 
@@ -626,7 +645,7 @@ docs/demo_evidence/
 
 ```
 
-This implementation supports controlled multi-run evaluation, including the qwen3:32b and DeepSeek-R1-32B 50-run evidence.
+This implementation supports both the historical fixed-role runs and the formal matched-seed, role-swapped evaluation.
 
 ---
 
@@ -634,34 +653,29 @@ This implementation supports controlled multi-run evaluation, including the qwen
 
 The project includes controlled-run evidence for multiple LLM backends.
 
-Current main evidence includes:
+The current primary evidence includes:
 
-| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
-| --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-| qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-| deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
+| Model | Matched seeds | Role-swapped matches | Valid LLM calls | LLM wins |
+| --- | ---: | ---: | ---: | ---: |
+| qwen3:32b | 50 | 100 | 2,286/2,286 | 63 |
+| deepseek-r1:32b | 50 | 100 | 2,305/2,305 | 60 |
 
-DeepSeek-R1-32B evidence is stored in:
-
-```text
-
-docs/demo_evidence/hpc_deepseek_r1_32b_50run/
-
-```
-
-Important files include:
+Formal runs are produced by:
 
 ```text
-
-deepseek_r1_32b_50run_summary.md
-
-summary_50run.json
-
-match_history_50run.jsonl
-
+scripts/run_paired_experiment.py
+scripts/barkla_paired_experiment.sbatch
 ```
 
-The implementation keeps summary evidence separate from raw run folders. This avoids overloading the repository with large or repetitive raw outputs while preserving the key reproducible results.
+The compact, tracked analysis products are:
+
+```text
+reports/final_trace_evaluation.md
+reports/final_trace_evaluation.json
+reports/final_trace_metrics.csv
+```
+
+Historical fixed-role evidence remains under `docs/demo_evidence/` for provenance. The 32B formal raw runs and transfer archives are retained locally outside normal Git history because they are several hundred megabytes each. The tracked reports preserve aggregate metrics and analysis logic, while the reproducibility guide records how to rerun or audit the experiment.
 
 ---
 

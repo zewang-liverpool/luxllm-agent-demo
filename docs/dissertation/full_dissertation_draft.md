@@ -1,3 +1,31 @@
+# LuxLLM-Agent: A Decision-Trace and Action-Verification Framework for Inspecting and Evaluating LLM-based Agents in Lux AI Season 3
+
+**Author:** Ze Wang
+
+**Institution:** University of Liverpool
+
+**Email:** Z.Wang300@liverpool.ac.uk
+
+**Project:** COMP702 Final-Year Project
+
+**Date:** July 2026
+
+---
+
+## Abstract
+
+Large language models can provide high-level planning in sequential environments, but their outputs are not automatically valid, timely, or attributable to executable actions. This dissertation presents LuxLLM-Agent, a decision-trace and action-verification framework for inspecting and evaluating LLM-based agents in Lux AI Season 3. The framework converts raw observations into structured summaries, constrains model responses to bounded strategic intents, applies deterministic normalization and rule-based checks, constructs legal action arrays, records decision provenance, and links execution evidence to replay state.
+
+The primary evaluation uses 50 matched Lux environment seeds with role swapping for each of two local 32B backends, Qwen3 and DeepSeek-R1, producing 200 completed matches. Across 206,591 structured trace records, agent-step and LLM-call field completeness, replay linkage, and action-array shape validity were all 100%. All 4,591 LLM calls were valid after deterministic checks; 520 Qwen responses required normalization. Risk filtering changed proposed targets on 5,590 Qwen steps and 7,090 DeepSeek steps. No LLM timeout, API error, or downstream action fallback was observed in the formal runs. Qwen won 63/100 matches and DeepSeek won 60/100, but their matched outcome difference was not statistically supported.
+
+The results show that structured traces make decision source and verifier intervention auditable, while rule-based verification provides a controlled boundary between model proposals and environment actions. The project does not claim a universal model ranking or leaderboard-level policy. Its contribution is a reproducible framework and evidence pipeline for examining how LLM-supported decisions are produced, checked, executed, and inspected.
+
+**Keywords:** LLM agents; decision tracing; action verification; reproducibility; Lux AI Season 3; replay inspection
+
+---
+
+---
+
 # Chapter 1: Introduction
 
 ## 1.1 Background
@@ -138,7 +166,7 @@ The system records whether decisions come from fresh LLM calls, cached LLM plans
 
 ### 1.6.4 Controlled evaluation with multiple LLM backends
 
-The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework. Both models completed 50 controlled Lux AI Season 3 runs with zero LLM errors in the current evidence.
+The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework using 50 matched environment seeds with role swapping. Each backend completed 100 matches, giving 200 formal matches in total. All 4,591 recorded LLM calls were valid after deterministic checks, and no LLM timeout, API error, or downstream action fallback was observed.
 
 ### 1.6.5 Replay-grounded decision trace overlay
 
@@ -176,16 +204,16 @@ The project is best understood as an artefact-based investigation into how LLM-b
 
 ## 1.8 Summary of Evaluation Evidence
 
-The project includes controlled-run evidence for two LLM backends.
+The primary evaluation uses the same 50 environment seeds for each backend and swaps the LLM between `player_0` and `player_1`. This controls seed and role effects more directly than the earlier fixed-role experiments.
 
-| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
-| --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-| qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-| deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
+| Model | Matches | LLM wins | Win rate | Wilson 95% CI | Valid LLM calls |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| qwen3:32b | 100 | 63 | 63% | 53.2%-71.8% | 2,286/2,286 |
+| deepseek-r1:32b | 100 | 60 | 60% | 50.2%-69.1% | 2,305/2,305 |
 
-These results show that both LLM backends can be integrated into the framework with zero recorded LLM errors in the current 50-run experiments. The qwen3:32b-backed configuration achieved a higher player_0 win rate, while the DeepSeek-R1-32B-backed configuration demonstrated that the framework can support another reasoning-oriented LLM backend.
+Across both backends, the evaluation contains 206,591 structured trace records. Agent-step and LLM-call trace completeness, replay linkage, and action-array shape validity were all 100%. Qwen required 520 deterministic normalization interventions, while DeepSeek required none. The risk filter changed proposed targets on 5,590 Qwen steps and 7,090 DeepSeek steps, providing observable evidence that rule-based verification affected execution rather than merely existing in the architecture.
 
-The evaluation also includes decision-source analysis, latency analysis, fallback analysis, replay-grounded inspection, and failure-case analysis.
+The Qwen-versus-DeepSeek matched comparison found a mean outcome-score difference of 0.03 with a paired-bootstrap 95% interval of [-0.07, 0.13] and a McNemar exact p-value of 0.690. Therefore, the results support controlled framework evaluation but do not establish a general ranking between the two models.
 
 ---
 
@@ -229,7 +257,7 @@ The next chapter introduces the background and related work needed to situate th
 
 ---
 
-# Chapter 2: Background and Related Work
+﻿# Chapter 2: Background and Related Work
 
 ## 2.1 Introduction
 
@@ -274,7 +302,7 @@ Environment update
 
 This loop is different from ordinary text generation because the model must respond to a changing environment over time. In a sequential decision-making task, each decision may affect future states.
 
-Recent work has explored several forms of LLM-based agents. ReAct shows that language models can interleave reasoning traces with task-specific actions in interactive decision-making settings (Yao et al., 2023). Reflexion studies language agents that use verbal feedback and memory to improve future decisions (Shinn et al., 2023). Toolformer explores how language models can be extended through external tool use (Schick et al., 2023). Generative Agents demonstrates how LLMs can be integrated into architectures involving memory, reflection, and planning in interactive environments (Park et al., 2023). CAMEL studies communicative LLM-based agents in multi-agent settings (Li et al., 2023).
+Recent work has explored several forms of LLM-based agents. ReAct shows that language models can interleave reasoning traces with task-specific actions in interactive decision-making settings (Yao et al., 2023a). Reflexion studies language agents that use verbal feedback and memory to improve future decisions (Shinn et al., 2023). Toolformer explores how language models can be extended through external tool use (Schick et al., 2023). Generative Agents demonstrates how LLMs can be integrated into architectures involving memory, reflection, and planning in interactive environments (Park et al., 2023). CAMEL studies communicative LLM-based agents in multi-agent settings (Li et al., 2023).
 
 These works show that LLMs can be useful beyond single-turn text generation. They can support interaction, reasoning, planning, memory, and external system use. However, they also show that LLM-based agents usually require surrounding system structures. The model output often needs to be interpreted, constrained, checked, or connected to external tools and environments.
 
@@ -298,7 +326,7 @@ Third, LLM decisions may be unstable across steps. If the model is called repeat
 
 Fourth, LLM calls may be slow, especially when using large local or HPC-hosted models.
 
-Prior work supports the idea that LLM planning needs grounding and control. SayCan argues that language-model knowledge should be grounded in feasible actions or affordances before execution (Ahn et al., 2022). Voyager shows that an LLM-powered embodied agent can combine environment feedback, executable skills, and self-verification (Wang et al., 2023). Tree of Thoughts suggests that LLM reasoning can be improved by considering and evaluating multiple reasoning paths rather than relying only on a single left-to-right generation (Yao et al., 2023).
+Prior work supports the idea that LLM planning needs grounding and control. SayCan argues that language-model knowledge should be grounded in feasible actions or affordances before execution (Ahn et al., 2022). Voyager shows that an LLM-powered embodied agent can combine environment feedback, executable skills, and self-verification (Wang et al., 2023). Tree of Thoughts suggests that LLM reasoning can be improved by considering and evaluating multiple reasoning paths rather than relying only on a single left-to-right generation (Yao et al., 2023b).
 
 LuxLLM-Agent applies a related principle in Lux AI Season 3. The LLM does not directly output final game actions. Instead, it proposes a structured strategic plan. This plan is parsed, checked, cached when appropriate, and converted into executable actions by rule-based and planning components.
 
@@ -355,7 +383,7 @@ Rule-based components may handle:
 * safety filtering;
 * environment-specific execution.
 
-This type of design is related to prior work where LLMs are embedded inside larger systems rather than used alone. Toolformer studies LLMs that use external APIs and tools (Schick et al., 2023). SayCan combines high-level language-model reasoning with executable skill constraints (Ahn et al., 2022). Voyager connects LLM planning with executable code skills, feedback, and self-verification in Minecraft (Wang et al., 2023). ReAct connects reasoning and acting in interactive tasks (Yao et al., 2023).
+This type of design is related to prior work where LLMs are embedded inside larger systems rather than used alone. Toolformer studies LLMs that use external APIs and tools (Schick et al., 2023). SayCan combines high-level language-model reasoning with executable skill constraints (Ahn et al., 2022). Voyager connects LLM planning with executable code skills, feedback, and self-verification in Minecraft (Wang et al., 2023). ReAct connects reasoning and acting in interactive tasks (Yao et al., 2023a).
 
 LuxLLM-Agent is also a hybrid system, but its focus is different. It does not train a new language model, create a general-purpose tool-using model, or implement a lifelong-learning agent. Instead, it builds a practical framework for using LLM strategic proposals inside Lux AI Season 3 with verification, fallback, caching, and decision trace logging.
 
@@ -400,7 +428,7 @@ Explainability is important for systems where users need to understand how decis
 
 For LLM-based agents, explainability can be difficult. A final action may be influenced by a model response, cached strategy, fallback rule, local verifier, or action planner. Without logs, it is difficult to know which component produced the final behaviour.
 
-Prior work has shown the value of recording or exposing intermediate agent information. ReAct uses reasoning traces alongside actions, which can make agent trajectories easier to interpret (Yao et al., 2023). Generative Agents uses memory, reflection, and planning as part of an agent architecture (Park et al., 2023). Reflexion uses verbal reflections and feedback records to improve later decisions (Shinn et al., 2023).
+Prior work has shown the value of recording or exposing intermediate agent information. ReAct uses reasoning traces alongside actions, which can make agent trajectories easier to interpret (Yao et al., 2023a). Generative Agents uses memory, reflection, and planning as part of an agent architecture (Park et al., 2023). Reflexion uses verbal reflections and feedback records to improve later decisions (Shinn et al., 2023).
 
 LuxLLM-Agent focuses on decision traceability and decision provenance.
 
@@ -453,7 +481,7 @@ LuxLLM-Agent uses a broader evaluation approach, including:
 
 This evaluation approach supports the dissertation research question because it focuses on inspection and evaluation rather than only performance.
 
-The project’s controlled-run evidence includes 50-run results for qwen3:32b and DeepSeek-R1-32B. Both models completed 50 controlled runs with zero LLM errors in the current evidence, while producing different gameplay outcomes.
+The project’s primary controlled evidence uses 50 matched environment seeds with role swapping for qwen3:32b and DeepSeek-R1-32B (Yang et al., 2025; DeepSeek-AI et al., 2025). Each backend completed 100 matches. The design makes role effects and seed effects visible and supports paired comparison without treating the outcome as a hardware-independent model ranking.
 
 This shows why evaluation should distinguish between execution stability, strategic quality, and final outcome.
 
@@ -492,7 +520,7 @@ The overlay is important for the project because it connects implementation, eva
 
 Lux AI Season 3 was selected because it provides a structured but challenging environment for agent evaluation.
 
-The official Kaggle competition page describes Lux AI Season 3 as a NeurIPS 2024 competition where participants create or train AI bots for a novel multi-agent 1v1 game. The official Season 3 specification describes a two-team game on a 2D map, arranged as a best-of-5 match sequence, with each match lasting 100 time steps. The official Lux-Design-S3 repository describes the task as involving multi-variable optimisation, resource gathering, allocation, and opponent-aware policy development.
+The official competition description presents Lux AI Season 3 as a NeurIPS 2024 multi-agent 1v1 competition designed around adaptation to changing game dynamics (Tao et al., 2024). The official Season 3 specification describes a two-team game on a 2D map, arranged as a best-of-5 match sequence, with each match lasting 100 time steps. The official Lux-Design-S3 repository provides the environment, kits, and specifications used by this project (Lux AI Challenge, 2024).
 
 These properties make Lux AI Season 3 suitable for this project because it includes:
 
@@ -540,28 +568,7 @@ LLMs can support high-level planning, but they are difficult to use as direct co
 
 LuxLLM-Agent addresses this by combining LLM strategic planning with rule-based verification, fallback, strategy caching, risk-aware filtering, decision trace logging, controlled evaluation, and replay-grounded inspection.
 
-The next chapter presents the project requirements and methodology in more detail.
-
----
-
-## References to Add to Bibliography Later
-
-The following references should be added to the final bibliography or BibTeX file in the next pass:
-
-* Ahn et al. (2022), *Do As I Can, Not As I Say: Grounding Language in Robotic Affordances*.
-* Berner et al. (2019), *Dota 2 with Large Scale Deep Reinforcement Learning*.
-* Browne et al. (2012), *A Survey of Monte Carlo Tree Search Methods*.
-* Li et al. (2023), *CAMEL: Communicative Agents for “Mind” Exploration of Large Language Model Society*.
-* Mnih et al. (2015), *Human-level Control through Deep Reinforcement Learning*.
-* Park et al. (2023), *Generative Agents: Interactive Simulacra of Human Behavior*.
-* Schick et al. (2023), *Toolformer: Language Models Can Teach Themselves to Use Tools*.
-* Shinn et al. (2023), *Reflexion: Language Agents with Verbal Reinforcement Learning*.
-* Vinyals et al. (2019), *Grandmaster Level in StarCraft II Using Multi-agent Reinforcement Learning*.
-* Wang et al. (2023), *Voyager: An Open-Ended Embodied Agent with Large Language Models*.
-* Yao et al. (2023), *ReAct: Synergizing Reasoning and Acting in Language Models*.
-* Yao et al. (2023), *Tree of Thoughts: Deliberate Problem Solving with Large Language Models*.
-* Kaggle, *NeurIPS 2024 - Lux AI Season 3*.
-* Lux AI Challenge, *Lux-Design-S3 official repository and specifications*.
+The next chapter presents the project requirements and methodology in more detail. The consolidated reference list appears after Chapter 7.
 
 ---
 
@@ -1158,14 +1165,14 @@ Main metrics include:
 
 * decision-source distribution.
 
-The main 50-run comparison is:
+The primary experiment uses 50 matched Lux environment seeds per backend. For each seed, the LLM-controlled agent is evaluated once as `player_0` and once as `player_1`, producing 100 matches per backend. The LLM sampling temperature is 0.0, and the same integer is used for the paired environment and LLM seed policy.
 
-| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
-| --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-| qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-| deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
+| Model | Seed pairs | Matches | Role-swapped pairs | Planned sampling |
+| --- | ---: | ---: | ---: | --- |
+| qwen3:32b | 50 | 100 | 50 | temperature 0.0 |
+| deepseek-r1:32b | 50 | 100 | 50 | temperature 0.0 |
 
-This comparison evaluates both gameplay outcome and framework stability.
+The quantitative analysis reports completion, decision validity, trace coverage, replay linkage, verification interventions, Wilson confidence intervals, seed-clustered bootstrap intervals, role effects, and matched backend comparison. Gameplay outcomes are secondary evidence; the primary evaluation concerns inspectability and action-verification behaviour.
 
 ---
 
@@ -1371,61 +1378,22 @@ The system should support reproducible experiments and visual demonstration. Thi
 
 ## 4.3 High-level Architecture
 
-The high-level architecture is shown below:
+The high-level architecture is shown in Figure 4.1.
 
-```text
-
-Lux AI Season 3 Observation
-
-        |
-
-        v
-
-Structured State Summariser
-
-        |
-
-        v
-
-LLM Decision Module
-
-        |
-
-        v
-
-Structured Plan Parser
-
-        |
-
-        v
-
-Rule-based Action Verifier
-
-        |
-
-        v
-
-Fallback / Strategy Cache / Risk Filter
-
-        |
-
-        v
-
-Action Planner
-
-        |
-
-        v
-
-Executable Lux AI Action
-
-        |
-
-        v
-
-Decision Logs + Evaluation Metrics + Replay Viewer
-
+```mermaid
+flowchart TD
+    A["Lux AI Season 3 observation"] --> B["Structured state summariser"]
+    B --> C["LLM strategic proposal"]
+    C --> D["Structured parsing and normalization"]
+    D --> E["Rule and risk verification"]
+    E --> F["Fallback and strategy cache"]
+    F --> G["Deterministic action planner"]
+    G --> H["Executable Lux action array"]
+    H --> I["Decision traces and match evidence"]
+    I --> J["Replay-grounded viewer"]
 ```
+
+**Figure 4.1:** LuxLLM-Agent system architecture. The LLM is bounded to strategic proposals; deterministic components retain control of action construction, verification, evidence recording, and replay inspection.
 
 This architecture separates strategic reasoning from executable action generation.
 
@@ -1455,20 +1423,15 @@ Its responsibilities include:
 
 * generating replay and evaluation evidence.
 
-Relevant files include:
+Relevant canonical files include:
 
 ```text
-
-agent.py
-
-baseline_agent.py
-
-main.py
-
-config.py
-
-run_match_llm.bat
-
+src/agent/agent.py
+src/agent/baseline_agent.py
+src/agent/main.py
+src/agent/config.py
+scripts/run_paired_experiment.py
+scripts/run_rule_smoke.py
 ```
 
 The runtime supports different experimental settings through environment variables, including:
@@ -2228,7 +2191,7 @@ This implementation supports the first sub-research question:
 
 ## 5.5 LLM Decision Implementation
 
-The LLM decision logic is implemented as a high-level planning module.
+The LLM decision logic is implemented as a high-level planning module. The formal experiments use Qwen3-32B and DeepSeek-R1-32B through a local Ollama server (Yang et al., 2025; DeepSeek-AI et al., 2025; Ollama, 2024).
 
 Relevant files include:
 
@@ -2287,6 +2250,25 @@ HOLD_POSITION
 The important implementation choice is that these intents are not executed directly. They are passed through parsing, verification, fallback, caching, and action planning before any executable Lux AI action is produced.
 
 This reduces the risk of invalid LLM output causing invalid environment actions.
+
+Figure 5.1 summarises the implemented decision path.
+
+```mermaid
+flowchart LR
+    A["Structured game state"] --> B["Prompt and model request"]
+    B --> C["Raw JSON response"]
+    C --> D{"Schema valid?"}
+    D -- "No" --> E["Deterministic normalization or explicit fallback"]
+    D -- "Yes" --> F["Bounded strategic intents"]
+    E --> F
+    F --> G["Risk and rule verification"]
+    G --> H["Action planner"]
+    H --> I["Legal Lux action array"]
+    G --> J["Verifier and provenance trace"]
+    I --> J
+```
+
+**Figure 5.1:** Implemented LLM decision pipeline. Raw responses cannot enter the environment directly; they pass through schema checks, normalization or fallback, verifier logic, and deterministic action construction.
 
 ---
 
@@ -2658,7 +2640,7 @@ docs/demo_evidence/
 
 ```
 
-This implementation supports controlled multi-run evaluation, including the qwen3:32b and DeepSeek-R1-32B 50-run evidence.
+This implementation supports both the historical fixed-role runs and the formal matched-seed, role-swapped evaluation.
 
 ---
 
@@ -2666,34 +2648,29 @@ This implementation supports controlled multi-run evaluation, including the qwen
 
 The project includes controlled-run evidence for multiple LLM backends.
 
-Current main evidence includes:
+The current primary evidence includes:
 
-| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
-| --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-| qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-| deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
+| Model | Matched seeds | Role-swapped matches | Valid LLM calls | LLM wins |
+| --- | ---: | ---: | ---: | ---: |
+| qwen3:32b | 50 | 100 | 2,286/2,286 | 63 |
+| deepseek-r1:32b | 50 | 100 | 2,305/2,305 | 60 |
 
-DeepSeek-R1-32B evidence is stored in:
-
-```text
-
-docs/demo_evidence/hpc_deepseek_r1_32b_50run/
-
-```
-
-Important files include:
+Formal runs are produced by:
 
 ```text
-
-deepseek_r1_32b_50run_summary.md
-
-summary_50run.json
-
-match_history_50run.jsonl
-
+scripts/run_paired_experiment.py
+scripts/barkla_paired_experiment.sbatch
 ```
 
-The implementation keeps summary evidence separate from raw run folders. This avoids overloading the repository with large or repetitive raw outputs while preserving the key reproducible results.
+The compact, tracked analysis products are:
+
+```text
+reports/final_trace_evaluation.md
+reports/final_trace_evaluation.json
+reports/final_trace_metrics.csv
+```
+
+Historical fixed-role evidence remains under `docs/demo_evidence/` for provenance. The 32B formal raw runs and transfer archives are retained locally outside normal Git history because they are several hundred megabytes each. The tracked reports preserve aggregate metrics and analysis logic, while the reproducibility guide records how to rerun or audit the experiment.
 
 ---
 
@@ -3205,7 +3182,64 @@ These metrics evaluate whether visual inspection can be connected to decision lo
 
 ---
 
-## 6.5 qwen3:32b 50-run Results
+## 6.5 Formal Matched-seed and Role-swapped Evaluation
+
+The primary evaluation supersedes the earlier fixed-role 50-run comparison. It uses 50 matched Lux environment seeds for each backend and evaluates the LLM-controlled agent in both player roles, producing 100 matches per backend and 200 matches overall.
+
+### 6.5.1 Completion and outcome evidence
+
+| Metric | qwen3:32b | deepseek-r1:32b |
+| --- | ---: | ---: |
+| Completed matches | 100/100 | 100/100 |
+| Matched seed pairs | 50 | 50 |
+| LLM wins | 63 | 60 |
+| LLM losses | 37 | 40 |
+| LLM win rate | 63% | 60% |
+| Wilson 95% CI | 53.2%-71.8% | 50.2%-69.1% |
+| Exact binomial p-value vs 0.5 | 0.0120 | 0.0569 |
+
+Qwen won 29/50 matches as `player_0` and 34/50 as `player_1`. DeepSeek won 30/50 in each role. Within-model matched-role analysis did not identify a statistically supported role effect: Qwen's paired-bootstrap interval for the player-role outcome-score difference was [-0.32, 0.12], while DeepSeek's was [-0.20, 0.20].
+
+The matched Qwen-versus-DeepSeek comparison covered 100 seed-role strata. Qwen alone won 14 strata and DeepSeek alone won 11. The mean outcome-score difference was 0.03, its paired-bootstrap 95% interval was [-0.07, 0.13], and the McNemar exact p-value was 0.690. This does not support a general claim that one backend is superior.
+
+### 6.5.2 Decision-trace and verification evidence
+
+| Metric | Qwen3-32B | DeepSeek-R1-32B |
+| --- | ---: | ---: |
+| Structured trace records | 103,286 | 103,305 |
+| Matches with trace | 100 (100%) | 100 (100%) |
+| Agent-step trace completeness | 100% | 100% |
+| LLM-call trace completeness | 100% | 100% |
+| Replay-linkage coverage | 100% | 100% |
+| LLM calls | 2,286 | 2,305 |
+| Post-check structured-valid calls | 2,286 (100%) | 2,305 (100%) |
+| Raw schema-valid calls | 1,766 (77.3%) | 2,305 (100%) |
+| Deterministic normalizations | 520 | 0 |
+| Cached-decision steps | 45,399 | 45,380 |
+| Observable rule-fallback steps | 2,815 | 2,815 |
+| Risk-filter changed steps | 5,590 | 7,090 |
+| Risk-filter changed targets | 31,128 | 34,379 |
+| Action-array shape validity | 100% | 100% |
+| LLM timeouts / errors | 0 / 0 | 0 / 0 |
+| Downstream action fallback steps | 0 | 0 |
+
+These metrics provide the primary answer to the research question. Trace completeness and replay linkage show that decisions can be inspected after execution. Raw-schema checks and normalization counts expose where the framework intervened before planning. Risk-filter changes show that rule-based verification affected proposed targets. Action-shape validity, completed matches, and the absence of downstream action fallback show reliable execution in the observed runs, without claiming proof of safety for every possible model output.
+
+The evidence is generated by `tools/analyse_trace_evidence.py` and summarised in `reports/final_trace_evaluation.md`, `reports/final_trace_evaluation.json`, and `reports/final_trace_metrics.csv`.
+
+### 6.5.3 Offline verifier intervention audit
+
+To make the verifier evidence more direct, `tools/audit_verifier_interventions.py` re-analyses the retained raw formal logs without making new model calls. It reports normalization and risk-filter interventions by backend, decision source, game phase, reason, and changed-target count.
+
+The strict-schema counterfactual shows that 520 Qwen calls would have been rejected if the framework required the full raw object schema and did not implement its deterministic string-intent normalization. All 520 normalized calls passed the post-check representation. DeepSeek produced no responses requiring this normalization in the formal run.
+
+Risk filtering changed 31,128 Qwen targets across 5,590 steps and 34,379 DeepSeek targets across 7,090 steps. Most interventions occurred while a cached LLM strategy was active: 5,153 Qwen steps and 6,569 DeepSeek steps. The recorded reason in every affected step was that the original target was inside the visible-enemy risk radius and a safer target was selected. This evidence demonstrates that verification was operational rather than merely specified in the architecture.
+
+The audit does not claim that every changed target caused a better match outcome. It establishes a narrower and reproducible result: the framework detected recorded risk conditions, changed proposed targets before action construction, and retained the reason and provenance needed for inspection. The outputs are stored in `reports/verifier_intervention_audit.md`, `.json`, and `.csv`.
+
+---
+
+## 6.6 Historical qwen3:32b Fixed-role Evidence
 
 The qwen3:32b evaluation provides the main LLM-backed controlled-run result.
 
@@ -3233,7 +3267,7 @@ The more important framework-level finding is that qwen3:32b can be integrated i
 
 ---
 
-## 6.6 DeepSeek-R1-32B 50-run Results
+## 6.7 Historical DeepSeek-R1-32B Fixed-role Evidence
 
 The DeepSeek-R1-32B evaluation was added as a comparison LLM backend.
 
@@ -3267,16 +3301,16 @@ The latency values are particularly important. An average latency of approximate
 
 ---
 
-## 6.7 Model Comparison
+## 6.8 Historical Fixed-role Comparison
 
-The summary comparison is:
+The following earlier comparison is retained as development history rather than used as the primary result:
 
 | Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | Wilson 95% CI | LLM errors |
 | --------------- | ---: | ------------: | ------------: | ----------------: | ------------: | ---------: |
 | qwen3:32b       |   50 |            35 |            15 |               70% | 56.2%-80.9% |          0 |
 | deepseek-r1:32b |   50 |            26 |            24 |               52% | 38.5%-65.2% |          0 |
 
-The qwen3:32b-backed configuration achieved a stronger gameplay outcome in this evaluation.
+The qwen3:32b-backed configuration achieved a stronger gameplay outcome in this historical fixed-role evaluation.
 
 However, the most important dissertation-level interpretation is not simply that qwen3:32b won more matches. A stronger interpretation is:
 
@@ -3288,7 +3322,7 @@ The comparison also shows why final win rate should not be the only metric. Alth
 
 ---
 
-## 6.8 Decision-source Analysis
+## 6.9 Decision-source Analysis
 
 Decision-source analysis is central to the project because it explains how behaviour was produced.
 
@@ -3354,7 +3388,7 @@ This is a strength of the evaluation because the system can explain decision pro
 
 ---
 
-## 6.9 Fallback and Verification Analysis
+## 6.10 Fallback and Verification Analysis
 
 Fallback and verification are important because the LLM output is not directly executed.
 
@@ -3398,7 +3432,7 @@ Therefore, the dissertation should interpret the system as a hybrid LLM-rule fra
 
 ---
 
-## 6.10 Latency and Strategy Cache Analysis
+## 6.11 Latency and Strategy Cache Analysis
 
 The DeepSeek-R1-32B evaluation recorded:
 
@@ -3433,7 +3467,7 @@ However, caching also introduces a limitation. Cached plans may become stale whe
 
 ---
 
-## 6.11 Replay-grounded Inspection Evaluation
+## 6.12 Replay-grounded Inspection Evaluation
 
 The LLM Decision Trace Overlay evaluates whether decision traces can be connected to replay frames.
 
@@ -3482,35 +3516,35 @@ The overlay is particularly useful because final match results cannot show wheth
 
 ---
 
-## 6.12 Failure-case Analysis
+## 6.13 Failure-case Analysis
 
 The project includes failure-case analysis to avoid only reporting successful results.
 
 Representative failure and limitation cases include:
 
-### 6.12.1 Valid LLM plan but limited strategic impact
+### 6.13.1 Valid LLM plan but limited strategic impact
 
 An LLM may produce a valid plan such as exploring stale tiles or moving toward relic candidates. This output can be structurally valid and parseable, but it may still have limited strategic impact.
 
 This shows that LLM validity is not the same as strategic quality.
 
-### 6.12.2 Fallback replaces or supports LLM decision
+### 6.13.2 Fallback replaces or supports LLM decision
 
 Trace records may show that behaviour came from `rule_only`, `fallback`, or `rule_fallback`. This is useful for stability, but it means final actions cannot always be attributed directly to the LLM.
 
 This shows that fallback is both a strength and an evaluation complication.
 
-### 6.12.3 Cached plan may become stale
+### 6.13.3 Cached plan may become stale
 
 A frame may use a recent LLM plan rather than an exact fresh decision. This is necessary for efficiency, but the cached plan may become less suitable as the game state changes.
 
 This shows the trade-off between latency reduction and adaptiveness.
 
-### 6.12.4 Stable execution but different model outcomes
+### 6.13.4 Stable execution but different model outcomes
 
 Both qwen3:32b and DeepSeek-R1-32B completed 50 runs with zero LLM errors, but their win rates differed. This shows that execution stability does not imply equal strategic performance.
 
-### 6.12.5 Viewer trace alignment requires careful labelling
+### 6.13.5 Viewer trace alignment requires careful labelling
 
 The overlay aligns replay frames and trace logs by step. This is useful, but the dissertation should clearly label which replay and trace sources are used, especially if data comes from specific controlled runs.
 
@@ -3518,67 +3552,67 @@ These failure cases strengthen the evaluation because they demonstrate critical 
 
 ---
 
-## 6.13 Discussion of Results
+## 6.14 Discussion of Results
 
 The evaluation supports several findings.
 
-### 6.13.1 The framework supports multiple LLM backends
+### 6.14.1 The framework supports multiple LLM backends
 
 Both qwen3:32b and DeepSeek-R1-32B completed 50 controlled runs with zero LLM errors. This suggests that the framework can integrate different reasoning-oriented LLMs.
 
-### 6.13.2 Decision tracing improves interpretability
+### 6.14.2 Decision tracing improves interpretability
 
 Decision-source logs and the overlay make it possible to inspect whether actions come from fresh LLM decisions, cached plans, fallback, or rule-based logic.
 
-### 6.13.3 Rule-based verification improves stability
+### 6.14.3 Rule-based verification improves stability
 
 The verifier and fallback mechanisms prevent arbitrary LLM output from directly controlling actions. This supports stable execution.
 
-### 6.13.4 Caching is necessary for large LLMs
+### 6.14.4 Caching is necessary for large LLMs
 
 Latency evidence shows that large LLMs are too slow to call at every step. Strategy caching is therefore necessary for practical integration.
 
-### 6.13.5 Win rate is not sufficient for evaluation
+### 6.14.5 Win rate is not sufficient for evaluation
 
 Final outcome metrics are useful, but they must be interpreted together with decision-source, fallback, latency, and replay-grounded inspection metrics.
 
 ---
 
-## 6.14 Threats to Validity
+## 6.15 Threats to Validity
 
 The evaluation has several threats to validity.
 
-### 6.14.1 Limited number of LLM backends
+### 6.15.1 Limited number of LLM backends
 
 The evaluation compares qwen3:32b and DeepSeek-R1-32B. This is useful, but it does not cover all possible LLMs.
 
-### 6.14.2 Prompt sensitivity
+### 6.15.2 Prompt sensitivity
 
 Different models may respond differently to the same prompt. The current comparison uses the same framework, but model-specific prompt tuning could change the results.
 
-### 6.14.3 Hybrid system attribution
+### 6.15.3 Hybrid system attribution
 
 The final behaviour is produced by a hybrid system. It includes LLM planning, cached decisions, rule-based verification, fallback, and action planning. Therefore, final win rate cannot be attributed only to the LLM.
 
-### 6.14.4 Run-specific evidence
+### 6.15.4 Run-specific evidence
 
 Some evidence, such as the Run008 viewer and overlay, is based on specific replay and trace files. The dissertation should avoid generalising too strongly from a single replay.
 
-### 6.14.5 Gameplay performance is not leaderboard-level
+### 6.15.5 Gameplay performance is not leaderboard-level
 
 The system is designed for inspection and evaluation rather than maximum Lux AI leaderboard performance. This should be clearly stated.
 
 ---
 
-## 6.15 Limitations
+## 6.16 Limitations
 
 The current evaluation has several limitations.
 
-First, the evaluation focuses on controlled-run evidence rather than large-scale benchmarking. More runs would provide stronger statistical confidence.
+First, the evaluation covers two local 32B reasoning-oriented backends and 50 matched seeds per backend. This is substantially stronger than the historical fixed-role runs, but it is not a large-scale multi-model benchmark.
 
-Second, the LLM-assisted configuration occupied the `player_0` role and the rule-controlled opponent occupied `player_1` throughout the reported runs. Because the roles were not swapped under matched seeds, possible player-side and environment effects cannot be separated from model or planner effects.
+Second, the formal evaluation swaps roles under matched seeds, but the opponent remains the same rule-based policy. The findings therefore apply to this agent, prompt, verifier, opponent, model quantisation, and Lux configuration.
 
-Third, the historical fixed-player win rates now include Wilson 95% confidence intervals and exact binomial tests, generated by `tools/recompute_reported_metrics.py`. These quantify uncertainty within each run, but the experiments were not matched by seed across models; differences such as 56% versus 70% and 70% versus 52% therefore remain descriptive rather than causal model comparisons.
+Third, the formal matched comparison reports Wilson intervals, seed-clustered bootstrap intervals, role analysis, and a matched McNemar test. These quantify uncertainty but do not turn the experiment into a hardware-independent causal model ranking. The historical fixed-player results remain descriptive only.
 
 Fourth, the failure-case analysis is currently representative rather than exhaustive. Future work could automatically identify and classify failure cases from logs.
 
@@ -3592,11 +3626,11 @@ These limitations should not be hidden. They help define the scope of the projec
 
 ---
 
-## 6.16 Summary
+## 6.17 Summary
 
 This chapter evaluated LuxLLM-Agent using gameplay outcomes, LLM execution metrics, decision-source analysis, fallback analysis, latency analysis, replay-grounded inspection, and failure-case analysis.
 
-The qwen3:32b-backed configuration achieved 35 wins out of 50 runs, while the DeepSeek-R1-32B-backed configuration achieved 26 wins out of 50 runs. Both models completed 50 controlled runs with zero LLM errors.
+The formal evaluation completed 100 role-swapped matches for each backend. Qwen won 63/100 and DeepSeek won 60/100, but the matched backend difference was not statistically supported. Across 206,591 structured trace records, trace completeness, replay linkage, and action-array shape validity were 100%. All 4,591 LLM calls were valid after deterministic checks, with 520 Qwen responses requiring normalization. Risk filtering changed proposed targets on thousands of steps, while no timeout, LLM error, or downstream action fallback was observed.
 
 The evaluation shows that LuxLLM-Agent can support multiple LLM backends within the same structured decision-trace and rule-based action-verification framework. Decision-source metrics and the replay overlay show how the system makes agent behaviour more inspectable than a standard final-score evaluation.
 
@@ -3674,7 +3708,7 @@ A win or loss does not explain:
 
 For this reason, LuxLLM-Agent records decision-source and trace metrics. These metrics provide a richer view of agent behaviour.
 
-The evaluation showed that qwen3:32b and DeepSeek-R1-32B produced different gameplay outcomes, but both completed 50 controlled runs with zero LLM errors. This shows why gameplay outcome and execution stability should be analysed separately.
+The formal evaluation completed 100 role-swapped matches for each backend and recorded 206,591 structured traces. All 4,591 LLM calls were valid after deterministic checks, but the trace audit also exposed 520 Qwen responses that required deterministic normalization and thousands of risk-filter interventions. This shows why gameplay outcome, structured-output quality, verification behaviour, and execution stability should be analysed separately.
 
 ---
 
@@ -3682,16 +3716,14 @@ The evaluation showed that qwen3:32b and DeepSeek-R1-32B produced different game
 
 The project compared qwen3:32b and DeepSeek-R1-32B under the same LuxLLM-Agent framework.
 
-The main 50-run results were:
+The formal matched-seed results were:
 
-| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
-| --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-| qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-| deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
+| Model | Matches | LLM wins | Win rate | Wilson 95% CI | Valid LLM calls |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| qwen3:32b | 100 | 63 | 63% | 53.2%-71.8% | 2,286/2,286 |
+| deepseek-r1:32b | 100 | 60 | 60% | 50.2%-69.1% | 2,305/2,305 |
 
-The qwen3:32b-backed configuration achieved a stronger gameplay outcome in the current evaluation. However, the stronger dissertation-level finding is that both models completed controlled 50-run evaluations with zero LLM errors.
-
-This suggests that the framework can support different reasoning-oriented LLM backends while maintaining stable execution through structured decision tracing, verification, fallback, and caching.
+The matched backend comparison produced a mean outcome-score difference of 0.03 with a paired-bootstrap 95% interval of [-0.07, 0.13] and a McNemar exact p-value of 0.690. The results therefore show that the framework supports both backends under controlled evaluation, but do not establish that one backend is generally superior.
 
 ---
 
@@ -3842,7 +3874,7 @@ The system is a hybrid of LLM and rule-based components. This makes it difficult
 
 The evaluation addresses this by recording decision sources, fallback behaviour, and cached-plan usage, but full causal attribution remains difficult.
 
-The reported controlled runs also keep the LLM-assisted configuration in the `player_0` role against a rule-controlled `player_1`. Without matched-seed role swapping, possible player-side and environment effects remain confounded with planner and model effects. The reported win rates are descriptive because no confidence intervals or hypothesis tests are provided.
+The formal experiment reduces role and seed confounding by evaluating both player roles under the same 50 environment seeds. It also reports Wilson intervals, seed-clustered bootstrap intervals, paired role analysis, and matched backend comparison. Residual internal-validity threats remain because the system is hybrid and uses one rule-based opponent, one prompt/configuration per backend, and one Lux evaluation setup.
 
 ---
 
@@ -3864,9 +3896,9 @@ For example, a valid LLM plan may still be strategically weak. This is why the p
 
 ### 7.6.4 Reliability
 
-The project uses scripts, logs, JSON/JSONL evidence files, and version-controlled documentation to improve reproducibility.
+The project uses one-command setup scripts, automated tests, version-controlled experiment runners, deterministic seed and bootstrap policies, environment metadata, model-server metadata, logs, JSON/JSONL evidence, and SHA-256-verified HPC archives to improve reproducibility.
 
-However, some runs depend on local or HPC configurations, such as installed LLM backends and hardware availability. This should be acknowledged when reporting results.
+The large-model runs still depend on Ollama, model availability, and GPU resources. Exact latency may vary across hardware, so the result should be interpreted as reproducible experimental evidence under the recorded environment rather than bit-identical performance on every machine.
 
 ---
 
@@ -3990,7 +4022,7 @@ This dissertation presented LuxLLM-Agent, a decision-trace and action-verificati
 
 The system integrates LLM-based strategic planning with structured state summarisation, plan parsing, rule-based action verification, fallback behaviour, strategy caching, risk-aware filtering, decision trace logging, controlled-run evaluation, and replay-grounded visual inspection.
 
-The evaluation showed that qwen3:32b and DeepSeek-R1-32B could both be integrated into the framework and complete 50 controlled Lux AI Season 3 runs with zero LLM errors. The qwen3:32b-backed configuration achieved a higher player_0 win rate in the current evidence, while the DeepSeek-R1-32B-backed configuration demonstrated stable execution with another reasoning-oriented LLM backend.
+The evaluation showed that qwen3:32b and DeepSeek-R1-32B could both be integrated into the framework and complete 100 matched-seed, role-swapped Lux AI Season 3 matches each. Across 206,591 trace records, the framework achieved complete recorded trace fields and replay linkage, validated all 4,591 LLM calls after deterministic checks, exposed normalization and risk-filter interventions, and completed every match without an observed LLM timeout, API error, or downstream action fallback.
 
 The key conclusion is that structured decision tracing and rule-based action verification can make LLM-based game agents more stable, inspectable, and evaluable. Rather than treating the LLM as a direct controller, LuxLLM-Agent treats the LLM as a strategic planner inside a controlled execution pipeline.
 
@@ -3998,3 +4030,38 @@ This makes the project more than a game-playing agent. It is a framework for und
 
 ---
 
+# References
+
+Ahn, M., Brohan, A., Brown, N., Chebotar, Y., Cortes, O., David, B., Finn, C., Fu, C., Gopalakrishnan, K., Hausman, K., et al. (2022). *Do as I can, not as I say: Grounding language in robotic affordances*. arXiv:2204.01691. https://arxiv.org/abs/2204.01691
+
+Berner, C., Brockman, G., Chan, B., Cheung, V., Dębiak, P., Dennison, C., Farhi, D., Fischer, Q., Hashme, S., Hesse, C., et al. (2019). *Dota 2 with large scale deep reinforcement learning*. arXiv:1912.06680. https://arxiv.org/abs/1912.06680
+
+Browne, C. B., Powley, E., Whitehouse, D., Lucas, S. M., Cowling, P. I., Rohlfshagen, P., Tavener, S., Perez, D., Samothrakis, S., & Colton, S. (2012). A survey of Monte Carlo tree search methods. *IEEE Transactions on Computational Intelligence and AI in Games, 4*(1), 1-43. https://doi.org/10.1109/TCIAIG.2012.2186810
+
+DeepSeek-AI, Guo, D., Yang, D., Zhang, H., Song, J., Zhang, R., Xu, R., Zhu, Q., Ma, S., Wang, P., et al. (2025). *DeepSeek-R1: Incentivizing reasoning capability in LLMs via reinforcement learning*. arXiv:2501.12948. https://arxiv.org/abs/2501.12948
+
+Li, G., Hammoud, H. A. A. K., Itani, H., Khizbullin, D., & Ghanem, B. (2023). *CAMEL: Communicative agents for “mind” exploration of large language model society*. arXiv:2303.17760. https://arxiv.org/abs/2303.17760
+
+Lux AI Challenge. (2024). *Lux-Design-S3: Repository for the Lux AI Challenge, Season 3 at NeurIPS 2024* [Software repository]. https://github.com/Lux-AI-Challenge/Lux-Design-S3
+
+Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A. A., Veness, J., Bellemare, M. G., Graves, A., Riedmiller, M., Fidjeland, A. K., Ostrovski, G., et al. (2015). Human-level control through deep reinforcement learning. *Nature, 518*, 529-533. https://doi.org/10.1038/nature14236
+
+Ollama. (2024). *Ollama* [Software]. https://ollama.com/
+
+Park, J. S., O’Brien, J. C., Cai, C. J., Morris, M. R., Liang, P., & Bernstein, M. S. (2023). *Generative agents: Interactive simulacra of human behavior*. arXiv:2304.03442. https://arxiv.org/abs/2304.03442
+
+Schick, T., Dwivedi-Yu, J., Dessì, R., Raileanu, R., Lomeli, M., Zettlemoyer, L., Cancedda, N., & Scialom, T. (2023). *Toolformer: Language models can teach themselves to use tools*. arXiv:2302.04761. https://arxiv.org/abs/2302.04761
+
+Shinn, N., Cassano, F., Berman, E., Gopinath, A., Narasimhan, K., & Yao, S. (2023). *Reflexion: Language agents with verbal reinforcement learning*. arXiv:2303.11366. https://arxiv.org/abs/2303.11366
+
+Tao, S., Kumar, A., Doerschuk-Tiberi, B., Pan, I., Howard, A., & Su, H. (2024). *Lux AI Season 3: Multi-agent meta learning at scale*. NeurIPS 2024 Competition Track. https://openreview.net/forum?id=7t8kWYbOcj
+
+Vinyals, O., Babuschkin, I., Czarnecki, W. M., Mathieu, M., Dudzik, A., Chung, J., Choi, D. H., Powell, R., Ewalds, T., Georgiev, P., et al. (2019). Grandmaster level in StarCraft II using multi-agent reinforcement learning. *Nature, 575*, 350-354. https://doi.org/10.1038/s41586-019-1724-z
+
+Wang, G., Xie, Y., Jiang, Y., Mandlekar, A., Xiao, C., Zhu, Y., Fan, L., & Anandkumar, A. (2023). *Voyager: An open-ended embodied agent with large language models*. arXiv:2305.16291. https://arxiv.org/abs/2305.16291
+
+Yang, A., Li, A., Yang, B., Zhang, B., Hui, B., Zheng, B., Yu, B., Gao, C., Huang, C., Lv, C., et al. (2025). *Qwen3 technical report*. arXiv:2505.09388. https://arxiv.org/abs/2505.09388
+
+Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2023a). *ReAct: Synergizing reasoning and acting in language models*. arXiv:2210.03629. https://arxiv.org/abs/2210.03629
+
+Yao, S., Yu, D., Zhao, J., Shafran, I., Griffiths, T. L., Cao, Y., & Narasimhan, K. (2023b). *Tree of thoughts: Deliberate problem solving with large language models*. arXiv:2305.10601. https://arxiv.org/abs/2305.10601

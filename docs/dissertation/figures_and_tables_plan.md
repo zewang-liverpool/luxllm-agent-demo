@@ -66,12 +66,12 @@ The final dissertation should include approximately 5 figures.
 
 | Figure   | Proposed title                               | Source                                                                  | Chapter        | Purpose                                                                                                              | Status                   |
 | -------- | -------------------------------------------- | ----------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| Figure 1 | LuxLLM-Agent System Architecture             | Created from Chapter 4 pipeline                                         | Chapter 4      | Shows the overall system pipeline from observation to LLM planning, verification, action execution, logs, and viewer | Needed                   |
-| Figure 2 | LLM Decision Pipeline                        | Created from Chapter 5 pipeline                                         | Chapter 5      | Shows structured state summary, prompt, LLM plan, parser, verifier, fallback/cache/risk filter, and action planner   | Needed                   |
-| Figure 3 | Run008 Isometric Replay Viewer               | Screenshot from S3 viewer                                               | Chapter 5 or 6 | Shows the Season 3 replay viewer and visual environment                                                              | Needed                   |
-| Figure 4 | LLM Decision Trace Overlay                   | Screenshot from `s3_isometric_battle_viewer_v09n12d_trace_overlay.html` | Chapter 6      | Shows replay-grounded decision inspection with frame, step, source, objective, fallback, and intents                 | Needed                   |
-| Figure 5 | DeepSeek-R1-32B Decision-source Distribution | Chart or table-derived bar chart from `summary_50run.json`              | Chapter 6      | Shows contribution of rule player, fallback, rule fallback, fresh LLM, and cached LLM                                | Optional but recommended |
-| Figure 6 | Failure-case Example with Overlay            | Screenshot from viewer overlay                                          | Chapter 6 or 7 | Shows a representative limitation case, such as cached plan or fallback                                              | Optional                 |
+| Figure 1 | LuxLLM-Agent System Architecture    | Mermaid source embedded in Chapter 4                                | Chapter 4 | Shows the bounded proposal, verifier, action, trace, and viewer pipeline | Source complete |
+| Figure 2 | LLM Decision Pipeline               | Mermaid source embedded in Chapter 5                                | Chapter 5 | Shows parsing, normalization, verification, fallback, and action construction | Source complete |
+| Figure 3 | Formal Framework Evidence Rates     | `reports/figures/framework_evidence_rates.png`                       | Chapter 6 | Shows trace coverage, validity, raw-schema quality, and verifier intervention | Complete |
+| Figure 4 | Formal Decision-source Distribution | `reports/figures/decision_source_distribution.png`                   | Chapter 6 | Compares cached, fresh, and rule-fallback provenance for both backends | Complete |
+| Figure 5 | Run008 Isometric Replay Viewer      | `paper/figures/figure_s3_replay_viewer.png`                          | Chapter 6 | Shows the replay artefact used for qualitative inspection | Complete |
+| Figure 6 | Detailed Decision Trace Overlay     | `docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html` | Chapter 6 | Shows step, source, objective, verifier fields, and unit intents | Optional |
 
 Recommended final count:
 
@@ -399,8 +399,8 @@ The final dissertation should include approximately 8 tables.
 | Table 2 | Non-functional Requirements                  | Chapter 3 | Summarises quality requirements such as stability, inspectability, reproducibility | Needed      |
 | Table 3 | Main Implementation Files                    | Chapter 5 | Maps project files to their implementation roles                                   | Needed      |
 | Table 4 | Evaluation Metrics                           | Chapter 6 | Defines gameplay, LLM, decision-source, fallback, latency, and replay metrics      | Needed      |
-| Table 5 | qwen3:32b vs DeepSeek-R1-32B 50-run Results  | Chapter 6 | Main model comparison table                                                        | Needed      |
-| Table 6 | DeepSeek-R1-32B Decision-source Distribution | Chapter 6 | Shows decision provenance evidence                                                 | Needed      |
+| Table 5 | Formal matched-seed backend outcomes          | Chapter 6 | Reports 100 role-swapped matches per backend with uncertainty                      | Complete    |
+| Table 6 | Formal trace and verification evidence        | Chapter 6 | Reports trace coverage, normalization, filtering, and action validity              | Complete    |
 | Table 7 | Failure-case Summary                         | Chapter 6 | Summarises representative failure and limitation cases                             | Recommended |
 | Table 8 | Threats to Validity                          | Chapter 7 | Summarises internal, external, construct, and reliability threats                  | Recommended |
 | Table 9 | Future Work Summary                          | Chapter 7 | Summarises possible future improvements                                            | Optional    |
@@ -512,7 +512,7 @@ Chapter 6: Evaluation
 
 ---
 
-## 7.5 Table 5: qwen3:32b vs DeepSeek-R1-32B 50-run Results
+## 7.5 Table 5: Formal Matched-seed Backend Outcomes
 
 ### Chapter
 
@@ -520,18 +520,18 @@ Chapter 6: Evaluation
 
 ### Final table
 
-| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
-| --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-| qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-| deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
+| Model | Matches | LLM wins | Win rate | Wilson 95% CI | Valid LLM calls |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| qwen3:32b | 100 | 63 | 63% | 53.2%-71.8% | 2,286/2,286 |
+| deepseek-r1:32b | 100 | 60 | 60% | 50.2%-69.1% | 2,305/2,305 |
 
 ### Why it is needed
 
-This is the main quantitative result table.
+This is the main gameplay-outcome table, but it remains secondary to the trace and verification evidence.
 
 ---
 
-## 7.6 Table 6: DeepSeek-R1-32B Decision-source Distribution
+## 7.6 Table 6: Formal Trace and Verification Evidence
 
 ### Chapter
 
@@ -539,31 +539,19 @@ Chapter 6: Evaluation
 
 ### Final table
 
-| Decision source | Count |
-| --------------- | ----: |
-| `rule_player`   | 25250 |
-| `fallback`      |    94 |
-| `rule_fallback` |  3163 |
-| `llm_fresh`     |  1362 |
-| `cached_llm`    | 20631 |
-
-### Derived values
-
-```text
-
-LLM-related decision events = 21993
-
-Fallback-related decision events = 3257
-
-LLM decision-source rate = approximately 43.55%
-
-Fallback decision-source rate = approximately 6.45%
-
-```
+| Metric | Qwen3-32B | DeepSeek-R1-32B |
+| --- | ---: | ---: |
+| Structured trace records | 103,286 | 103,305 |
+| Trace and replay-link completeness | 100% | 100% |
+| Post-check valid LLM calls | 2,286/2,286 | 2,305/2,305 |
+| Deterministic normalizations | 520 | 0 |
+| Rule-fallback steps | 2,815 | 2,815 |
+| Risk-filter changed steps | 5,590 | 7,090 |
+| Action-array shape validity | 100% | 100% |
 
 ### Why it is needed
 
-This table supports decision provenance analysis.
+This table directly supports the research question by connecting inspectability, structured-output checks, verifier intervention, and executable action evidence.
 
 ---
 

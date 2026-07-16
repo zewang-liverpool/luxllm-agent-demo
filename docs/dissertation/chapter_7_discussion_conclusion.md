@@ -68,7 +68,7 @@ A win or loss does not explain:
 
 For this reason, LuxLLM-Agent records decision-source and trace metrics. These metrics provide a richer view of agent behaviour.
 
-The evaluation showed that qwen3:32b and DeepSeek-R1-32B produced different gameplay outcomes, but both completed 50 controlled runs with zero LLM errors. This shows why gameplay outcome and execution stability should be analysed separately.
+The formal evaluation completed 100 role-swapped matches for each backend and recorded 206,591 structured traces. All 4,591 LLM calls were valid after deterministic checks, but the trace audit also exposed 520 Qwen responses that required deterministic normalization and thousands of risk-filter interventions. This shows why gameplay outcome, structured-output quality, verification behaviour, and execution stability should be analysed separately.
 
 ---
 
@@ -76,16 +76,14 @@ The evaluation showed that qwen3:32b and DeepSeek-R1-32B produced different game
 
 The project compared qwen3:32b and DeepSeek-R1-32B under the same LuxLLM-Agent framework.
 
-The main 50-run results were:
+The formal matched-seed results were:
 
-| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
-| --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-| qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-| deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
+| Model | Matches | LLM wins | Win rate | Wilson 95% CI | Valid LLM calls |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| qwen3:32b | 100 | 63 | 63% | 53.2%-71.8% | 2,286/2,286 |
+| deepseek-r1:32b | 100 | 60 | 60% | 50.2%-69.1% | 2,305/2,305 |
 
-The qwen3:32b-backed configuration achieved a stronger gameplay outcome in the current evaluation. However, the stronger dissertation-level finding is that both models completed controlled 50-run evaluations with zero LLM errors.
-
-This suggests that the framework can support different reasoning-oriented LLM backends while maintaining stable execution through structured decision tracing, verification, fallback, and caching.
+The matched backend comparison produced a mean outcome-score difference of 0.03 with a paired-bootstrap 95% interval of [-0.07, 0.13] and a McNemar exact p-value of 0.690. The results therefore show that the framework supports both backends under controlled evaluation, but do not establish that one backend is generally superior.
 
 ---
 
@@ -236,7 +234,7 @@ The system is a hybrid of LLM and rule-based components. This makes it difficult
 
 The evaluation addresses this by recording decision sources, fallback behaviour, and cached-plan usage, but full causal attribution remains difficult.
 
-The reported controlled runs also keep the LLM-assisted configuration in the `player_0` role against a rule-controlled `player_1`. Without matched-seed role swapping, possible player-side and environment effects remain confounded with planner and model effects. The reported win rates are descriptive because no confidence intervals or hypothesis tests are provided.
+The formal experiment reduces role and seed confounding by evaluating both player roles under the same 50 environment seeds. It also reports Wilson intervals, seed-clustered bootstrap intervals, paired role analysis, and matched backend comparison. Residual internal-validity threats remain because the system is hybrid and uses one rule-based opponent, one prompt/configuration per backend, and one Lux evaluation setup.
 
 ---
 
@@ -258,9 +256,9 @@ For example, a valid LLM plan may still be strategically weak. This is why the p
 
 ### 7.6.4 Reliability
 
-The project uses scripts, logs, JSON/JSONL evidence files, and version-controlled documentation to improve reproducibility.
+The project uses one-command setup scripts, automated tests, version-controlled experiment runners, deterministic seed and bootstrap policies, environment metadata, model-server metadata, logs, JSON/JSONL evidence, and SHA-256-verified HPC archives to improve reproducibility.
 
-However, some runs depend on local or HPC configurations, such as installed LLM backends and hardware availability. This should be acknowledged when reporting results.
+The large-model runs still depend on Ollama, model availability, and GPU resources. Exact latency may vary across hardware, so the result should be interpreted as reproducible experimental evidence under the recorded environment rather than bit-identical performance on every machine.
 
 ---
 
@@ -384,7 +382,7 @@ This dissertation presented LuxLLM-Agent, a decision-trace and action-verificati
 
 The system integrates LLM-based strategic planning with structured state summarisation, plan parsing, rule-based action verification, fallback behaviour, strategy caching, risk-aware filtering, decision trace logging, controlled-run evaluation, and replay-grounded visual inspection.
 
-The evaluation showed that qwen3:32b and DeepSeek-R1-32B could both be integrated into the framework and complete 50 controlled Lux AI Season 3 runs with zero LLM errors. The qwen3:32b-backed configuration achieved a higher player_0 win rate in the current evidence, while the DeepSeek-R1-32B-backed configuration demonstrated stable execution with another reasoning-oriented LLM backend.
+The evaluation showed that qwen3:32b and DeepSeek-R1-32B could both be integrated into the framework and complete 100 matched-seed, role-swapped Lux AI Season 3 matches each. Across 206,591 trace records, the framework achieved complete recorded trace fields and replay linkage, validated all 4,591 LLM calls after deterministic checks, exposed normalization and risk-filter interventions, and completed every match without an observed LLM timeout, API error, or downstream action fallback.
 
 The key conclusion is that structured decision tracing and rule-based action verification can make LLM-based game agents more stable, inspectable, and evaluable. Rather than treating the LLM as a direct controller, LuxLLM-Agent treats the LLM as a strategic planner inside a controlled execution pipeline.
 
