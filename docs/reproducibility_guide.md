@@ -26,16 +26,12 @@ copied into `docs/demo_evidence/` after review.
 ```powershell
 git clone https://github.com/zewang-liverpool/luxllm-agent-demo.git
 cd luxllm-agent-demo
-py -3.11 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --upgrade pip==23.1.2
-.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
 ```
 
-Alternatively, after confirming that `py -3.11` is installed:
-
-```powershell
-.\scripts\setup.ps1
-```
+The setup script validates an existing `.venv`. If it points to a Python
+installation that has been removed, it rebuilds the environment using the
+first available supported Python 3.10-3.12 interpreter.
 
 ### Linux / Barkla2
 
@@ -44,6 +40,9 @@ git clone https://github.com/zewang-liverpool/luxllm-agent-demo.git
 cd luxllm-agent-demo
 PYTHON_BIN=python3.11 bash scripts/setup.sh
 ```
+
+`PYTHON_BIN` can be omitted to select the first available supported
+interpreter. The Linux script also rebuilds an unusable `.venv`.
 
 Runtime dependencies are declared in `requirements.txt`; development/test
 dependencies are in `requirements-dev.txt`; the exact verified Windows Python
@@ -62,7 +61,7 @@ The smoke test compiles every tracked Python utility without creating
 Expected result:
 
 ```text
-11 tests passed
+23 tests passed
 ```
 
 GitHub Actions runs the same checks on Python 3.10 and 3.11 for pushes and pull
@@ -215,9 +214,25 @@ These statistics improve reporting but do not make the two LLM configurations
 causally identical.  Hardware, model build, Ollama version, prompt, source
 commit, and seed metadata must be reported alongside the result.
 
-## 10. Reproducibility Acceptance Checklist
+## 10. Offline Evidence Audit
+
+With the two formal result directories extracted under
+`archive/barkla_results/`, regenerate the verifier audit without Ollama or a
+GPU:
+
+```powershell
+.\.venv\Scripts\python.exe tools\audit_verifier_interventions.py
+.\.venv\Scripts\python.exe tools\validate_project_evidence.py
+```
+
+The first command writes deterministic Markdown, JSON, and CSV reports under
+`reports/`. The second rejects stale primary claims and checks that the compact
+formal report, verifier audit, and canonical documentation agree.
+
+## 11. Reproducibility Acceptance Checklist
 
 - [ ] A new environment installs from a tracked dependency file.
+- [ ] A broken `.venv` is detected and rebuilt by the setup script.
 - [ ] `scripts/smoke_test.py` passes.
 - [ ] `pytest` passes.
 - [ ] The rule-only Lux match exits successfully.
@@ -225,4 +240,6 @@ commit, and seed metadata must be reported alongside the result.
 - [ ] Ollama preflight reports the requested model.
 - [ ] All planned seed/role pairs are complete.
 - [ ] `environment.json`, `match_history.jsonl`, and `summary.json` exist.
+- [ ] The verifier intervention audit regenerates from retained raw logs.
+- [ ] The project evidence consistency check passes.
 - [ ] Only reviewed summaries are committed; raw large runs remain ignored.

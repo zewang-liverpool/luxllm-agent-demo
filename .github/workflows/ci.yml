@@ -19,3 +19,19 @@ jobs:
       - run: python -m pip install pytest==8.3.5
       - run: python scripts/smoke_test.py
       - run: python -m pytest
+
+  setup-recovery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Create a stale virtual-environment interpreter
+        run: |
+          mkdir -p .venv/bin
+          ln -s /missing/python .venv/bin/python
+      - name: Rebuild the environment through the public setup entry point
+        run: PYTHON_BIN=python bash scripts/setup.sh
+      - name: Validate the rebuilt environment
+        run: .venv/bin/python scripts/smoke_test.py

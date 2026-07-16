@@ -11,6 +11,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIRS = [ROOT / "src" / "agent", ROOT / "src" / "viewer_tools", ROOT / "scripts", ROOT / "tools", ROOT / "tests"]
+sys.path.insert(0, str(ROOT / "tools"))
+
+from validate_project_evidence import validate as validate_project_evidence
 
 
 def compile_sources() -> None:
@@ -43,6 +46,14 @@ def validate_demo_data() -> None:
             raise SystemExit(f"Viewer does not reference {required}")
 
 
+def validate_evidence_consistency() -> None:
+    failures = validate_project_evidence()
+    if failures:
+        raise SystemExit(
+            "Project evidence consistency failed:\n" + "\n".join(failures)
+        )
+
+
 def run_tests() -> int:
     env = os.environ.copy()
     paths = [str(ROOT / "src" / "agent"), str(ROOT / "src" / "viewer_tools"), str(ROOT / "tools"), str(ROOT / "scripts")]
@@ -58,6 +69,7 @@ def run_tests() -> int:
 def main() -> int:
     compile_sources()
     validate_demo_data()
+    validate_evidence_consistency()
     return run_tests()
 
 

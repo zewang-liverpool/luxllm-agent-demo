@@ -591,14 +591,14 @@ Main metrics include:
 
 * decision-source distribution.
 
-The main 50-run comparison is:
+The primary experiment uses 50 matched Lux environment seeds per backend. For each seed, the LLM-controlled agent is evaluated once as `player_0` and once as `player_1`, producing 100 matches per backend. The LLM sampling temperature is 0.0, and the same integer is used for the paired environment and LLM seed policy.
 
-| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
-| --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-| qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-| deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
+| Model | Seed pairs | Matches | Role-swapped pairs | Planned sampling |
+| --- | ---: | ---: | ---: | --- |
+| qwen3:32b | 50 | 100 | 50 | temperature 0.0 |
+| deepseek-r1:32b | 50 | 100 | 50 | temperature 0.0 |
 
-This comparison evaluates both gameplay outcome and framework stability.
+The quantitative analysis reports completion, decision validity, trace coverage, replay linkage, verification interventions, Wilson confidence intervals, seed-clustered bootstrap intervals, role effects, and matched backend comparison. Gameplay outcomes are secondary evidence; the primary evaluation concerns inspectability and action-verification behaviour.
 
 ---
 

@@ -138,7 +138,7 @@ The system records whether decisions come from fresh LLM calls, cached LLM plans
 
 ### 1.6.4 Controlled evaluation with multiple LLM backends
 
-The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework. Both models completed 50 controlled Lux AI Season 3 runs with zero LLM errors in the current evidence.
+The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework using 50 matched environment seeds with role swapping. Each backend completed 100 matches, giving 200 formal matches in total. All 4,591 recorded LLM calls were valid after deterministic checks, and no LLM timeout, API error, or downstream action fallback was observed.
 
 ### 1.6.5 Replay-grounded decision trace overlay
 
@@ -176,16 +176,16 @@ The project is best understood as an artefact-based investigation into how LLM-b
 
 ## 1.8 Summary of Evaluation Evidence
 
-The project includes controlled-run evidence for two LLM backends.
+The primary evaluation uses the same 50 environment seeds for each backend and swaps the LLM between `player_0` and `player_1`. This controls seed and role effects more directly than the earlier fixed-role experiments.
 
-| Model           | Runs | player_0 wins | player_1 wins | player_0 win rate | LLM errors |
-| --------------- | ---: | ------------: | ------------: | ----------------: | ---------: |
-| qwen3:32b       |   50 |            35 |            15 |               70% |          0 |
-| deepseek-r1:32b |   50 |            26 |            24 |               52% |          0 |
+| Model | Matches | LLM wins | Win rate | Wilson 95% CI | Valid LLM calls |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| qwen3:32b | 100 | 63 | 63% | 53.2%-71.8% | 2,286/2,286 |
+| deepseek-r1:32b | 100 | 60 | 60% | 50.2%-69.1% | 2,305/2,305 |
 
-These results show that both LLM backends can be integrated into the framework with zero recorded LLM errors in the current 50-run experiments. The qwen3:32b-backed configuration achieved a higher player_0 win rate, while the DeepSeek-R1-32B-backed configuration demonstrated that the framework can support another reasoning-oriented LLM backend.
+Across both backends, the evaluation contains 206,591 structured trace records. Agent-step and LLM-call trace completeness, replay linkage, and action-array shape validity were all 100%. Qwen required 520 deterministic normalization interventions, while DeepSeek required none. The risk filter changed proposed targets on 5,590 Qwen steps and 7,090 DeepSeek steps, providing observable evidence that rule-based verification affected execution rather than merely existing in the architecture.
 
-The evaluation also includes decision-source analysis, latency analysis, fallback analysis, replay-grounded inspection, and failure-case analysis.
+The Qwen-versus-DeepSeek matched comparison found a mean outcome-score difference of 0.03 with a paired-bootstrap 95% interval of [-0.07, 0.13] and a McNemar exact p-value of 0.690. Therefore, the results support controlled framework evaluation but do not establish a general ranking between the two models.
 
 ---
 

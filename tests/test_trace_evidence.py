@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from analyse_trace_evidence import percentile, raw_intent_shape
+from audit_verifier_interventions import reason_fragments
 
 
 class TraceEvidenceTests(unittest.TestCase):
@@ -27,6 +28,12 @@ class TraceEvidenceTests(unittest.TestCase):
 
     def test_nearest_rank_percentile_is_deterministic(self):
         self.assertEqual(percentile([1, 2, 3, 4], 0.95), 4.0)
+
+    def test_verifier_reason_fragments_are_unique_and_ordered(self):
+        self.assertEqual(
+            reason_fragments("unsafe target; safer target selected; unsafe target"),
+            ["unsafe target", "safer target selected"],
+        )
 
 
 if __name__ == "__main__":

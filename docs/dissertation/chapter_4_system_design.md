@@ -74,61 +74,22 @@ The system should support reproducible experiments and visual demonstration. Thi
 
 ## 4.3 High-level Architecture
 
-The high-level architecture is shown below:
+The high-level architecture is shown in Figure 4.1.
 
-```text
-
-Lux AI Season 3 Observation
-
-        |
-
-        v
-
-Structured State Summariser
-
-        |
-
-        v
-
-LLM Decision Module
-
-        |
-
-        v
-
-Structured Plan Parser
-
-        |
-
-        v
-
-Rule-based Action Verifier
-
-        |
-
-        v
-
-Fallback / Strategy Cache / Risk Filter
-
-        |
-
-        v
-
-Action Planner
-
-        |
-
-        v
-
-Executable Lux AI Action
-
-        |
-
-        v
-
-Decision Logs + Evaluation Metrics + Replay Viewer
-
+```mermaid
+flowchart TD
+    A["Lux AI Season 3 observation"] --> B["Structured state summariser"]
+    B --> C["LLM strategic proposal"]
+    C --> D["Structured parsing and normalization"]
+    D --> E["Rule and risk verification"]
+    E --> F["Fallback and strategy cache"]
+    F --> G["Deterministic action planner"]
+    G --> H["Executable Lux action array"]
+    H --> I["Decision traces and match evidence"]
+    I --> J["Replay-grounded viewer"]
 ```
+
+**Figure 4.1:** LuxLLM-Agent system architecture. The LLM is bounded to strategic proposals; deterministic components retain control of action construction, verification, evidence recording, and replay inspection.
 
 This architecture separates strategic reasoning from executable action generation.
 
@@ -158,20 +119,15 @@ Its responsibilities include:
 
 * generating replay and evaluation evidence.
 
-Relevant files include:
+Relevant canonical files include:
 
 ```text
-
-agent.py
-
-baseline_agent.py
-
-main.py
-
-config.py
-
-run_match_llm.bat
-
+src/agent/agent.py
+src/agent/baseline_agent.py
+src/agent/main.py
+src/agent/config.py
+scripts/run_paired_experiment.py
+scripts/run_rule_smoke.py
 ```
 
 The runtime supports different experimental settings through environment variables, including:

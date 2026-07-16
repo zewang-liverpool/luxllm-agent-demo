@@ -14,6 +14,8 @@ This folder documents the final demo video artifacts for the Lux AI Season 3 LLM
 
 The video file itself is distributed through GitHub Releases instead of being committed directly to the repository, because the MP4 file is larger than the normal GitHub repository file-size limit.
 
-After the release is published, add the release URL here:
+Repository releases are available from:
 
-- GitHub Release URL: TODO
+- GitHub Releases: https://github.com/zewang-liverpool/luxllm-agent-demo/releases
+
+Before final submission, verify that the selected release asset is the same 75.33-second H.264/AAC file documented in `docs/final_demo_runbook.md`.

@@ -1,0 +1,209 @@
+{
+  "scope": "offline verifier intervention audit",
+  "causal_claim": false,
+  "experiments": [
+    {
+      "label": "Qwen3-32B",
+      "experiment_directory": "9755477_qwen3_32b_paired",
+      "llm_calls": 2286,
+      "raw_schema_valid_calls": 1766,
+      "raw_schema_valid_rate": 0.7725284339457568,
+      "strict_schema_rejections_without_normalization": 520,
+      "normalization_interventions": 520,
+      "normalization_types": {
+        "string_intent_shorthand": 520
+      },
+      "normalization_samples": [
+        {
+          "run": "seed_20260701_player_1",
+          "step": 51,
+          "types": [
+            "string_intent_shorthand"
+          ],
+          "raw_text": "{\"unit_intents\":{\"0\":\"EXPLORE_STALE_TILE\",\"1\":\"MOVE_TO_RELIC_CANDIDATE\",\"2\":\"EXPLORE_STALE_TILE\",\"3\":\"EXPLORE_STALE_TILE\",\"4\":\"EXPLORE_STALE_TILE\",\"5\":\"EXPLORE_STALE_TILE\"}}",
+          "post_check_valid": true
+        },
+        {
+          "run": "seed_20260701_player_1",
+          "step": 180,
+          "types": [
+            "string_intent_shorthand"
+          ],
+          "raw_text": "{\"unit_intents\":{\"0\":\"EXPLORE_STALE_TILE\",\"1\":\"EXPLORE_STALE_TILE\",\"2\":\"MOVE_TO_RELIC_CANDIDATE\",\"3\":\"EXPLORE_STALE_TILE\",\"4\":\"MOVE_TO_RELIC_CANDIDATE\",\"5\":\"MOVE_TO_RELIC_CANDIDATE\"}}",
+          "post_check_valid": true
+        },
+        {
+          "run": "seed_20260701_player_1",
+          "step": 240,
+          "types": [
+            "string_intent_shorthand"
+          ],
+          "raw_text": "{\"unit_intents\":{\"0\":\"MOVE_TO_RELIC_CANDIDATE\",\"1\":\"MOVE_TO_CONFIRMED_SCORE\",\"2\":\"EXPLORE_STALE_TILE\",\"3\":\"MOVE_TO_RELIC_CANDIDATE\",\"4\":\"MOVE_TO_RELIC_CANDIDATE\",\"5\":\"MOVE_TO_RELIC_CANDIDATE\"}}",
+          "post_check_valid": true
+        }
+      ],
+      "llm_agent_steps": 50500,
+      "risk_filter_changed_steps": 5590,
+      "risk_filter_changed_step_rate": 0.1106930693069307,
+      "risk_filter_changed_targets": 31128,
+      "mean_changed_targets_per_intervention_step": 5.568515205724508,
+      "max_changed_targets_in_one_step": 16,
+      "risk_interventions_by_decision_source": {
+        "cached_llm": 5153,
+        "llm_fresh": 361,
+        "rule_fallback": 76
+      },
+      "risk_interventions_by_phase": {
+        "early_exploration": 4959,
+        "mid_exploit": 535,
+        "final_push": 96
+      },
+      "risk_interventions_by_reason": {
+        "original target inside visible-enemy risk radius": 5590,
+        "safer target selected": 5590
+      },
+      "risk_interventions_by_cache_state": {
+        "cached": 5153,
+        "fresh_or_rule": 437
+      },
+      "risk_interventions_by_visible_enemy_count": {
+        "1": 2007,
+        "2": 1369,
+        "3": 785,
+        "4": 627,
+        "5": 329,
+        "6": 204,
+        "7": 119,
+        "9": 38,
+        "11": 8,
+        "8": 89,
+        "10": 15
+      },
+      "risk_filter_samples": [
+        {
+          "run": "seed_20260701_player_0",
+          "step": 26,
+          "match_idx": 0,
+          "step_in_match": 26,
+          "decision_source": "cached_llm",
+          "phase": "early_exploration",
+          "cache_used": true,
+          "changed_targets": 4,
+          "visible_enemy_units": 1,
+          "reason": "original target inside visible-enemy risk radius; safer target selected; original target inside visible-enemy risk radius; safer target selected; original target inside visible-enemy risk radius; safer target selected"
+        },
+        {
+          "run": "seed_20260701_player_0",
+          "step": 27,
+          "match_idx": 0,
+          "step_in_match": 27,
+          "decision_source": "cached_llm",
+          "phase": "early_exploration",
+          "cache_used": true,
+          "changed_targets": 3,
+          "visible_enemy_units": 2,
+          "reason": "original target inside visible-enemy risk radius; safer target selected; original target inside visible-enemy risk radius; safer target selected; original target inside visible-enemy risk radius; safer target selected"
+        },
+        {
+          "run": "seed_20260701_player_0",
+          "step": 28,
+          "match_idx": 0,
+          "step_in_match": 28,
+          "decision_source": "cached_llm",
+          "phase": "early_exploration",
+          "cache_used": true,
+          "changed_targets": 1,
+          "visible_enemy_units": 1,
+          "reason": "original target inside visible-enemy risk radius; safer target selected"
+        }
+      ]
+    },
+    {
+      "label": "DeepSeek-R1-32B",
+      "experiment_directory": "9756874_deepseek-r1_32b_paired",
+      "llm_calls": 2305,
+      "raw_schema_valid_calls": 2305,
+      "raw_schema_valid_rate": 1.0,
+      "strict_schema_rejections_without_normalization": 0,
+      "normalization_interventions": 0,
+      "normalization_types": {},
+      "normalization_samples": [],
+      "llm_agent_steps": 50500,
+      "risk_filter_changed_steps": 7090,
+      "risk_filter_changed_step_rate": 0.1403960396039604,
+      "risk_filter_changed_targets": 34379,
+      "mean_changed_targets_per_intervention_step": 4.848942172073342,
+      "max_changed_targets_in_one_step": 16,
+      "risk_interventions_by_decision_source": {
+        "cached_llm": 6569,
+        "llm_fresh": 445,
+        "rule_fallback": 76
+      },
+      "risk_interventions_by_phase": {
+        "early_exploration": 4884,
+        "mid_exploit": 1472,
+        "final_push": 734
+      },
+      "risk_interventions_by_reason": {
+        "original target inside visible-enemy risk radius": 7090,
+        "safer target selected": 7090
+      },
+      "risk_interventions_by_cache_state": {
+        "cached": 6569,
+        "fresh_or_rule": 521
+      },
+      "risk_interventions_by_visible_enemy_count": {
+        "2": 1843,
+        "1": 2749,
+        "3": 973,
+        "4": 626,
+        "5": 351,
+        "6": 239,
+        "8": 103,
+        "7": 158,
+        "9": 36,
+        "10": 8,
+        "11": 3,
+        "13": 1
+      },
+      "risk_filter_samples": [
+        {
+          "run": "seed_20260701_player_0",
+          "step": 27,
+          "match_idx": 0,
+          "step_in_match": 27,
+          "decision_source": "cached_llm",
+          "phase": "early_exploration",
+          "cache_used": true,
+          "changed_targets": 2,
+          "visible_enemy_units": 2,
+          "reason": "original target inside visible-enemy risk radius; safer target selected; original target inside visible-enemy risk radius; safer target selected"
+        },
+        {
+          "run": "seed_20260701_player_0",
+          "step": 28,
+          "match_idx": 0,
+          "step_in_match": 28,
+          "decision_source": "cached_llm",
+          "phase": "early_exploration",
+          "cache_used": true,
+          "changed_targets": 1,
+          "visible_enemy_units": 2,
+          "reason": "original target inside visible-enemy risk radius; safer target selected"
+        },
+        {
+          "run": "seed_20260701_player_0",
+          "step": 34,
+          "match_idx": 0,
+          "step_in_match": 34,
+          "decision_source": "cached_llm",
+          "phase": "early_exploration",
+          "cache_used": true,
+          "changed_targets": 1,
+          "visible_enemy_units": 1,
+          "reason": "original target inside visible-enemy risk radius; safer target selected"
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 # Reproducibility Validation Report
 
-Validation date: 11 July 2026
-Branch: `codex/reproducibility-hardening`
+Validation date: 16 July 2026
+Branch: `codex/dissertation-demo-finalization`
 
 ## Closed Weaknesses
 
@@ -11,12 +11,15 @@ Branch: `codex/reproducibility-hardening`
 | Incomplete GitHub runtime source | Promoted the complete v0.9-E1 runtime to `src/agent/`; added `lux_state.py` and `state_summarizer.py` | Source compilation and real Lux subprocess run passed |
 | Broken legacy script paths | Replaced legacy `src/scripts` workflow with top-level setup, smoke, paired-experiment, and Slurm scripts | Commands executed from repository root |
 | No one-command verification | Added `scripts/smoke_test.py` and `scripts/run_rule_smoke.py` | Both completed successfully |
-| No automated tests | Added eleven unit tests and GitHub Actions for Python 3.10/3.11 | 11/11 unittest and 11/11 pytest tests passed locally |
+| No automated tests | Added 23 unit tests and GitHub Actions for Python 3.10/3.11 | 23/23 unittest and pytest tests passed locally |
 | Fixed `player_0` prompt | Prompt now derives the actual player from `team_id` | Unit test and two-role mock integration run passed |
 | No matched-seed protocol | Added `scripts/run_paired_experiment.py`; every seed runs once per role | Mock seed 4242 completed as both roles |
 | No statistical uncertainty | Added Wilson intervals, exact binomial tests, exact McNemar analysis, and paired bootstrap role-effect intervals | Statistics unit tests passed |
 | Historical results not mechanically recomputable | Added `tools/recompute_reported_metrics.py` | Reproduced 70% and 52% from tracked JSON |
-| Output/environment provenance incomplete | Every new experiment writes Git commit, Python/platform, package versions, Ollama models, temperature, seed policy, and per-run results | Verified in mock experiment `environment.json` and `summary.json` |
+| Output/environment provenance incomplete | Every formal experiment records Git commit, Python/platform, package versions, Ollama models, temperature, seed policy, and per-run results | Verified in both 100-match formal experiments |
+| Broken `.venv` could block clean reproduction | Setup scripts now detect and rebuild stale environments that point to removed Python installations | Windows recovery tested locally; Linux recovery added to CI |
+| Verifier operation was reported only in aggregate | Added deterministic offline normalization and risk-filter intervention audit | Regenerated from both formal raw result directories |
+| Documentation could regress to historical claims | Added a mechanical evidence-consistency validator to the smoke test | Formal reports, verifier audit, canonical chapters, and assembled draft agree |
 | Local workspace contained many untracked legacy files | Archived 100 legacy files under ignored `archive/legacy-untracked-20260711/` with a manifest | `git status` is clean after archival |
 
 ## Local Validation Results
@@ -24,9 +27,10 @@ Branch: `codex/reproducibility-hardening`
 ### Unit and repository checks
 
 ```text
-pytest: 11 passed
-unittest: 11 passed
+pytest: 23 passed
+unittest: 23 passed
 viewer data: 505+ frames and 500+ trace items validated
+project evidence consistency: passed
 ```
 
 ### Rule-only end-to-end match
@@ -61,11 +65,18 @@ These intervals resolve the absence of uncertainty reporting for each historical
 run. They do not resolve player-side bias or establish a matched causal model
 comparison.
 
-## Remaining External Validation
+## Completed Formal Large-model Validation
 
-The only unresolved execution item is the real large-model paired experiment.
-This workstation has an 8 GB RTX 4060 and no Ollama installation, so it cannot
-run `qwen3:32b` or `deepseek-r1:32b` faithfully. The prepared Barkla2 protocol
-requires 50 matched seeds per model (100 matches per model). Once those jobs
-finish, their `summary.json` files will close the remaining empirical role-bias
-item.
+The Barkla2 paired experiments are complete:
+
+| Model | Matched seeds | Role-swapped matches | LLM wins | Valid LLM calls |
+| --- | ---: | ---: | ---: | ---: |
+| qwen3:32b | 50 | 100 | 63 | 2,286/2,286 |
+| deepseek-r1:32b | 50 | 100 | 60 | 2,305/2,305 |
+
+Across the two experiments, all 200 matches completed and 206,591 structured
+trace records were retained. The compact tracked evidence is under `reports/`;
+the large raw results and SHA-256-verified transfer archives remain under the
+ignored local `archive/` directory.
+
+No additional large-model execution is required for technical closeout.

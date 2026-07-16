@@ -165,6 +165,9 @@ The paired backend comparison matched all 100 seed-role strata. Qwen was the sol
 
 Full research-question-aligned analysis is available in [`reports/final_trace_evaluation.md`](reports/final_trace_evaluation.md), with machine-readable JSON/CSV and figures in `reports/figures/`.
 
+The overall supervisor-facing project report is available at
+[`docs/supervisor_project_report_20260716.md`](docs/supervisor_project_report_20260716.md).
+
 ---
 
 ## Historical Development Results (Superseded)
@@ -292,6 +295,9 @@ docs/demo_evidence/llm_model_comparison_summary.md
 reports/final_trace_evaluation.md
 reports/final_trace_evaluation.json
 reports/final_trace_metrics.csv
+reports/verifier_intervention_audit.md
+reports/verifier_intervention_audit.json
+reports/verifier_intervention_audit.csv
 reports/figures/framework_evidence_rates.png
 reports/figures/decision_source_distribution.png
 docs/demo_evidence/hpc_qwen3_32b_50run/
@@ -378,11 +384,13 @@ unit tests, CI, a rule-only end-to-end smoke match, and a matched-seed
 role-swapped experiment runner are tracked in the repository.
 
 ```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
 .\.venv\Scripts\python.exe scripts\smoke_test.py
 .\.venv\Scripts\python.exe scripts\run_rule_smoke.py --seed 42
 ```
+
+The setup scripts detect an unusable `.venv` left by a removed Python
+installation and rebuild it with an available supported interpreter.
 
 For the full setup, 100-match paired protocol, Barkla2 instructions, generated
 files, and acceptance criteria, see
@@ -392,29 +400,19 @@ files, and acceptance criteria, see
 
 ## Barkla2 GPU Evaluation
 
-Large LLM experiments are intended to run on Barkla2 GPU nodes rather than local CPU nodes.
-
-Example Barkla evidence already produced:
-
-```text
-qwen3:32b 50-run
-deepseek-r1:32b 50-run
-```
-
-DeepSeek-R1-32B 50-run evidence was produced with:
+Large LLM experiments run on Barkla2 GPU nodes rather than local CPU nodes.
+The completed formal evidence uses 50 matched seeds with role swapping for
+each backend:
 
 ```text
-Model: deepseek-r1:32b
-Runs: 50
-Platform: Barkla2 GPU
-LLM errors: 0
+qwen3:32b       100/100 matches complete
+deepseek-r1:32b 100/100 matches complete
 ```
 
-The corresponding evidence archive can be stored locally under:
-
-```text
-docs/demo_evidence/hpc_deepseek_r1_32b_50run/
-```
+Compact tracked reports are under `reports/`. Raw formal results and
+SHA-256-verified transfer archives remain local under `archive/barkla_results/`
+and `archive/barkla_transfer/` and are intentionally excluded from normal Git
+history.
 
 ---
 
@@ -463,6 +461,9 @@ The current results support the following dissertation-level interpretation:
 5. **Model comparison** shows that the same framework can support different reasoning-oriented LLM backends.
 
 The main contribution is not that one LLM is always better than another, but that LuxLLM-Agent provides a framework for running, tracing, validating, and evaluating LLM-based game agents under controlled conditions.
+
+The finite technical stopping criteria are defined in
+[`docs/project_closeout_standard.md`](docs/project_closeout_standard.md).
 
 ---
 
@@ -515,7 +516,9 @@ The strongest dissertation angle is:
     <tr><td align="center">Automated tests and GitHub Actions CI</td><td align="center">Complete</td></tr>
     <tr><td align="center">Rule-only end-to-end smoke test</td><td align="center">Complete</td></tr>
     <tr><td align="center">Matched-seed role-swap experiment pipeline</td><td align="center">Complete</td></tr>
-    <tr><td align="center">Real-model paired 100-match evidence</td><td align="center">Pending Barkla2 run</td></tr>
+    <tr><td align="center">Qwen3 paired 100-match evidence</td><td align="center">Complete</td></tr>
+    <tr><td align="center">DeepSeek-R1 paired 100-match evidence</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Combined decision-trace/action-verification audit</td><td align="center">Complete</td></tr>
     <tr><td align="center">Historical confidence intervals and exact tests</td><td align="center">Complete</td></tr>
     <tr><td align="center">Dissertation chapter drafts</td><td align="center">Complete</td></tr>
     <tr><td align="center">Final 75-second demo screencast</td><td align="center">Complete</td></tr>
@@ -529,12 +532,13 @@ The strongest dissertation angle is:
 
 ## Submission-Freeze Next Steps
 
-1. Incorporate supervisor feedback without expanding the project scope.
-2. Finalise citations and bibliography entries.
-3. Verify that figures, tables, captions, and reported metrics agree across all documents.
-4. Verify the final Run008 screenshots and upload the prepared 75-second screencast if a public URL is required.
-5. Complete author, repository, licensing, and submission metadata.
-6. Keep generated PDFs, raw videos, large logs, archives, and per-run directories out of normal Git history.
+1. Follow the [final manual acceptance checklist](docs/final_manual_acceptance_checklist.md).
+2. Rehearse the [final demonstration runbook](docs/final_demo_runbook.md).
+3. Incorporate supervisor feedback without expanding the project scope.
+4. Finalise citations and bibliography entries in the university-formatted dissertation.
+5. Verify that figures, tables, captions, and reported metrics agree across all documents.
+6. Complete official dissertation front-page metadata and export the final submission PDF.
+7. Keep generated PDFs, raw videos, large logs, archives, and per-run directories out of normal Git history.
 
 ---
 
