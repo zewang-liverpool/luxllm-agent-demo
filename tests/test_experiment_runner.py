@@ -8,9 +8,54 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from run_paired_experiment import parse_rewards, resolve_source_commit, winner_from_rewards
+from run_dual_llm_experiment import model_available, summarise_dual_records
 
 
 class ExperimentRunnerTests(unittest.TestCase):
+    def test_dual_llm_summary_tracks_model_a_across_role_swap(self):
+        records = [
+            {
+                "status": "complete",
+                "seed": 7,
+                "winner": "player_0",
+                "winner_model": "qwen3:32b",
+                "model_a_player": "player_0",
+                "llm_player": "player_0",
+                "llm_won": True,
+            },
+            {
+                "status": "complete",
+                "seed": 7,
+                "winner": "player_0",
+                "winner_model": "deepseek-r1:32b",
+                "model_a_player": "player_1",
+                "llm_player": "player_1",
+                "llm_won": False,
+            },
+        ]
+        summary = summarise_dual_records(
+            records,
+            model_a="qwen3:32b",
+            model_b="deepseek-r1:32b",
+        )
+        self.assertEqual(summary["completed_matches"], 2)
+        self.assertEqual(summary["paired_seeds_completed"], 1)
+        self.assertEqual(summary["model_a_wins"], 1)
+        self.assertEqual(summary["model_a_losses"], 1)
+        self.assertEqual(
+            summary["winner_model_counts"],
+            {"qwen3:32b": 1, "deepseek-r1:32b": 1},
+        )
+
+    def test_dual_llm_inventory_requires_both_named_models(self):
+        inventory = [
+            {"name": "qwen3:32b"},
+            {"name": "deepseek-r1:32b"},
+        ]
+        self.assertTrue(model_available("qwen3:32b", inventory))
+        self.assertTrue(model_available("deepseek-r1:32b", inventory))
+        self.assertFalse(model_available("missing:32b", inventory))
+
     def test_parse_numpy_style_rewards(self):
         text = "Rewards: {'player_0': array(5, dtype=int32), 'player_1': array(2, dtype=int32)}"
         self.assertEqual(parse_rewards(text), (5, 2))

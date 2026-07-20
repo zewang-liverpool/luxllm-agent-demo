@@ -59,25 +59,33 @@ def audit_experiment(label: str, root: Path, sample_limit: int = 3) -> Dict:
     if not root.is_dir():
         raise FileNotFoundError(root)
 
-    decision_files = sorted(root.glob("runs/*/logs/llm_decisions.jsonl"))
-    trace_files = sorted(root.glob("runs/*/logs/decision_trace.jsonl"))
+    # Single-LLM runs write directly under logs/.  Dual-LLM runs isolate
+    # concurrent writers under logs/player_0 and logs/player_1.
+    decision_files = sorted(root.glob("runs/*/logs/**/llm_decisions.jsonl"))
+    trace_files = sorted(root.glob("runs/*/logs/**/decision_trace.jsonl"))
     if not decision_files or not trace_files:
         raise ValueError(f"{root}: expected formal run logs were not found")
 
     calls = 0
     raw_schema_valid = 0
     normalization_types = Counter()
+    calls_by_model = Counter()
+    raw_schema_valid_by_model = Counter()
+    normalization_by_model = Counter()
     normalization_samples = []
 
     for path in decision_files:
-        run_name = path.parents[1].name
+        run_name = path.relative_to(root / "runs").parts[0]
         for record in iter_jsonl(path):
             if not record.get("llm_called"):
                 continue
             calls += 1
+            model = str(record.get("model", record.get("llm_model", "unknown")))
+            calls_by_model[model] += 1
             raw_text = str(record.get("raw_text", ""))
             shape = raw_intent_shape(raw_text)
             raw_schema_valid += int(shape["raw_schema_valid"])
+            raw_schema_valid_by_model[model] += int(shape["raw_schema_valid"])
             types = []
             if shape["string_shorthand"]:
                 types.append("string_intent_shorthand")
@@ -85,6 +93,8 @@ def audit_experiment(label: str, root: Path, sample_limit: int = 3) -> Dict:
                 types.append("prefixed_unit_key")
             for item in types:
                 normalization_types[item] += 1
+            if types:
+                normalization_by_model[model] += 1
             if types and len(normalization_samples) < sample_limit:
                 normalization_samples.append(
                     {
@@ -105,10 +115,12 @@ def audit_experiment(label: str, root: Path, sample_limit: int = 3) -> Dict:
     risk_by_reason = Counter()
     risk_by_cache_state = Counter()
     visible_enemy_counts = Counter()
+    risk_changed_steps_by_model = Counter()
+    risk_changed_targets_by_model = Counter()
     risk_samples = []
 
     for path in trace_files:
-        run_name = path.parents[1].name
+        run_name = path.relative_to(root / "runs").parts[0]
         for record in iter_jsonl(path):
             if record.get("event") != "agent_step_trace" or not record.get("llm_enabled"):
                 continue
@@ -118,6 +130,9 @@ def audit_experiment(label: str, root: Path, sample_limit: int = 3) -> Dict:
             risk_changed_steps += 1
             changed = int(record.get("risk_filter_changed_targets", 0) or 0)
             risk_changed_targets += changed
+            model = str(record.get("llm_model", "unknown"))
+            risk_changed_steps_by_model[model] += 1
+            risk_changed_targets_by_model[model] += changed
             changed_target_counts.append(changed)
             risk_by_source[str(record.get("decision_source") or "unknown")] += 1
             risk_by_phase[str(record.get("phase") or "unknown")] += 1
@@ -157,6 +172,9 @@ def audit_experiment(label: str, root: Path, sample_limit: int = 3) -> Dict:
         "strict_schema_rejections_without_normalization": strict_rejections,
         "normalization_interventions": normalization_interventions,
         "normalization_types": dict(normalization_types),
+        "calls_by_model": dict(calls_by_model),
+        "raw_schema_valid_by_model": dict(raw_schema_valid_by_model),
+        "normalization_by_model": dict(normalization_by_model),
         "normalization_samples": normalization_samples,
         "llm_agent_steps": llm_agent_steps,
         "risk_filter_changed_steps": risk_changed_steps,
@@ -164,6 +182,8 @@ def audit_experiment(label: str, root: Path, sample_limit: int = 3) -> Dict:
             risk_changed_steps / llm_agent_steps if llm_agent_steps else 0.0
         ),
         "risk_filter_changed_targets": risk_changed_targets,
+        "risk_filter_changed_steps_by_model": dict(risk_changed_steps_by_model),
+        "risk_filter_changed_targets_by_model": dict(risk_changed_targets_by_model),
         "mean_changed_targets_per_intervention_step": (
             mean(changed_target_counts) if changed_target_counts else 0.0
         ),
@@ -233,6 +253,30 @@ def write_markdown(path: Path, results: Sequence[Dict]) -> None:
             "",
         ]
     )
+
+    lines.extend(["## Per-model intervention coverage", ""])
+    for result in results:
+        lines.extend(
+            [
+                f'### {result["label"]}',
+                "",
+                "| Model | Fresh calls | Raw-schema valid | Normalized | Risk-changed steps | Risk-changed targets |",
+                "|---|---:|---:|---:|---:|---:|",
+            ]
+        )
+        models = sorted(
+            set(result["calls_by_model"])
+            | set(result["risk_filter_changed_steps_by_model"])
+        )
+        for model in models:
+            lines.append(
+                f"| `{model}` | {result['calls_by_model'].get(model, 0):,} | "
+                f"{result['raw_schema_valid_by_model'].get(model, 0):,} | "
+                f"{result['normalization_by_model'].get(model, 0):,} | "
+                f"{result['risk_filter_changed_steps_by_model'].get(model, 0):,} | "
+                f"{result['risk_filter_changed_targets_by_model'].get(model, 0):,} |"
+            )
+        lines.append("")
 
     for result in results:
         lines.extend(

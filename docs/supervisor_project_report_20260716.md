@@ -6,8 +6,8 @@
 - **Email:** Z.Wang300@liverpool.ac.uk
 - **Supervisor:** Meng Fang
 - **Repository:** https://github.com/zewang-liverpool/luxllm-agent-demo
-- **Development branch:** `codex/dissertation-demo-finalization`
-- **Report date:** 16 July 2026
+- **Development branch:** `codex/dual-llm-supplementary`
+- **Report updated:** 20 July 2026
 
 ## 1. Executive Summary
 
@@ -17,13 +17,13 @@ LuxLLM-Agent is an artefact-based MSc project investigating how an LLM can be in
 
 The implemented system treats the LLM as a bounded strategic planner. Raw Lux observations are summarised, the model proposes structured unit intents, deterministic code parses and normalises the response, a rule-based verifier applies safety and risk checks, and an action planner constructs legal Lux action arrays. The system records decision provenance and links it to replay state for later inspection.
 
-The current technical scope is complete. Two formal 32B-model experiments produced 200 completed matched-seed, role-swapped matches and 206,591 structured trace records. All 4,591 LLM calls were valid after deterministic checks, all recorded action arrays had the expected shape, and no model timeout, API error, or downstream action fallback was observed. The project now has reproducible setup scripts, automated tests, continuous integration, evidence-consistency checks, a replay viewer, a backup demonstration video, and a finite closeout standard.
+The current technical scope is complete. The primary evaluation comprises two 32B-model-versus-rule-policy experiments with 200 completed matched-seed, role-swapped matches and 206,591 structured trace records. All 4,591 LLM calls were valid after deterministic checks. A supervisor-requested supplementary direct LLM-versus-LLM experiment adds 100 completed matches, 106,317 structured trace records, and 4,676/4,676 valid fresh calls while both players use the framework simultaneously. Across these formal runs, all recorded action arrays had the expected shape and no model timeout, API error, or downstream action fallback was observed.
 
 The main result is not a universal ranking of Qwen and DeepSeek. The main result is that structured traces and deterministic verification make model proposals observable, auditable, and executable under the recorded experimental conditions.
 
 ## 2. Project Objectives
 
-The project has pursued seven objectives:
+The project has pursued eight objectives:
 
 1. implement a working Lux AI Season 3 agent;
 2. transform raw observations into structured strategic summaries;
@@ -32,8 +32,9 @@ The project has pursued seven objectives:
 5. record decision sources, verifier interventions, latency, errors, and outcomes;
 6. evaluate multiple backends using controlled seeds and swapped player roles;
 7. connect decision evidence to a visual replay interface.
+8. test whether two simultaneous LLM agents can use isolated trace streams and the same verification boundary in direct play.
 
-All seven objectives have an implemented and tested artefact.
+All eight objectives have an implemented and tested artefact.
 
 ## 3. System Design
 
@@ -177,14 +178,64 @@ Every affected step retained the recorded reason that the original target was in
 
 This demonstrates that the verifier was operational. It does not prove that every individual intervention improved the final score, and the project explicitly avoids that causal claim.
 
-## 9. Reproducibility and Software Quality
+## 9. Supervisor-requested Direct LLM-versus-LLM Experiment
+
+The supplementary experiment places `qwen3:32b` and `deepseek-r1:32b` in the same Lux matches. Fifty environment seeds were each run twice, swapping which model controlled `player_0` and `player_1`. Both players used the same structured proposal, deterministic normalization, caching, risk filtering, and action-construction pipeline. Per-player log isolation prevented concurrent JSONL writers from corrupting trace evidence.
+
+### 9.1 Outcome evidence
+
+| Metric | Result |
+| --- | ---: |
+| Completed matches | 100 / 100 |
+| Proper role-swapped seed pairs | 50 / 50 |
+| Qwen wins | 54 |
+| DeepSeek wins | 46 |
+| Draws | 0 |
+| Qwen win rate | 54% |
+| Seed-clustered bootstrap 95% interval | 45%-63% |
+| Seed-level exact sign p-value | 0.503 |
+| Qwen wins as `player_0` / `player_1` | 28 / 26 |
+
+The recorded 54:46 result is not statistically distinguishable from parity. It must not be presented as evidence that Qwen is generally superior to DeepSeek.
+
+### 9.2 Framework evidence
+
+| Metric | Direct dual-LLM run |
+| --- | ---: |
+| Structured trace records | 106,317 |
+| Matches with trace | 100 / 100 |
+| Agent-step / LLM-call trace completeness | 100% / 100% |
+| Replay-linkage coverage | 100% |
+| Fresh LLM calls valid after checks | 4,676 / 4,676 |
+| Raw-schema-valid calls | 4,105 / 4,676 |
+| Deterministic normalizations | 571 |
+| Risk-filter changed steps | 15,721 |
+| Risk-filter changed targets | 85,805 |
+| Action-array shape validity | 100% |
+| Timeouts / API errors / action fallbacks | 0 / 0 / 0 |
+
+This experiment supports the original research question rather than changing it. Its contribution is evidence that structured tracing and rule-based verification continue to operate when both competing agents are LLM-assisted. The direct model outcome remains secondary.
+
+Tracked reports:
+
+- `reports/dual_llm_trace_evaluation.md`;
+- `reports/dual_llm_verifier_audit.md`;
+- `reports/dual_llm_trace_evaluation.json`.
+
+Local formal archive SHA-256:
+
+```text
+2B16B3C03EDA364F599F2EEF8884669124A1398D5BA1AAB7DE4709D9CF8A4EA7
+```
+
+## 10. Reproducibility and Software Quality
 
 Previous reproducibility weaknesses have been addressed:
 
 - complete runtime source is tracked under `src/agent/`;
 - dependency files and a verified Windows lock file are included;
 - setup scripts can rebuild a stale `.venv` referencing a removed Python installation;
-- 23 automated tests pass;
+- 28 automated tests pass;
 - the dependency-free smoke runner compiles source, validates viewer data, checks evidence consistency, and runs the tests;
 - a real rule-only Lux match completes successfully at seed 42;
 - GitHub Actions tests Python 3.10 and 3.11;
@@ -200,13 +251,17 @@ C25D30A0B4CD826EFF0A4F28F26457DA03352FA6E164F62A7973646A08ED277D
 
 DeepSeek SHA-256:
 285BFEAF7D1725EB2A619D60D6BACE3924ED260E11D9CB969D50F5EE5779C180
+
+Dual LLM SHA-256:
+2B16B3C03EDA364F599F2EEF8884669124A1398D5BA1AAB7DE4709D9CF8A4EA7
 ```
 
-## 10. Demonstration and Supporting Artefacts
+## 11. Demonstration and Supporting Artefacts
 
 The project provides:
 
 - a replay-grounded HTML viewer;
+- a prominent Lux AI Season 3 identity and a three-stage proposal-verification-execution inspector;
 - Run008 trace-overlay data;
 - a verified 75.33-second H.264/AAC backup video;
 - evaluation figures and machine-readable reports;
@@ -217,12 +272,12 @@ The project provides:
 
 The formal 32B models do not need to be run live during a presentation. The viewer, recorded evidence, reports, and backup video provide a lower-risk demonstration path.
 
-## 11. Limitations
+## 12. Limitations
 
 The project retains several explicitly reported limitations:
 
 1. only two 32B reasoning-oriented backends were evaluated;
-2. both models were tested against one rule-based opponent;
+2. the primary experiments use one rule-based opponent, while the supplementary direct comparison still covers only one model pair;
 3. results are specific to the recorded prompt, verifier, quantisation, Lux version, and environment configuration;
 4. the system is hybrid, so match outcomes cannot be attributed solely to the LLM;
 5. the viewer provides one detailed replay case rather than a formal human-user study;
@@ -232,13 +287,14 @@ The project retains several explicitly reported limitations:
 
 These limitations define the project scope and avoid overstating the results.
 
-## 12. Current Completion Status
+## 13. Current Completion Status
 
 The project has reached technical closeout for the agreed MSc scope:
 
 - core implementation: complete;
 - real-model formal experiments: complete;
 - matched role-swap evaluation: complete;
+- direct dual-LLM supplementary evaluation: complete;
 - trace and verifier evidence: complete;
 - reproducibility hardening: complete;
 - automated tests and CI: complete;
@@ -248,28 +304,28 @@ The project has reached technical closeout for the agreed MSc scope:
 
 Further development is not planned unless a test fails, a factual inconsistency is identified, the supervisor requests a material correction, or a submission-blocking defect is discovered.
 
-## 13. Remaining Non-development Work
+## 14. Remaining Non-development Work
 
 The remaining work is review and presentation rather than feature development:
 
-1. obtain supervisor feedback on the argument and limitations;
+1. integrate the supplementary evidence into the final university-formatted dissertation;
 2. perform the final manual acceptance checklist;
 3. rehearse the demonstration and questions;
-4. verify the public GitHub release link for the video if required;
+4. record a refreshed UI video if the supervisor requests it;
 5. keep large raw runs and archives outside normal Git history;
-6. merge the finalisation branch after GitHub CI passes.
+6. merge the supplementary branch after GitHub CI passes.
 
-## 14. Questions for Supervisor Feedback
+## 15. Questions for Supervisor Feedback
 
 The following points would benefit most from supervisor guidance:
 
 1. Is the research question sufficiently answered by the combination of trace completeness, replay linkage, normalization evidence, and recorded verifier intervention?
 2. Is the boundary between operational verifier evidence and causal performance claims sufficiently clear?
-3. Is the matched-seed, role-swapped evaluation adequate for the MSc scope?
+3. Is the distinction between the primary model-versus-rule evaluation and supplementary direct dual-LLM evaluation clear enough?
 4. Should the historical fixed-role experiments remain as supporting development history, or be omitted from the final narrative?
 5. Is the current limitation discussion appropriately critical and proportionate?
 
-## 15. Conclusion
+## 16. Conclusion
 
 LuxLLM-Agent demonstrates a practical architecture for integrating local LLM planning into a sequential game agent while retaining deterministic control of executable actions. Its main contribution is a reproducible evidence framework: structured decision provenance makes behaviour inspectable, normalization exposes and repairs bounded output-format failures, risk-aware verification records changes to unsafe targets, and replay linkage connects decisions to game context.
 
@@ -287,4 +343,6 @@ The project therefore answers the research question at an operational artefact l
 >
 > Qwen won 63 matches and DeepSeek won 60, but the matched comparison was not statistically significant, so I do not claim that one model is generally better. The main conclusion is that structured traces make LLM-agent behaviour auditable, while rule-based verification creates a controlled boundary between model proposals and executable actions.
 >
-> The implementation, experiments, automated tests, CI, replay viewer, evidence audit, and reproducibility workflow are now technically complete. The remaining work is supervisor review, demonstration rehearsal, and final acceptance rather than further feature development.
+> Following supervisor feedback, I also ran the two LLM agents directly against each other for 100 role-swapped matches. Qwen won 54 and DeepSeek won 46, but the seed-level result was not significant. More importantly, all 4,676 fresh calls were valid after checks, trace and replay-link coverage remained complete, and the verifier recorded 571 normalization and 15,721 risk-filter intervention steps while both players used the framework simultaneously.
+>
+> The implementation, experiments, automated tests, CI, improved Season 3 viewer, evidence audit, and reproducibility workflow are now technically complete. The remaining work is dissertation writing, presentation rehearsal, and final acceptance rather than further feature development.

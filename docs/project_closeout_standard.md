@@ -25,6 +25,8 @@ The project is considered technically closed when all of the following hold:
 3. **Formal evidence completeness**
    - Both 100-match formal experiment directories are locally retained.
    - Their compact tracked report records 200 completed matches.
+   - The supervisor-requested 100-match direct dual-LLM archive is locally
+     retained and its tracked supplementary reports regenerate from raw logs.
    - Trace coverage, LLM-call validity, replay linkage, normalization,
      risk-filter intervention, action shape, timeout, and error metrics are
      reproducibly generated from the raw logs.
@@ -42,6 +44,14 @@ The project is considered technically closed when all of the following hold:
      experiment as primary evidence.
    - Historical fixed-role results are labelled as historical.
    - Known obsolete claims are rejected by an automated consistency check.
+
+6. **Supervisor-requested supplementary scope**
+   - Direct Qwen-versus-DeepSeek play is complete for 50 matched seeds with
+     role swapping.
+   - The result is reported as evidence of simultaneous tracing and
+     verification, not as a universal model ranking.
+   - No additional GPU experiment is required unless a retained result fails
+     validation or the supervisor identifies a specific missing comparison.
 
 ## Explicit non-requirements
 

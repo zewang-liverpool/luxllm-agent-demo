@@ -15,7 +15,7 @@ v0.9-E1 note:
 import os
 
 
-AGENT_VERSION = "v0.9-E1-qwen3-32b-trace-metrics"
+AGENT_VERSION = "v0.10-dual-llm-trace-metrics"
 
 
 # ============================================================
@@ -134,6 +134,84 @@ FALLBACK_PLAYER = get_env_str("LUX_FALLBACK_PLAYER", "player_1")
 #   qwen3:32b
 LLM_MODEL = get_env_str("LUX_LLM_MODEL", "qwen3:32b")
 LLM_BASE_URL = get_env_str("LUX_LLM_BASE_URL", "http://127.0.0.1:11434")
+
+
+def _player_env_prefix(player: str) -> str:
+    """Return the environment-variable prefix for a Lux player identifier."""
+    value = str(player).strip().lower()
+    if value not in {"player_0", "player_1"}:
+        raise ValueError(f"Unsupported Lux player: {player!r}")
+    return f"LUX_{value.upper()}"
+
+
+def _parse_bool_value(value: str, default: bool) -> bool:
+    normalized = str(value).strip().lower()
+    if normalized in ("1", "true", "yes", "y", "on"):
+        return True
+    if normalized in ("0", "false", "no", "n", "off"):
+        return False
+    return bool(default)
+
+
+def llm_enabled_for_player(player: str) -> bool:
+    """Resolve LLM routing while preserving the legacy one-LLM configuration."""
+    prefix = _player_env_prefix(player)
+    explicit = os.getenv(f"{prefix}_LLM_ENABLED")
+    if explicit is not None:
+        return _parse_bool_value(explicit, False)
+
+    configured_players = os.getenv("LUX_LLM_PLAYERS")
+    if configured_players is not None:
+        enabled_players = {
+            item.strip().lower()
+            for item in configured_players.split(",")
+            if item.strip()
+        }
+        return str(player).strip().lower() in enabled_players
+
+    return str(player).strip().lower() == str(LLM_PLAYER).strip().lower()
+
+
+def llm_model_for_player(player: str) -> str:
+    """Return a player-specific model, falling back to the legacy model."""
+    return get_env_str(f"{_player_env_prefix(player)}_LLM_MODEL", LLM_MODEL)
+
+
+def llm_base_url_for_player(player: str) -> str:
+    """Return a player-specific Ollama endpoint, falling back to the legacy URL."""
+    return get_env_str(f"{_player_env_prefix(player)}_LLM_BASE_URL", LLM_BASE_URL)
+
+
+def separate_player_logs_enabled() -> bool:
+    """Use isolated log files when more than one LLM player is configured."""
+    explicit = os.getenv("LUX_SEPARATE_PLAYER_LOGS")
+    if explicit is not None:
+        return _parse_bool_value(explicit, False)
+    configured_players = {
+        item.strip().lower()
+        for item in os.getenv("LUX_LLM_PLAYERS", "").split(",")
+        if item.strip()
+    }
+    return len(configured_players) > 1
+
+
+def log_dir_for_player(player: str) -> str:
+    """Return a concurrency-safe player log directory for dual-LLM runs."""
+    if separate_player_logs_enabled():
+        return os.path.join(LOG_DIR, str(player).strip().lower())
+    return LOG_DIR
+
+
+def error_log_dir_for_player(player: str) -> str:
+    if separate_player_logs_enabled():
+        return os.path.join(ERROR_LOG_DIR, str(player).strip().lower())
+    return ERROR_LOG_DIR
+
+
+def replay_dir_for_player(player: str) -> str:
+    if separate_player_logs_enabled():
+        return os.path.join(REPLAY_DIR, str(player).strip().lower())
+    return REPLAY_DIR
 
 # Keep timeout configurable.
 # For qwen3:32b on Barkla2, this may need to be higher than local small models.

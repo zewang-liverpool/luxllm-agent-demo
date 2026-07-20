@@ -12,6 +12,8 @@ from assemble_dissertation import DISSERTATION_DIR, OUTPUT, PARTS
 ROOT = Path(__file__).resolve().parents[1]
 FORMAL_REPORT = ROOT / "reports" / "final_trace_evaluation.json"
 VERIFIER_AUDIT = ROOT / "reports" / "verifier_intervention_audit.json"
+DUAL_REPORT = ROOT / "reports" / "dual_llm_trace_evaluation.json"
+DUAL_VERIFIER_AUDIT = ROOT / "reports" / "dual_llm_verifier_audit.json"
 
 CANONICAL_CLAIM_FILES = (
     ROOT / "README.md",
@@ -45,7 +47,13 @@ def find_forbidden_claims(text: str) -> List[str]:
 
 def validate() -> List[str]:
     errors: List[str] = []
-    for path in (FORMAL_REPORT, VERIFIER_AUDIT, *CANONICAL_CLAIM_FILES):
+    for path in (
+        FORMAL_REPORT,
+        VERIFIER_AUDIT,
+        DUAL_REPORT,
+        DUAL_VERIFIER_AUDIT,
+        *CANONICAL_CLAIM_FILES,
+    ):
         if not path.is_file():
             errors.append(f"missing required file: {path.relative_to(ROOT)}")
     if errors:
@@ -53,6 +61,8 @@ def validate() -> List[str]:
 
     formal = json.loads(FORMAL_REPORT.read_text(encoding="utf-8"))
     audit = json.loads(VERIFIER_AUDIT.read_text(encoding="utf-8"))
+    dual = json.loads(DUAL_REPORT.read_text(encoding="utf-8"))
+    dual_audit = json.loads(DUAL_VERIFIER_AUDIT.read_text(encoding="utf-8"))
     experiments = formal.get("experiments", [])
     audited = audit.get("experiments", [])
     if len(experiments) != 2:
@@ -91,6 +101,58 @@ def validate() -> List[str]:
                     f"does not match audit {audit_key}={other.get(audit_key)!r}"
                 )
 
+    dual_experiments = dual.get("experiments", [])
+    dual_audited = dual_audit.get("experiments", [])
+    if len(dual_experiments) != 1:
+        errors.append(
+            f"dual-LLM report should contain 1 experiment, found {len(dual_experiments)}"
+        )
+    if len(dual_audited) != 1:
+        errors.append(
+            f"dual-LLM verifier audit should contain 1 experiment, found {len(dual_audited)}"
+        )
+    if dual_experiments:
+        item = dual_experiments[0]
+        expected_dual_values = {
+            "completed_matches": 100,
+            "trace_records": 106317,
+            "decision_log_calls": 4676,
+            "decision_log_valid_calls": 4676,
+            "normalization_interventions": 571,
+            "risk_filter_changed_steps": 15721,
+            "risk_filter_changed_targets": 85805,
+            "action_fallback_steps": 0,
+            "trace_timeouts": 0,
+            "trace_llm_errors": 0,
+        }
+        for key, expected in expected_dual_values.items():
+            if item.get(key) != expected:
+                errors.append(
+                    f"dual-LLM {key} should be {expected}, found {item.get(key)!r}"
+                )
+        if item.get("match_trace_coverage") != 1.0:
+            errors.append("dual-LLM match trace coverage should be 100%")
+        if item.get("replay_linkage_rate") != 1.0:
+            errors.append("dual-LLM replay linkage should be 100%")
+        if item.get("action_shape_valid_rate") != 1.0:
+            errors.append("dual-LLM action shape validity should be 100%")
+
+        if dual_audited:
+            audited_item = dual_audited[0]
+            comparisons = (
+                ("decision_log_calls", "llm_calls"),
+                ("raw_schema_valid_calls", "raw_schema_valid_calls"),
+                ("normalization_interventions", "normalization_interventions"),
+                ("risk_filter_changed_steps", "risk_filter_changed_steps"),
+                ("risk_filter_changed_targets", "risk_filter_changed_targets"),
+            )
+            for report_key, audit_key in comparisons:
+                if item.get(report_key) != audited_item.get(audit_key):
+                    errors.append(
+                        f"dual-LLM {report_key}={item.get(report_key)!r} "
+                        f"does not match audit {audit_key}={audited_item.get(audit_key)!r}"
+                    )
+
     required_tokens = {
         DISSERTATION_DIR / "chapter_1_introduction.md": (
             "200 formal matches",
@@ -101,11 +163,16 @@ def validate() -> List[str]:
             "200 matches overall",
             "206,591",
             "4,591",
+            "106,317",
+            "4,676",
         ),
         DISSERTATION_DIR / "chapter_7_discussion_conclusion.md": (
             "206,591",
             "4,591",
+            "106,317",
+            "4,676",
         ),
+        ROOT / "README.md": ("106,317", "4,676", "15,721", "85,805"),
     }
     for path, tokens in required_tokens.items():
         text = path.read_text(encoding="utf-8")

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lux S3 Isometric Battle Replay</title>
+  <title>LuxLLM-Agent | Lux AI Season 3 Decision-Trace Viewer</title>
   <style>
     :root {
       --bg-top: #5dc7d4;
@@ -103,7 +103,7 @@
       top: 16px;
       left: 16px;
       display: flex;
-      align-items: center;
+      align-items: stretch;
       gap: 10px;
       z-index: 10;
     }
@@ -111,23 +111,44 @@
     .title-pill {
       background: var(--panel);
       border-radius: 18px;
-      padding: 12px 18px;
+      padding: 10px 18px 11px;
       box-shadow: var(--shadow);
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 800;
       letter-spacing: 0.2px;
       white-space: nowrap;
     }
 
+    .title-kicker {
+      display: block;
+      margin-bottom: 2px;
+      color: #aeefff;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
     .title-tag {
-      background: rgba(255, 255, 255, 0.92);
-      color: #26323c;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.94);
+      color: #17323b;
       border-radius: 14px;
-      padding: 8px 14px;
+      padding: 7px 14px;
       box-shadow: var(--shadow);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
-      white-space: nowrap;
+      line-height: 1.25;
+    }
+
+    .season-badge {
+      color: #08728a;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
     }
 
     .side-panel {
@@ -748,7 +769,7 @@
 
   #luxTracePanel .trace-row {
     display: grid;
-    grid-template-columns: 110px 1fr;
+    grid-template-columns: 104px 1fr;
     gap: 8px;
     padding: 5px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.07);
@@ -797,6 +818,53 @@
     background: rgba(255, 95, 95, 0.18);
     color: #ffc2c2;
     border-color: rgba(255, 95, 95, 0.35);
+  }
+
+  #luxTracePanel .trace-badge.fresh {
+    background: rgba(79, 130, 255, 0.20);
+    color: #d5e2ff;
+    border-color: rgba(79, 130, 255, 0.48);
+  }
+
+  #luxTracePanel .trace-badge.cached {
+    background: rgba(164, 112, 255, 0.20);
+    color: #eadcff;
+    border-color: rgba(164, 112, 255, 0.46);
+  }
+
+  #luxTracePanel .trace-badge.rule {
+    background: rgba(255, 190, 80, 0.18);
+    color: #ffe0a6;
+    border-color: rgba(255, 190, 80, 0.40);
+  }
+
+  #luxTracePanel .trace-stage {
+    margin-top: 9px;
+    padding: 8px 9px 7px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  #luxTracePanel .trace-stage.proposal {
+    border-left: 3px solid #4f82ff;
+  }
+
+  #luxTracePanel .trace-stage.verification {
+    border-left: 3px solid #ffd166;
+  }
+
+  #luxTracePanel .trace-stage.execution {
+    border-left: 3px solid #63d56b;
+  }
+
+  #luxTracePanel .trace-stage-title {
+    margin-bottom: 5px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
   }
 
   #luxTracePanel .trace-section-title {
@@ -856,8 +924,14 @@
     <canvas id="battleCanvas"></canvas>
 
     <div class="title-wrap">
-      <div class="title-pill">Lux S3 Isometric Battle Replay</div>
-      <div class="title-tag">match score summary</div>
+      <div class="title-pill">
+        <span class="title-kicker">Inspectable game-agent evaluation</span>
+        LuxLLM-Agent
+      </div>
+      <div class="title-tag">
+        <span class="season-badge">Lux AI Season 3</span>
+        Decision Trace + Rule Verification
+      </div>
     </div>
 
     <div id="timelinePanel" class="side-panel">
@@ -881,13 +955,13 @@
     </div>
 
     <div id="statusPanel" class="side-panel">
-      <div class="status-heading">Match Status</div>
+      <div class="status-heading">Season 3 Match Status</div>
 
       <div class="status-card">
         <div class="team-badge badge-blue">P0</div>
         <div>
           <div class="team-name">player_0</div>
-          <div class="team-sub">LLM / replay side</div>
+          <div class="team-sub">LLM agent / replay side</div>
         </div>
         <div class="team-score" id="scoreP0">0</div>
       </div>
@@ -896,7 +970,7 @@
         <div class="team-badge badge-red">P1</div>
         <div>
           <div class="team-name">player_1</div>
-          <div class="team-sub">Opponent / replay side</div>
+          <div class="team-sub">Game bot / opponent side</div>
         </div>
         <div class="team-score" id="scoreP1">0</div>
       </div>
@@ -2044,25 +2118,38 @@
   </script>
 
 <div id="luxTracePanel">
-  <div class="trace-title">LLM Decision Trace Overlay</div>
-  <div class="trace-subtitle">Replay-grounded inspection panel. Press <b>H</b> to hide/show.</div>
+  <div class="trace-title">Decision-to-Action Inspector</div>
+  <div class="trace-subtitle">Lux AI Season 3 · replay-grounded evidence · press <b>H</b> to hide/show</div>
 
   <div class="trace-badges" id="traceBadges"></div>
 
   <div class="trace-row"><div class="trace-key">Frame / Step</div><div class="trace-value" id="traceStep">Loading...</div></div>
   <div class="trace-row"><div class="trace-key">Phase</div><div class="trace-value" id="tracePhase">-</div></div>
-  <div class="trace-row"><div class="trace-key">Source</div><div class="trace-value" id="traceSource">-</div></div>
-  <div class="trace-row"><div class="trace-key">LLM Model</div><div class="trace-value" id="traceModel">-</div></div>
-  <div class="trace-row"><div class="trace-key">Objective</div><div class="trace-value" id="traceObjective">-</div></div>
-  <div class="trace-row"><div class="trace-key">Risk Posture</div><div class="trace-value" id="traceRisk">-</div></div>
-  <div class="trace-row"><div class="trace-key">Reason</div><div class="trace-value" id="traceReason">-</div></div>
-  <div class="trace-row"><div class="trace-key">Fallback</div><div class="trace-value" id="traceFallback">-</div></div>
-  <div class="trace-row"><div class="trace-key">Risk Filter</div><div class="trace-value" id="traceRiskFilter">-</div></div>
-  <div class="trace-row"><div class="trace-key">Score</div><div class="trace-value" id="traceScore">-</div></div>
-  <div class="trace-row"><div class="trace-key">Summary</div><div class="trace-value" id="traceSummary">-</div></div>
 
-  <div class="trace-section-title">Unit Intents</div>
-  <div id="traceIntents"></div>
+  <div class="trace-stage proposal">
+    <div class="trace-stage-title">1 · LLM Proposal</div>
+    <div class="trace-row"><div class="trace-key">Player</div><div class="trace-value" id="tracePlayer">-</div></div>
+    <div class="trace-row"><div class="trace-key">Source</div><div class="trace-value" id="traceSource">-</div></div>
+    <div class="trace-row"><div class="trace-key">Model</div><div class="trace-value" id="traceModel">-</div></div>
+    <div class="trace-row"><div class="trace-key">Objective</div><div class="trace-value" id="traceObjective">-</div></div>
+    <div class="trace-row"><div class="trace-key">Reason</div><div class="trace-value" id="traceReason">-</div></div>
+    <div class="trace-section-title">Structured unit intents</div>
+    <div id="traceIntents"></div>
+  </div>
+
+  <div class="trace-stage verification">
+    <div class="trace-stage-title">2 · Rule Verification</div>
+    <div class="trace-row"><div class="trace-key">Schema check</div><div class="trace-value" id="traceValidity">-</div></div>
+    <div class="trace-row"><div class="trace-key">Risk posture</div><div class="trace-value" id="traceRisk">-</div></div>
+    <div class="trace-row"><div class="trace-key">Fallback</div><div class="trace-value" id="traceFallback">-</div></div>
+    <div class="trace-row"><div class="trace-key">Risk filter</div><div class="trace-value" id="traceRiskFilter">-</div></div>
+  </div>
+
+  <div class="trace-stage execution">
+    <div class="trace-stage-title">3 · Executed State</div>
+    <div class="trace-row"><div class="trace-key">Score</div><div class="trace-value" id="traceScore">-</div></div>
+    <div class="trace-row"><div class="trace-key">Summary</div><div class="trace-value" id="traceSummary">-</div></div>
+  </div>
 
   <div class="trace-footer">
     Data source: <code>data/run008_decision_trace_overlay.json</code>
@@ -2163,12 +2250,12 @@
   function renderBadges(item) {
     const badges = [];
 
-    if (item.has_exact_llm_decision) {
-      badges.push(badge("fresh LLM step", "good"));
-    } else if (item.has_recent_llm_decision) {
-      badges.push(badge("cached/recent plan", "good"));
+    if (item.decision_source === "llm_fresh" || item.has_exact_llm_decision) {
+      badges.push(badge("fresh LLM proposal", "fresh"));
+    } else if (item.decision_source === "cached_llm" || item.has_recent_llm_decision) {
+      badges.push(badge("cached LLM plan", "cached"));
     } else {
-      badges.push(badge("no LLM plan", "warn"));
+      badges.push(badge("rule fallback", "rule"));
     }
 
     if (item.fallback_used) {
@@ -2177,12 +2264,16 @@
 
     if (item.timed_out || item.llm_error) {
       badges.push(badge("LLM issue", "bad"));
+    } else if (item.llm_valid || item.has_exact_llm_decision || item.has_recent_llm_decision) {
+      badges.push(badge("structured output valid", "good"));
     } else {
-      badges.push(badge("LLM errors: 0", "good"));
+      badges.push(badge("no fresh schema check", ""));
     }
 
     if (item.risk_filter_changed) {
-      badges.push(badge("risk filter changed", "warn"));
+      badges.push(badge("verifier changed target", "warn"));
+    } else {
+      badges.push(badge("verifier: no change", "good"));
     }
 
     const el = byId("traceBadges");
@@ -2223,11 +2314,18 @@
 
     text("traceStep", `${item.frame_index} / ${item.step}`);
     text("tracePhase", item.phase || plan.phase);
+    text("tracePlayer", item.player || "player_0");
     text("traceSource", `${item.decision_source || "-"} (${item.llm_mode || "mode unknown"})`);
     text("traceModel", item.llm_model || "-");
     text("traceObjective", plan.main_objective || "-");
     text("traceRisk", plan.risk_posture || "-");
     text("traceReason", plan.reason || "-");
+    text(
+      "traceValidity",
+      item.llm_called
+        ? (item.llm_valid ? "valid structured proposal" : "invalid; deterministic fallback")
+        : (item.has_recent_llm_decision ? "previous verified plan reused" : "not applicable")
+    );
 
     const fallbackText = item.fallback_used
       ? `Yes${item.fallback_reason ? ": " + item.fallback_reason : ""}`

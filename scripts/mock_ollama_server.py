@@ -9,6 +9,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
 MODEL = "mock:latest"
+MODELS = [MODEL, "mock-qwen:latest", "mock-deepseek:latest"]
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -25,7 +26,14 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):  # noqa: N802
         if self.path == "/api/tags":
-            self._write_json({"models": [{"name": MODEL, "model": MODEL, "size": 0}]})
+            self._write_json(
+                {
+                    "models": [
+                        {"name": model, "model": model, "size": 0}
+                        for model in MODELS
+                    ]
+                }
+            )
             return
         self._write_json({"error": "not found"}, status=404)
 
@@ -35,6 +43,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         length = int(self.headers.get("Content-Length", "0"))
         request = json.loads(self.rfile.read(length).decode("utf-8"))
+        requested_model = str(request.get("model", MODEL))
+        if requested_model not in MODELS:
+            self._write_json({"error": "model not found"}, status=404)
+            return
         prompt = str(request.get("prompt", ""))
         unit_ids = sorted(set(re.findall(r"\bu(\d+):", prompt)), key=int)
         intents = {
@@ -43,7 +55,7 @@ class Handler(BaseHTTPRequestHandler):
         }
         self._write_json(
             {
-                "model": MODEL,
+                "model": requested_model,
                 "response": json.dumps({"unit_intents": intents}),
                 "done": True,
             }

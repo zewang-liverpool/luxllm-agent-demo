@@ -1,0 +1,173 @@
+{
+  "research_question": "How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?",
+  "analysis_commit": "working-tree-after-3f7a7f5",
+  "experiments": [
+    {
+      "label": "Dual LLM (Qwen vs DeepSeek)",
+      "experiment_directory": "9845992_qwen3_32b_vs_deepseek-r1_32b",
+      "model": "qwen3:32b vs deepseek-r1:32b",
+      "source_commit": "3f7a7f55dc70baa30560a13ff2013899a9899314",
+      "completed_matches": 100,
+      "planned_matches": 100,
+      "match_completion_rate": 1.0,
+      "runs_with_trace": 100,
+      "trace_streams": 200,
+      "missing_trace_runs": [],
+      "match_trace_coverage": 1.0,
+      "trace_records": 106317,
+      "agent_step_trace_records": 101641,
+      "agent_step_trace_records_complete": 101641,
+      "agent_step_trace_completeness_rate": 1.0,
+      "decision_call_trace_records": 4676,
+      "decision_call_trace_records_complete": 4676,
+      "decision_call_trace_completeness_rate": 1.0,
+      "unknown_trace_records": 0,
+      "replay_linked_trace_records": 101641,
+      "replay_linkage_rate": 1.0,
+      "missing_trace_fields": {},
+      "llm_agent_trace_records": 101641,
+      "rule_player_trace_records": 0,
+      "decision_source_counts": {
+        "rule_fallback": 5750,
+        "llm_fresh": 4676,
+        "cached_llm": 91215
+      },
+      "llm_mode_counts": {
+        "skip_llm_rule_fallback:no_active_units": 204,
+        "skip_llm_rule_fallback:no_trigger": 5546,
+        "fresh_llm_call:new_relic_discovered": 600,
+        "reuse_cached_llm_intents:no_trigger": 91215,
+        "fresh_llm_call:periodic_interval": 3218,
+        "fresh_llm_call:new_match": 804,
+        "fresh_llm_call:score_diff_changed": 54
+      },
+      "llm_agent_fallback_steps": 5750,
+      "llm_agent_fallback_rate": 0.05657165907458604,
+      "fallback_reason_counts": {
+        "llm_not_called_no_valid_cache": 5750
+      },
+      "cache_steps": 91215,
+      "cache_step_rate": 0.8974232839110201,
+      "trace_llm_calls": 4676,
+      "trace_valid_llm_calls": 4676,
+      "trace_llm_validity_rate": 1.0,
+      "trace_timeouts": 0,
+      "trace_llm_errors": 0,
+      "decision_log_records": 4676,
+      "decision_log_calls": 4676,
+      "decision_log_valid_calls": 4676,
+      "decision_log_validity_rate": 1.0,
+      "calls_by_player_and_model": {
+        "player_0|qwen3:32b": 1149,
+        "player_1|deepseek-r1:32b": 1166,
+        "player_0|deepseek-r1:32b": 1192,
+        "player_1|qwen3:32b": 1169
+      },
+      "valid_calls_by_player_and_model": {
+        "player_0|qwen3:32b": 1149,
+        "player_1|deepseek-r1:32b": 1166,
+        "player_0|deepseek-r1:32b": 1192,
+        "player_1|qwen3:32b": 1169
+      },
+      "raw_json_parseable_calls": 4676,
+      "raw_json_parse_rate": 1.0,
+      "raw_schema_valid_calls": 4105,
+      "raw_schema_valid_rate": 0.8778870829769033,
+      "string_shorthand_normalizations": 571,
+      "prefixed_key_normalizations": 0,
+      "normalization_interventions": 571,
+      "normalization_intervention_rate": 0.12211291702309666,
+      "action_fallback_steps": 0,
+      "risk_filter_changed_steps": 15721,
+      "risk_filter_changed_step_rate": 0.15467183518462038,
+      "risk_filter_changed_targets": 85805,
+      "risk_filter_events": 360736,
+      "action_shape_valid_steps": 101641,
+      "action_shape_valid_rate": 1.0,
+      "active_action_steps": 95774,
+      "active_actions": 637140,
+      "llm_latency_ms_mean": 5491.704644995722,
+      "llm_latency_ms_median": 6080.297500000001,
+      "llm_latency_ms_p95": 7050.021,
+      "llm_latency_ms_max": 7770.642,
+      "llm_win_rate_secondary": 0.54,
+      "matched_seed_performance_secondary": {
+        "seeds_above_0_5": 12,
+        "seeds_equal_0_5": 30,
+        "seeds_below_0_5": 8,
+        "clustered_win_rate": 0.54,
+        "cluster_bootstrap_95_ci": [
+          0.45,
+          0.63
+        ],
+        "exact_sign_pvalue_vs_0_5": 0.5034446716308594,
+        "bootstrap_iterations": 10000,
+        "bootstrap_seed": 42,
+        "independence_unit": "matched Lux environment seed"
+      },
+      "secondary_outcome": {
+        "model_a": "qwen3:32b",
+        "model_b": "deepseek-r1:32b",
+        "model_a_wins": 54,
+        "model_a_losses": 46,
+        "draws": 0,
+        "model_a_win_rate": 0.54,
+        "model_a_win_rate_wilson_95_ci": [
+          0.44264860323368227,
+          0.6343919169097589
+        ],
+        "exact_binomial_pvalue_vs_0_5": 0.4841184136072915,
+        "by_model_a_role": {
+          "player_0": {
+            "matches": 50,
+            "wins": 28,
+            "losses": 22,
+            "draws": 0,
+            "win_rate": 0.56,
+            "win_rate_wilson_95_ci": [
+              0.4230602802165686,
+              0.6883780078874284
+            ]
+          },
+          "player_1": {
+            "matches": 50,
+            "wins": 26,
+            "losses": 24,
+            "draws": 0,
+            "win_rate": 0.52,
+            "win_rate_wilson_95_ci": [
+              0.38511744890044614,
+              0.6520286471342196
+            ]
+          }
+        },
+        "matched_seed_performance": {
+          "seeds_above_0_5": 12,
+          "seeds_equal_0_5": 30,
+          "seeds_below_0_5": 8,
+          "clustered_win_rate": 0.54,
+          "cluster_bootstrap_95_ci": [
+            0.45,
+            0.63
+          ],
+          "exact_sign_pvalue_vs_0_5": 0.5034446716308594,
+          "bootstrap_iterations": 10000,
+          "bootstrap_seed": 42,
+          "independence_unit": "matched Lux environment seed"
+        },
+        "matched_role_analysis": {
+          "player_0_only_wins": 16,
+          "player_1_only_wins": 14,
+          "mcnemar_exact_pvalue": 0.855535551905632,
+          "mean_outcome_score_difference_player_0_minus_player_1": 0.04,
+          "paired_bootstrap_95_ci": [
+            -0.18,
+            0.26
+          ],
+          "bootstrap_iterations": 10000,
+          "bootstrap_seed": 42
+        }
+      }
+    }
+  ]
+}

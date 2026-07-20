@@ -29,10 +29,12 @@ Record the date, tester, and any observation directly in a copy of this checklis
 | --- | --- | --- | --- | --- |
 | B1 | Qwen archive retained | `D:\PythonProject\lux_llm_agent\archive\barkla_transfer\9755477_qwen3_32b_paired.tar.gz` | File exists; SHA-256 is `C25D30A0B4CD826EFF0A4F28F26457DA03352FA6E164F62A7973646A08ED277D` | ☐ |
 | B2 | DeepSeek archive retained | `D:\PythonProject\lux_llm_agent\archive\barkla_transfer\9756874_deepseek-r1_32b_paired.tar.gz` | File exists; SHA-256 is `285BFEAF7D1725EB2A619D60D6BACE3924ED260E11D9CB969D50F5EE5779C180` | ☐ |
-| B3 | Formal report | `reports\final_trace_evaluation.md` | Reports 200 matches and 206,591 trace records | ☐ |
-| B4 | Machine-readable report | `reports\final_trace_evaluation.json` | Opens as valid JSON | ☐ |
-| B5 | Metrics table | `reports\final_trace_metrics.csv` | Opens and agrees with the Markdown report | ☐ |
-| B6 | Claims remain bounded | `paper\main.tex`, Chapter 6, Chapter 7 | No universal model-ranking or proof-of-safety claim | ☐ |
+| B3 | Direct dual-LLM archive retained | `D:\PythonProject\lux_llm_agent\archive\barkla_transfer\9845992_qwen3_32b_vs_deepseek-r1_32b.tar.gz` | File exists; SHA-256 is `2B16B3C03EDA364F599F2EEF8884669124A1398D5BA1AAB7DE4709D9CF8A4EA7` | ☐ |
+| B4 | Primary formal report | `reports\final_trace_evaluation.md` | Reports 200 matches and 206,591 trace records | ☐ |
+| B5 | Dual-LLM report | `reports\dual_llm_trace_evaluation.md` | Reports 100 matches, 106,317 trace records, and 4,676 valid calls | ☐ |
+| B6 | Machine-readable reports | `reports\final_trace_evaluation.json`, `reports\dual_llm_trace_evaluation.json` | Both open as valid JSON | ☐ |
+| B7 | Metrics tables | `reports\final_trace_metrics.csv`, `reports\dual_llm_trace_metrics.csv` | Open and agree with the Markdown reports | ☐ |
+| B8 | Claims remain bounded | `paper\main.tex`, Chapter 6, Chapter 7 | No universal model-ranking or proof-of-safety claim | ☐ |
 
 ## C. Dissertation
 
@@ -54,7 +56,7 @@ Record the date, tester, and any observation directly in a copy of this checklis
 | --- | --- | --- | --- | --- |
 | D1 | Demo runbook | `docs\final_demo_runbook.md` | Presenter can follow it without additional instructions | ☐ |
 | D2 | Local server | `python -m http.server 8000` | Starts without a port error | ☐ |
-| D3 | Viewer | `http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html` | Replay and decision trace load | ☐ |
+| D3 | Viewer | `http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html` | Replay loads; Lux AI Season 3 is prominent; proposal, verification, and executed-state sections are legible | ☐ |
 | D4 | Replay data | `logs\isometric_replay_frames_v09n11.json` | Viewer timeline has data | ☐ |
 | D5 | Trace overlay data | `data\run008_decision_trace_overlay.json` | Trace panel displays step-aligned information | ☐ |
 | D6 | Backup video | `docs\demo_videos\LuxLLM_Agent_Final_Demo_Run008_Isometric_Visualization.mp4` | H.264/AAC video plays with sound for 75.33 seconds | ☐ |

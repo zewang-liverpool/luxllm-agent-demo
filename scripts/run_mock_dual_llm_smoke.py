@@ -1,12 +1,12 @@
-"""Run one complete matched seed pair through a deterministic mock Ollama."""
+"""Run one role-swapped LLM-versus-LLM pair with deterministic mock models."""
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 import sys
 import time
 from pathlib import Path
-import shutil
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,21 +22,25 @@ def main() -> int:
     )
     try:
         time.sleep(1.0)
-        output_dir = ROOT / "results" / "mock_llm_role_swap_smoke"
+        output_dir = ROOT / "results" / "mock_dual_llm_role_swap_smoke"
         if output_dir.exists():
             shutil.rmtree(output_dir)
         command = [
             sys.executable,
-            str(ROOT / "scripts" / "run_paired_experiment.py"),
-            "--model",
-            "mock:latest",
+            str(ROOT / "scripts" / "run_dual_llm_experiment.py"),
+            "--model-a",
+            "mock-qwen:latest",
+            "--model-b",
+            "mock-deepseek:latest",
             "--pairs",
             "1",
             "--seed-start",
-            "4242",
+            "4343",
             "--temperature",
             "0.0",
-            "--ollama-base-url",
+            "--model-a-base-url",
+            "http://127.0.0.1:11435",
+            "--model-b-base-url",
             "http://127.0.0.1:11435",
             "--output-dir",
             str(output_dir),
