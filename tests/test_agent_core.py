@@ -2,6 +2,7 @@ import os
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -10,6 +11,7 @@ sys.path.insert(0, str(ROOT / "src" / "agent"))
 os.environ.setdefault("LUX_RUN_DIR", str(ROOT / "results" / "test-runtime"))
 
 from action_planner import make_empty_actions
+import config
 from llm_decider import (
     build_ollama_payload,
     extract_json_object,
@@ -22,6 +24,31 @@ from state_summarizer import gameview_to_prompt
 
 
 class AgentCoreTests(unittest.TestCase):
+    @mock.patch.dict(
+        os.environ,
+        {
+            "LUX_LLM_PLAYERS": "player_0,player_1",
+            "LUX_PLAYER_0_LLM_MODEL": "qwen3:32b",
+            "LUX_PLAYER_1_LLM_MODEL": "deepseek-r1:32b",
+        },
+    )
+    def test_dual_llm_player_routing_and_models_are_independent(self):
+        self.assertTrue(config.llm_enabled_for_player("player_0"))
+        self.assertTrue(config.llm_enabled_for_player("player_1"))
+        self.assertEqual(config.llm_model_for_player("player_0"), "qwen3:32b")
+        self.assertEqual(config.llm_model_for_player("player_1"), "deepseek-r1:32b")
+
+    @mock.patch.dict(
+        os.environ,
+        {
+            "LUX_LLM_PLAYERS": "player_0,player_1",
+            "LUX_PLAYER_1_LLM_ENABLED": "0",
+        },
+    )
+    def test_explicit_player_disable_overrides_dual_player_list(self):
+        self.assertTrue(config.llm_enabled_for_player("player_0"))
+        self.assertFalse(config.llm_enabled_for_player("player_1"))
+
     def test_parse_units_accepts_official_nested_energy_shape(self):
         observation = {
             "units": {

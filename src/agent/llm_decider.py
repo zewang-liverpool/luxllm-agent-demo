@@ -27,17 +27,8 @@ import config
 from state_summarizer import gameview_to_prompt
 
 
-DECISION_LOG_PATH = os.path.join(config.LOG_DIR, "decision_log.jsonl")
-LLM_ERROR_LOG_PATH = os.path.join(config.LOG_DIR, "llm_error_log.jsonl")
-
-
-def ensure_log_dirs() -> None:
-    os.makedirs(config.LOG_DIR, exist_ok=True)
-    os.makedirs(config.ERROR_LOG_DIR, exist_ok=True)
-
-
 def append_jsonl(path: str, data: Dict) -> None:
-    ensure_log_dirs()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "a", encoding="utf-8") as f:
         f.write(json.dumps(data, ensure_ascii=False) + "\n")
 
@@ -199,10 +190,29 @@ def infer_fallback_reason(
 
 
 class LLMDecider:
-    def __init__(self, model: str = None, base_url: str = None, enabled: bool = None):
+    def __init__(
+        self,
+        model: str = None,
+        base_url: str = None,
+        enabled: bool = None,
+        player: str = None,
+        log_dir: str = None,
+        error_log_dir: str = None,
+    ):
         self.model = model or config.LLM_MODEL
         self.base_url = base_url or config.LLM_BASE_URL
         self.enabled = config.LLM_ENABLED if enabled is None else bool(enabled)
+        self.player = player
+        self.log_dir = log_dir or config.LOG_DIR
+        self.error_log_dir = error_log_dir or config.ERROR_LOG_DIR
+        self.llm_decision_log = os.path.join(self.log_dir, "llm_decisions.jsonl")
+        self.decision_log = os.path.join(self.log_dir, "decision_log.jsonl")
+        self.decision_trace_log = os.path.join(self.log_dir, "decision_trace.jsonl")
+        self.ablation_metrics_log = os.path.join(
+            self.log_dir,
+            "ablation_metrics.jsonl",
+        )
+        self.llm_error_log = os.path.join(self.error_log_dir, "llm_error_log.jsonl")
 
         # agent.py depends on these runtime fields.
         self.last_elapsed = 0.0
@@ -279,13 +289,14 @@ class LLMDecider:
             }
 
             append_jsonl(
-                LLM_ERROR_LOG_PATH,
+                self.llm_error_log,
                 {
                     "time": time.time(),
                     "event": "llm_error",
                     "experiment_tag": config.EXPERIMENT_TAG,
                     "step": step,
                     "match": match,
+                    "player": self.player,
                     "model": self.model,
                     "error": error_text,
                     "timed_out": self.last_timed_out,
@@ -377,6 +388,7 @@ class LLMDecider:
             "experiment_tag": config.EXPERIMENT_TAG,
             "step": step,
             "match": match,
+            "player": self.player,
             "elapsed": elapsed,
             "llm_latency_ms": round(elapsed * 1000.0, 3),
             "model": self.model,
@@ -400,6 +412,7 @@ class LLMDecider:
             "step": step,
             "match_idx": match.get("match_idx"),
             "step_in_match": match.get("step_in_match"),
+            "player": self.player,
             "elapsed": elapsed,
             "llm_latency_ms": round(elapsed * 1000.0, 3),
             "model": self.model,
@@ -424,7 +437,7 @@ class LLMDecider:
             "step": step,
             "match_idx": match.get("match_idx"),
             "step_in_match": match.get("step_in_match"),
-            "player": match.get("player"),
+            "player": self.player,
             "llm_enabled": bool(self.enabled),
             "llm_model": self.model,
             "llm_called": bool(llm_called),
@@ -445,14 +458,14 @@ class LLMDecider:
             "intents": parsed.get("unit_intents", {}),
         }
 
-        append_jsonl(config.LLM_DECISION_LOG, detailed_record)
-        append_jsonl(DECISION_LOG_PATH, compact_record)
+        append_jsonl(self.llm_decision_log, detailed_record)
+        append_jsonl(self.decision_log, compact_record)
 
         if bool(getattr(config, "LOG_DECISION_TRACE", True)):
-            append_jsonl(config.DECISION_TRACE_LOG, trace_record)
+            append_jsonl(self.decision_trace_log, trace_record)
 
         if bool(getattr(config, "LOG_ABLATION_METRICS", True)):
-            append_jsonl(config.ABLATION_METRICS_LOG, compact_record)
+            append_jsonl(self.ablation_metrics_log, compact_record)
 
     def _infer_decision_source(
         self,

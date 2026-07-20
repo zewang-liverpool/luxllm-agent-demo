@@ -35,17 +35,28 @@ class Agent:
             (not config.FORCE_RULE_ONLY)
             and (not getattr(config, "FORCE_FALLBACK", False))
             and config.LLM_ENABLED
-            and self.player == config.LLM_PLAYER
+            and config.llm_enabled_for_player(self.player)
         )
 
-        self.is_fallback_player = bool(
-            config.FORCE_RULE_ONLY
-            or getattr(config, "FORCE_FALLBACK", False)
-            or self.player == config.FALLBACK_PLAYER
-            or not self.llm_enabled_for_this_player
-        )
+        self.is_fallback_player = not self.llm_enabled_for_this_player
+        self.llm_model = config.llm_model_for_player(self.player)
+        self.llm_base_url = config.llm_base_url_for_player(self.player)
+        self.log_dir = config.log_dir_for_player(self.player)
+        self.error_log_dir = config.error_log_dir_for_player(self.player)
+        self.replay_dir = config.replay_dir_for_player(self.player)
+        self.agent_debug_log = os.path.join(self.log_dir, "agent_debug.log")
+        self.decision_trace_log = os.path.join(self.log_dir, "decision_trace.jsonl")
+        self.ablation_metrics_log = os.path.join(self.log_dir, "ablation_metrics.jsonl")
+        self.frame_log_path = os.path.join(self.log_dir, "frame_log.jsonl")
 
-        self.llm_decider = LLMDecider(enabled=self.llm_enabled_for_this_player)
+        self.llm_decider = LLMDecider(
+            model=self.llm_model,
+            base_url=self.llm_base_url,
+            enabled=self.llm_enabled_for_this_player,
+            player=self.player,
+            log_dir=self.log_dir,
+            error_log_dir=self.error_log_dir,
+        )
 
         self.last_llm_intents = {"unit_intents": {}}
         self.last_llm_step = -9999
@@ -74,11 +85,13 @@ class Agent:
                 "is_fallback_player": self.is_fallback_player,
                 "llm_player": config.LLM_PLAYER,
                 "fallback_player": config.FALLBACK_PLAYER,
-                "llm_model": config.LLM_MODEL,
+                "llm_players": os.getenv("LUX_LLM_PLAYERS"),
+                "llm_model": self.llm_model,
+                "llm_base_url": self.llm_base_url,
                 "frame_logging": bool(getattr(config, "ENABLE_FRAME_LOGGING", False)),
-                "frame_log_path": getattr(config, "FRAME_LOG_PATH", ""),
-                "decision_trace_log": getattr(config, "DECISION_TRACE_LOG", ""),
-                "ablation_metrics_log": getattr(config, "ABLATION_METRICS_LOG", ""),
+                "frame_log_path": self.frame_log_path,
+                "decision_trace_log": self.decision_trace_log,
+                "ablation_metrics_log": self.ablation_metrics_log,
             }
         )
 
@@ -91,7 +104,7 @@ class Agent:
             f"llm_enabled_for_this_player={self.llm_enabled_for_this_player}, "
             f"is_fallback_player={self.is_fallback_player}, "
             f"llm_player={config.LLM_PLAYER}, fallback_player={config.FALLBACK_PLAYER}, "
-            f"model={config.LLM_MODEL}",
+            f"model={self.llm_model}",
             file=sys.stderr,
             flush=True,
         )
@@ -430,9 +443,9 @@ class Agent:
         return fixed
 
     def _ensure_dirs(self) -> None:
-        os.makedirs(config.LOG_DIR, exist_ok=True)
-        os.makedirs(config.ERROR_LOG_DIR, exist_ok=True)
-        os.makedirs(config.REPLAY_DIR, exist_ok=True)
+        os.makedirs(self.log_dir, exist_ok=True)
+        os.makedirs(self.error_log_dir, exist_ok=True)
+        os.makedirs(self.replay_dir, exist_ok=True)
 
         if hasattr(config, "VIEW_DIR"):
             os.makedirs(config.VIEW_DIR, exist_ok=True)
@@ -442,8 +455,8 @@ class Agent:
 
     def _log_debug(self, data: Dict) -> None:
         try:
-            os.makedirs(config.LOG_DIR, exist_ok=True)
-            with open(config.AGENT_DEBUG_LOG, "a", encoding="utf-8") as f:
+            os.makedirs(self.log_dir, exist_ok=True)
+            with open(self.agent_debug_log, "a", encoding="utf-8") as f:
                 f.write(json.dumps(data, ensure_ascii=False) + "\n")
         except Exception:
             pass
@@ -547,7 +560,7 @@ class Agent:
             "decision_source": decision_source,
             "llm_mode": str(llm_mode),
             "llm_enabled": bool(self.llm_enabled_for_this_player),
-            "llm_model": config.LLM_MODEL,
+            "llm_model": self.llm_model,
             "llm_called": bool(llm_called),
             "llm_latency_ms": float(llm_latency_ms),
             "llm_latency_seconds": float(llm_latency_seconds),
@@ -597,7 +610,7 @@ class Agent:
         frame/action-step-level records, including cached and fallback steps.
         """
         if bool(getattr(config, "LOG_DECISION_TRACE", True)):
-            self._append_jsonl(config.DECISION_TRACE_LOG, decision_trace)
+            self._append_jsonl(self.decision_trace_log, decision_trace)
 
         if bool(getattr(config, "LOG_ABLATION_METRICS", True)):
             metrics_record = {
@@ -629,7 +642,7 @@ class Agent:
                 "score_player_1": decision_trace.get("score_player_1"),
                 "elapsed_total_ms": decision_trace.get("elapsed_total_ms"),
             }
-            self._append_jsonl(config.ABLATION_METRICS_LOG, metrics_record)
+            self._append_jsonl(self.ablation_metrics_log, metrics_record)
 
     def _mode_has_fresh_llm_call(self, llm_mode: str) -> bool:
         text = str(llm_mode).lower()
@@ -907,7 +920,7 @@ class Agent:
             return
 
         try:
-            os.makedirs(config.LOG_DIR, exist_ok=True)
+            os.makedirs(self.log_dir, exist_ok=True)
 
             score = gameview.get("score", {}) if isinstance(gameview, dict) else {}
             my_points = int(score.get("my_points", 0))
@@ -990,7 +1003,7 @@ class Agent:
                 "llm": {
                     "enabled_for_player": bool(self.llm_enabled_for_this_player),
                     "is_fallback_player": bool(self.is_fallback_player),
-                    "model": config.LLM_MODEL,
+                    "model": self.llm_model,
                     "called": bool(decision_trace.get("llm_called", False)),
                     "elapsed": float(decision_trace.get("llm_latency_seconds", 0.0)),
                     "latency_ms": float(decision_trace.get("llm_latency_ms", 0.0)),
@@ -1046,7 +1059,7 @@ class Agent:
                 "elapsed_total": float(elapsed),
             }
 
-            with open(config.FRAME_LOG_PATH, "a", encoding="utf-8") as f:
+            with open(self.frame_log_path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(frame, ensure_ascii=False) + "\n")
 
         except Exception as exc:
