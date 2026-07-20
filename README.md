@@ -6,7 +6,7 @@ The project combines a Lux AI Season 3 agent, structured game-state summarisatio
 
 The project is designed for an MSc dissertation and research-demo style artifact. Its main goal is not simply to build an agent that plays Lux AI, but to investigate how LLM-based game-agent decisions can be structured, verified, traced, and evaluated.
 
-> **Project status:** `LuxLLM-Agent COMP702 Submission Freeze v1`. The core system, controlled experiments, decision-trace viewer, and dissertation drafts are complete. Current work is limited to supervisor feedback, citations, figures, tables, screenshots, formatting, and final submission preparation.
+> **Project status:** `LuxLLM-Agent COMP702 Submission Freeze v1`. The core system, controlled experiments, supervisor-requested dual-LLM supplementary experiment, decision-trace viewer, and dissertation drafts are complete. Current work is limited to evidence integration, supervisor feedback, presentation rehearsal, formatting, and final submission preparation.
 
 ---
 
@@ -114,6 +114,7 @@ The LLM does not directly execute arbitrary environment actions. Instead, it pro
 ### Controlled-run evaluation
 
 * Includes 50 matched seeds with role swapping for each backend: 100 matches for `qwen3:32b` and 100 for `deepseek-r1:32b`.
+* Includes a supplementary 50-seed, role-swapped direct LLM-versus-LLM experiment: 100 matches with both agents using the same trace-and-verification pipeline.
 * Measures trace completeness, replay linkage, output normalization, action verification, risk filtering, fallback observability, latency, and secondary match outcomes.
 * Preserves exact runtime provenance, model inventory, seeds, dependency versions, and analysis-code versions.
 
@@ -164,6 +165,32 @@ Across each backend's 50,500 LLM-agent steps, structured provenance distinguishe
 The paired backend comparison matched all 100 seed-role strata. Qwen was the sole winner in 14 strata and DeepSeek in 11; the difference was not significant (McNemar exact `p = 0.6900`, paired mean difference `0.03`, 95% CI `[-0.07, 0.13]`). This supports backend portability of the trace-and-verification framework, not a hardware-independent model ranking.
 
 Full research-question-aligned analysis is available in [`reports/final_trace_evaluation.md`](reports/final_trace_evaluation.md), with machine-readable JSON/CSV and figures in `reports/figures/`.
+
+### Supplementary direct LLM-versus-LLM experiment
+
+Following supervisor feedback, a direct `qwen3:32b` versus `deepseek-r1:32b` experiment was run using the same 50 Lux seeds in both model-role assignments. Both players used independent log streams but the same structured proposal, deterministic normalization, risk verification, caching, and action-construction pipeline.
+
+<table align="center" width="100%">
+  <thead>
+    <tr><th align="center">Metric</th><th align="center">Result</th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Completed matches / paired seeds</td><td align="center">100 / 50</td></tr>
+    <tr><td align="center">Qwen wins / DeepSeek wins / draws</td><td align="center">54 / 46 / 0</td></tr>
+    <tr><td align="center">Qwen win rate</td><td align="center">54%, seed-clustered 95% CI [45%, 63%]</td></tr>
+    <tr><td align="center">Seed-level exact sign p-value</td><td align="center">0.5034</td></tr>
+    <tr><td align="center">Structured trace records</td><td align="center">106,317</td></tr>
+    <tr><td align="center">Valid fresh LLM calls</td><td align="center">4,676 / 4,676 (100%)</td></tr>
+    <tr><td align="center">Deterministic normalization interventions</td><td align="center">571</td></tr>
+    <tr><td align="center">Risk-filter changed steps / targets</td><td align="center">15,721 / 85,805</td></tr>
+    <tr><td align="center">Trace completeness / replay linkage / action shape</td><td align="center">100% / 100% / 100%</td></tr>
+    <tr><td align="center">Timeouts / LLM errors / action fallbacks</td><td align="center">0 / 0 / 0</td></tr>
+  </tbody>
+</table>
+
+The 54:46 outcome is not statistically distinguishable from parity under the recorded matched-seed analysis. This supplementary experiment is therefore evidence that two simultaneous LLM agents can be traced and verified consistently—not evidence that Qwen is generally better than DeepSeek.
+
+The tracked reports are [`reports/dual_llm_trace_evaluation.md`](reports/dual_llm_trace_evaluation.md) and [`reports/dual_llm_verifier_audit.md`](reports/dual_llm_verifier_audit.md). The large raw archive remains local and is identified by SHA-256 `2B16B3C03EDA364F599F2EEF8884669124A1398D5BA1AAB7DE4709D9CF8A4EA7`.
 
 The overall supervisor-facing project report is available at
 [`docs/supervisor_project_report_20260716.md`](docs/supervisor_project_report_20260716.md).

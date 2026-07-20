@@ -41,7 +41,14 @@ def validate_demo_data() -> None:
     if not isinstance(trace_items, list) or len(trace_items) < 500:
         raise SystemExit(f"Unexpected decision trace count: {len(trace_items) if isinstance(trace_items, list) else 'invalid'}")
     viewer = viewer_path.read_text(encoding="utf-8")
-    for required in ("isometric_replay_frames.json", "run008_decision_trace_overlay.json"):
+    for required in (
+        "isometric_replay_frames.json",
+        "run008_decision_trace_overlay.json",
+        "Lux AI Season 3",
+        "1 · LLM Proposal",
+        "2 · Rule Verification",
+        "3 · Executed State",
+    ):
         if required not in viewer:
             raise SystemExit(f"Viewer does not reference {required}")
 

@@ -47,8 +47,8 @@ The current dissertation draft consists of front matter and seven chapters. Run 
 | Chapter 3 | `docs/dissertation/chapter_3_requirements_methodology.md` | Draft complete                   | Defines requirements and methodology                                                                                   |
 | Chapter 4 | `docs/dissertation/chapter_4_system_design.md`            | Draft complete                   | Explains the system architecture and design rationale                                                                  |
 | Chapter 5 | `docs/dissertation/chapter_5_implementation.md`           | Draft complete                   | Describes implementation details and project files                                                                     |
-| Chapter 6 | `docs/dissertation/chapter_6_evaluation.md`               | Formal evidence integrated       | Evaluates 200 matched role-swapped matches, trace coverage, verification interventions, outcomes, and limitations       |
-| Chapter 7 | `docs/dissertation/chapter_7_discussion_conclusion.md`    | Formal evidence integrated       | Answers the RQ using trace, verification, reproducibility, outcome, limitation, and threat-to-validity evidence          |
+| Chapter 6 | `docs/dissertation/chapter_6_evaluation.md`               | Formal and supplementary evidence integrated | Evaluates the 200 primary matches and 100 direct dual-LLM matches, trace coverage, verification, outcomes, and limitations |
+| Chapter 7 | `docs/dissertation/chapter_7_discussion_conclusion.md`    | Formal and supplementary evidence integrated | Answers the RQ using trace, verification, reproducibility, outcome, limitation, and threat-to-validity evidence          |
 | Full draft | `docs/dissertation/full_dissertation_draft.md`           | Deterministically assembled      | Combines front matter and the seven canonical chapter files                                                             |
 
 ---
@@ -75,6 +75,8 @@ The following analysis documents support Chapter 6 and Chapter 7.
 | --------------------------------------------- | ----------------------------------------------------- |
 | `docs/analysis/qwen3_vs_deepseek_analysis.md` | Analyses qwen3:32b and DeepSeek-R1-32B 50-run results |
 | `docs/analysis/failure_case_analysis.md`      | Provides representative failure and limitation cases  |
+| `reports/dual_llm_trace_evaluation.md`        | Evaluates the supervisor-requested direct dual-LLM run |
+| `reports/dual_llm_verifier_audit.md`          | Audits normalization and risk-filter interventions     |
 
 ---
 

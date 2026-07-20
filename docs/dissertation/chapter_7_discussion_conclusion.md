@@ -85,6 +85,8 @@ The formal matched-seed results were:
 
 The matched backend comparison produced a mean outcome-score difference of 0.03 with a paired-bootstrap 95% interval of [-0.07, 0.13] and a McNemar exact p-value of 0.690. The results therefore show that the framework supports both backends under controlled evaluation, but do not establish that one backend is generally superior.
 
+The supplementary direct LLM-versus-LLM experiment provides a stronger operational test of backend support because both players used the framework simultaneously. Across 100 role-swapped matches, Qwen won 54 and DeepSeek won 46; the seed-clustered 95% interval was [45%, 63%] and the seed-level exact sign p-value was 0.503. All 4,676 fresh calls were valid after deterministic checks, and complete per-player trace streams were retained. The non-significant outcome keeps the interpretation aligned with the dissertation: the experiment demonstrates simultaneous traceability and verification, not a model leaderboard.
+
 ---
 
 ### 7.3.4 Strategy caching is necessary but introduces trade-offs
@@ -118,7 +120,7 @@ This means that the viewer can align nearly all replay frames with decision trac
 
 This improves interpretability because the user can inspect what the agent was doing, which decision source was active, what the LLM objective was, whether fallback was used, and how the score context evolved.
 
-The overlay therefore turns the viewer from a simple replay tool into a replay-grounded decision inspection interface.
+The improved overlay makes Lux AI Season 3 explicit and separates evidence into three visible stages: LLM proposal, rule verification, and executed state. It also distinguishes fresh decisions, cached plans, rule fallback, and verifier intervention through labelled badges. The overlay therefore turns the viewer from a simple replay tool into a replay-grounded decision inspection interface.
 
 ---
 
@@ -168,7 +170,7 @@ This is a practical contribution because it makes the system easier to inspect, 
 
 ### 7.4.6 Controlled multi-model evaluation
 
-The project evaluates both qwen3:32b and DeepSeek-R1-32B under the same framework. This strengthens the project by showing that the system is not tied to only one LLM backend.
+The project evaluates both qwen3:32b and DeepSeek-R1-32B under the same framework, first against the same rule policy and then directly against each other with matched seeds and role swapping. The dual-agent implementation isolates concurrent player logs and validates both player-model assignments. This strengthens the project by showing that the trace-and-verification system is not tied to only one backend or one LLM-controlled side.
 
 ---
 
@@ -204,7 +206,7 @@ This limitation suggests the need for better event-triggered plan refresh mechan
 
 ### 7.5.4 Limited number of model backends
 
-The project compares qwen3:32b and DeepSeek-R1-32B. This provides useful evidence, but the evaluation does not cover all possible LLMs.
+The project compares qwen3:32b and DeepSeek-R1-32B. The supplementary direct experiment adds a second opponent configuration but does not add another model family. The results therefore do not cover all possible LLMs or prompt configurations.
 
 A larger evaluation could include additional models and more runs.
 
@@ -382,7 +384,9 @@ This dissertation presented LuxLLM-Agent, a decision-trace and action-verificati
 
 The system integrates LLM-based strategic planning with structured state summarisation, plan parsing, rule-based action verification, fallback behaviour, strategy caching, risk-aware filtering, decision trace logging, controlled-run evaluation, and replay-grounded visual inspection.
 
-The evaluation showed that qwen3:32b and DeepSeek-R1-32B could both be integrated into the framework and complete 100 matched-seed, role-swapped Lux AI Season 3 matches each. Across 206,591 trace records, the framework achieved complete recorded trace fields and replay linkage, validated all 4,591 LLM calls after deterministic checks, exposed normalization and risk-filter interventions, and completed every match without an observed LLM timeout, API error, or downstream action fallback.
+The primary evaluation showed that qwen3:32b and DeepSeek-R1-32B could both be integrated into the framework and complete 100 matched-seed, role-swapped Lux AI Season 3 matches each. Across 206,591 trace records, the framework achieved complete recorded trace fields and replay linkage, validated all 4,591 LLM calls after deterministic checks, exposed normalization and risk-filter interventions, and completed every match without an observed LLM timeout, API error, or downstream action fallback.
+
+The supplementary direct LLM-versus-LLM experiment completed another 100 role-swapped matches while both players used the framework. Its 106,317 trace records were complete, all 4,676 fresh calls were valid after checks, and verifier interventions remained observable. The 54:46 outcome was not statistically significant, so this evidence strengthens the operational framework claim without changing the project into a model-ranking study.
 
 The key conclusion is that structured decision tracing and rule-based action verification can make LLM-based game agents more stable, inspectable, and evaluable. Rather than treating the LLM as a direct controller, LuxLLM-Agent treats the LLM as a strategic planner inside a controlled execution pipeline.
 

@@ -61,7 +61,7 @@ The smoke test compiles every tracked Python utility without creating
 Expected result:
 
 ```text
-23 tests passed
+28 tests passed
 ```
 
 GitHub Actions runs the same checks on Python 3.10 and 3.11 for pushes and pull
@@ -228,6 +228,28 @@ GPU:
 The first command writes deterministic Markdown, JSON, and CSV reports under
 `reports/`. The second rejects stale primary claims and checks that the compact
 formal report, verifier audit, and canonical documentation agree.
+
+For the supervisor-requested direct dual-LLM archive, validate and regenerate
+the supplementary reports locally without Ollama:
+
+```powershell
+$dual = "archive\barkla_results\dual_llm_9845992\results\9845992_qwen3_32b_vs_deepseek-r1_32b"
+.\.venv\Scripts\python.exe tools\validate_dual_llm_result.py $dual
+.\.venv\Scripts\python.exe tools\analyse_trace_evidence.py `
+  --experiment "Dual LLM (Qwen vs DeepSeek)=$dual" `
+  --json-output reports\dual_llm_trace_evaluation.json `
+  --csv-output reports\dual_llm_trace_metrics.csv `
+  --markdown-output reports\dual_llm_trace_evaluation.md `
+  --figure-dir reports\dual_llm_figures
+.\.venv\Scripts\python.exe tools\audit_verifier_interventions.py `
+  --experiment "Dual LLM (Qwen vs DeepSeek)=$dual" `
+  --output-prefix reports\dual_llm_verifier_audit
+```
+
+The retained archive is
+`archive\barkla_transfer\9845992_qwen3_32b_vs_deepseek-r1_32b.tar.gz`
+with SHA-256
+`2B16B3C03EDA364F599F2EEF8884669124A1398D5BA1AAB7DE4709D9CF8A4EA7`.
 
 ## 11. Reproducibility Acceptance Checklist
 

@@ -136,16 +136,20 @@ def summarise_experiment(label: str, root: Path) -> Dict:
 
     trace_files = []
     decision_files = []
+    runs_with_trace = 0
     missing_trace_runs = []
     for run_dir in run_dirs:
-        trace_path = run_dir / "logs" / "decision_trace.jsonl"
-        decision_path = run_dir / "logs" / "llm_decisions.jsonl"
-        if trace_path.exists():
-            trace_files.append(trace_path)
+        # Single-LLM runs use logs/<file>.  Dual-LLM runs isolate concurrent
+        # writers under logs/player_0 and logs/player_1 to prevent JSONL
+        # corruption.  Recursive discovery supports both layouts.
+        run_trace_files = sorted((run_dir / "logs").glob("**/decision_trace.jsonl"))
+        run_decision_files = sorted((run_dir / "logs").glob("**/llm_decisions.jsonl"))
+        if run_trace_files:
+            trace_files.extend(run_trace_files)
+            runs_with_trace += 1
         else:
             missing_trace_runs.append(run_dir.name)
-        if decision_path.exists():
-            decision_files.append(decision_path)
+        decision_files.extend(run_decision_files)
 
     trace_records = 0
     agent_step_trace_records = 0
@@ -243,15 +247,23 @@ def summarise_experiment(label: str, root: Path) -> Dict:
     shorthand_normalizations = 0
     key_normalizations = 0
     decision_latencies = []
+    calls_by_player_and_model = Counter()
+    valid_calls_by_player_and_model = Counter()
     for path in decision_files:
         for record in iter_jsonl(path):
             decision_records += 1
             if not bool(record.get("llm_called")):
                 continue
             decision_calls += 1
+            route = (
+                f'{record.get("player", "unknown")}|'
+                f'{record.get("model", record.get("llm_model", "unknown"))}'
+            )
+            calls_by_player_and_model[route] += 1
             decision_latencies.append(float(record.get("llm_latency_ms", 0.0) or 0.0))
             if bool(record.get("llm_valid")):
                 decision_valid += 1
+                valid_calls_by_player_and_model[route] += 1
             shape = raw_intent_shape(str(record.get("raw_text", "")))
             raw_json_parseable += shape["raw_json_parseable"]
             raw_schema_valid += shape["raw_schema_valid"]
@@ -262,14 +274,22 @@ def summarise_experiment(label: str, root: Path) -> Dict:
     return {
         "label": label,
         "experiment_directory": root.name,
-        "model": metadata.get("model"),
+        "model": (
+            metadata.get("model")
+            or (
+                f'{summary.get("model_a")} vs {summary.get("model_b")}'
+                if summary.get("model_a") and summary.get("model_b")
+                else None
+            )
+        ),
         "source_commit": metadata.get("git_commit"),
         "completed_matches": len(completed),
         "planned_matches": int(metadata.get("planned_matches", len(history))),
         "match_completion_rate": ratio(len(completed), int(metadata.get("planned_matches", len(history)))),
-        "runs_with_trace": len(trace_files),
+        "runs_with_trace": runs_with_trace,
+        "trace_streams": len(trace_files),
         "missing_trace_runs": missing_trace_runs,
-        "match_trace_coverage": ratio(len(trace_files), len(completed)),
+        "match_trace_coverage": ratio(runs_with_trace, len(completed)),
         "trace_records": trace_records,
         "agent_step_trace_records": agent_step_trace_records,
         "agent_step_trace_records_complete": complete_agent_step_trace_records,
@@ -303,6 +323,8 @@ def summarise_experiment(label: str, root: Path) -> Dict:
         "decision_log_calls": decision_calls,
         "decision_log_valid_calls": decision_valid,
         "decision_log_validity_rate": ratio(decision_valid, decision_calls),
+        "calls_by_player_and_model": dict(calls_by_player_and_model),
+        "valid_calls_by_player_and_model": dict(valid_calls_by_player_and_model),
         "raw_json_parseable_calls": raw_json_parseable,
         "raw_json_parse_rate": ratio(raw_json_parseable, decision_calls),
         "raw_schema_valid_calls": raw_schema_valid,
@@ -326,8 +348,27 @@ def summarise_experiment(label: str, root: Path) -> Dict:
         "llm_latency_ms_median": median(decision_latencies) if decision_latencies else 0.0,
         "llm_latency_ms_p95": percentile(decision_latencies, 0.95),
         "llm_latency_ms_max": max(decision_latencies) if decision_latencies else 0.0,
-        "llm_win_rate_secondary": summary.get("llm_win_rate"),
+        "llm_win_rate_secondary": summary.get(
+            "llm_win_rate", summary.get("model_a_win_rate")
+        ),
         "matched_seed_performance_secondary": summary.get("matched_seed_performance"),
+        "secondary_outcome": {
+            "model_a": summary.get("model_a"),
+            "model_b": summary.get("model_b"),
+            "model_a_wins": summary.get("model_a_wins"),
+            "model_a_losses": summary.get("model_a_losses"),
+            "draws": summary.get("draws"),
+            "model_a_win_rate": summary.get("model_a_win_rate"),
+            "model_a_win_rate_wilson_95_ci": summary.get(
+                "model_a_win_rate_wilson_95_ci"
+            ),
+            "exact_binomial_pvalue_vs_0_5": summary.get(
+                "exact_binomial_pvalue_vs_0_5"
+            ),
+            "by_model_a_role": summary.get("by_model_a_role"),
+            "matched_seed_performance": summary.get("matched_seed_performance"),
+            "matched_role_analysis": summary.get("matched_role_analysis"),
+        },
     }
 
 
@@ -410,6 +451,58 @@ def write_markdown(path: Path, results: Sequence[Dict], analysis_commit: str) ->
                 f'| `{source}` | {count:,} ({percent(ratio(count, result["llm_agent_trace_records"]))}) |'
             )
         lines.extend(["", "Fallback reasons are retained in the JSON report for audit and debugging.", ""])
+
+    lines.extend(["## Player-model call coverage", ""])
+    for result in results:
+        lines.extend(
+            [
+                f'### {result["label"]}',
+                "",
+                "| Player and model | Fresh calls | Valid after checks |",
+                "|---|---:|---:|",
+            ]
+        )
+        for route, count in sorted(result["calls_by_player_and_model"].items()):
+            valid = result["valid_calls_by_player_and_model"].get(route, 0)
+            lines.append(f"| `{route}` | {count:,} | {valid:,} |")
+        lines.append("")
+
+    dual_outcomes = [
+        (result, result["secondary_outcome"])
+        for result in results
+        if result["secondary_outcome"].get("model_a")
+        and result["secondary_outcome"].get("model_b")
+    ]
+    if dual_outcomes:
+        lines.extend(
+            [
+                "## Secondary matched outcome",
+                "",
+                "These outcomes are retained as controlled context, not as a general model leaderboard.",
+                "",
+                "| Experiment | Wins | Win rate | Match-level Wilson 95% CI | Match-level binomial p | Seed-clustered 95% CI | Seed-level sign p |",
+                "|---|---:|---:|---:|---:|---:|---:|",
+            ]
+        )
+        for result, outcome in dual_outcomes:
+            interval = outcome.get("model_a_win_rate_wilson_95_ci") or [0.0, 0.0]
+            matched_seed = outcome.get("matched_seed_performance") or {}
+            clustered_interval = matched_seed.get("cluster_bootstrap_95_ci") or [
+                0.0,
+                0.0,
+            ]
+            lines.append(
+                f'| {result["label"]} | '
+                f'{outcome["model_a"]} {outcome["model_a_wins"]} : '
+                f'{outcome["model_b"]} {outcome["model_a_losses"]} | '
+                f'{percent(float(outcome["model_a_win_rate"] or 0.0))} | '
+                f'[{percent(float(interval[0]))}, {percent(float(interval[1]))}] | '
+                f'{float(outcome["exact_binomial_pvalue_vs_0_5"] or 0.0):.4f} | '
+                f'[{percent(float(clustered_interval[0]))}, '
+                f'{percent(float(clustered_interval[1]))}] | '
+                f'{float(matched_seed.get("exact_sign_pvalue_vs_0_5") or 0.0):.4f} |'
+            )
+        lines.append("")
 
     lines.extend(
         [

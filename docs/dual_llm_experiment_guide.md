@@ -28,7 +28,7 @@ Run before transferring the source to Barkla2:
 Expected minimum result:
 
 ```text
-27 tests pass
+28 tests pass
 2/2 mock matches complete
 1 matched seed pair complete
 both players and both mock models present in every run
@@ -93,3 +93,21 @@ This produces 50 matched seeds and 100 role-swapped matches. Treat the
 head-to-head outcome as supplementary evidence. The primary analysis remains
 trace completeness, model-labelled provenance, normalization, fallback,
 latency, risk-filter intervention, and executable action validity.
+
+## Completed formal evidence
+
+The formal Barkla2 run completed on job `9845992` using an A100 80 GB node:
+
+- 100/100 matches and 50/50 role-swapped seed pairs completed;
+- Qwen won 54 and DeepSeek won 46, with no draws;
+- the seed-clustered Qwen win-rate interval was `[0.45, 0.63]`;
+- the seed-level exact sign-test p-value was `0.5034`;
+- 4,676/4,676 fresh LLM calls were valid after deterministic checks;
+- 106,317 structured trace records had complete required fields and replay linkage;
+- 571 raw responses required deterministic normalization;
+- risk verification changed targets on 15,721 steps;
+- no LLM timeout, API error, or downstream action fallback was observed.
+
+The 54:46 result is not statistically distinguishable from parity. Its proper
+use is supplementary evidence that simultaneous LLM agents remain inspectable
+and verifiable through the framework.

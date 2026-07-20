@@ -1,0 +1,143 @@
+{
+  "scope": "offline verifier intervention audit",
+  "causal_claim": false,
+  "experiments": [
+    {
+      "label": "Dual LLM (Qwen vs DeepSeek)",
+      "experiment_directory": "9845992_qwen3_32b_vs_deepseek-r1_32b",
+      "llm_calls": 4676,
+      "raw_schema_valid_calls": 4105,
+      "raw_schema_valid_rate": 0.8778870829769033,
+      "strict_schema_rejections_without_normalization": 571,
+      "normalization_interventions": 571,
+      "normalization_types": {
+        "string_intent_shorthand": 571
+      },
+      "calls_by_model": {
+        "qwen3:32b": 2318,
+        "deepseek-r1:32b": 2358
+      },
+      "raw_schema_valid_by_model": {
+        "qwen3:32b": 1747,
+        "deepseek-r1:32b": 2358
+      },
+      "normalization_by_model": {
+        "qwen3:32b": 571
+      },
+      "normalization_samples": [
+        {
+          "run": "seed_20260701_model_a_player_0",
+          "step": 300,
+          "types": [
+            "string_intent_shorthand"
+          ],
+          "raw_text": "{\"unit_intents\":{\"0\":\"MOVE_TO_RELIC_CANDIDATE\",\"1\":\"MOVE_TO_RELIC_CANDIDATE\",\"2\":\"CONTEST_RELIC_ZONE\",\"3\":\"MOVE_TO_RELIC_CANDIDATE\",\"4\":\"MOVE_TO_RELIC_CANDIDATE\",\"5\":\"MOVE_TO_RELIC_CANDIDATE\"}}",
+          "post_check_valid": true
+        },
+        {
+          "run": "seed_20260701_model_a_player_1",
+          "step": 30,
+          "types": [
+            "string_intent_shorthand"
+          ],
+          "raw_text": "{\"unit_intents\":{\"0\":\"EXPLORE_STALE_TILE\",\"1\":\"MOVE_TO_RELIC_CANDIDATE\",\"2\":\"MOVE_TO_RELIC_CANDIDATE\",\"3\":\"MOVE_TO_RELIC_CANDIDATE\",\"4\":\"MOVE_TO_RELIC_CANDIDATE\",\"5\":\"MOVE_TO_RELIC_CANDIDATE\"}}",
+          "post_check_valid": true
+        },
+        {
+          "run": "seed_20260701_model_a_player_1",
+          "step": 60,
+          "types": [
+            "string_intent_shorthand"
+          ],
+          "raw_text": "{\"unit_intents\":{\"0\":\"MOVE_TO_RELIC_CANDIDATE\",\"1\":\"EXPLORE_STALE_TILE\",\"2\":\"EXPLORE_STALE_TILE\",\"3\":\"MOVE_TO_RELIC_CANDIDATE\",\"4\":\"HOLD_POSITION\",\"5\":\"HOLD_POSITION\"}}",
+          "post_check_valid": true
+        }
+      ],
+      "llm_agent_steps": 101641,
+      "risk_filter_changed_steps": 15721,
+      "risk_filter_changed_step_rate": 0.15467183518462038,
+      "risk_filter_changed_targets": 85805,
+      "risk_filter_changed_steps_by_model": {
+        "qwen3:32b": 7593,
+        "deepseek-r1:32b": 8128
+      },
+      "risk_filter_changed_targets_by_model": {
+        "qwen3:32b": 43475,
+        "deepseek-r1:32b": 42330
+      },
+      "mean_changed_targets_per_intervention_step": 5.457986133197633,
+      "max_changed_targets_in_one_step": 16,
+      "risk_interventions_by_decision_source": {
+        "cached_llm": 14541,
+        "llm_fresh": 1018,
+        "rule_fallback": 162
+      },
+      "risk_interventions_by_phase": {
+        "early_exploration": 10528,
+        "mid_exploit": 3426,
+        "final_push": 1767
+      },
+      "risk_interventions_by_reason": {
+        "original target inside visible-enemy risk radius": 15721,
+        "safer target selected": 15721
+      },
+      "risk_interventions_by_cache_state": {
+        "cached": 14541,
+        "fresh_or_rule": 1180
+      },
+      "risk_interventions_by_visible_enemy_count": {
+        "1": 6210,
+        "2": 3649,
+        "3": 2394,
+        "4": 1396,
+        "5": 854,
+        "6": 558,
+        "8": 202,
+        "7": 295,
+        "9": 95,
+        "10": 41,
+        "11": 19,
+        "12": 5,
+        "13": 3
+      },
+      "risk_filter_samples": [
+        {
+          "run": "seed_20260701_model_a_player_0",
+          "step": 26,
+          "match_idx": 0,
+          "step_in_match": 26,
+          "decision_source": "cached_llm",
+          "phase": "early_exploration",
+          "cache_used": true,
+          "changed_targets": 4,
+          "visible_enemy_units": 1,
+          "reason": "original target inside visible-enemy risk radius; safer target selected; original target inside visible-enemy risk radius; safer target selected; original target inside visible-enemy risk radius; safer target selected"
+        },
+        {
+          "run": "seed_20260701_model_a_player_0",
+          "step": 27,
+          "match_idx": 0,
+          "step_in_match": 27,
+          "decision_source": "cached_llm",
+          "phase": "early_exploration",
+          "cache_used": true,
+          "changed_targets": 3,
+          "visible_enemy_units": 2,
+          "reason": "original target inside visible-enemy risk radius; safer target selected; original target inside visible-enemy risk radius; safer target selected; original target inside visible-enemy risk radius; safer target selected"
+        },
+        {
+          "run": "seed_20260701_model_a_player_0",
+          "step": 28,
+          "match_idx": 0,
+          "step_in_match": 28,
+          "decision_source": "cached_llm",
+          "phase": "early_exploration",
+          "cache_used": true,
+          "changed_targets": 1,
+          "visible_enemy_units": 1,
+          "reason": "original target inside visible-enemy risk radius; safer target selected"
+        }
+      ]
+    }
+  ]
+}
