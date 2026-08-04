@@ -2,11 +2,15 @@
 
 **Author:** Ze Wang
 
+**Student ID:** 201868809
+
 **Institution:** University of Liverpool
 
 **Email:** Z.Wang300@liverpool.ac.uk
 
-**Project:** COMP702 Final-Year Project
+**Supervisor:** Meng Fang
+
+**Project:** COMP702 MSc Project
 
 **Date:** July 2026
 
@@ -16,7 +20,7 @@
 
 Large language models can provide high-level planning in sequential environments, but their outputs are not automatically valid, timely, or attributable to executable actions. This dissertation presents LuxLLM-Agent, a decision-trace and action-verification framework for inspecting and evaluating LLM-based agents in Lux AI Season 3. The framework converts raw observations into structured summaries, constrains model responses to bounded strategic intents, applies deterministic normalization and rule-based checks, constructs legal action arrays, records decision provenance, and links execution evidence to replay state.
 
-The primary evaluation uses 50 matched Lux environment seeds with role swapping for each of two local 32B backends, Qwen3 and DeepSeek-R1, producing 200 completed matches. Across 206,591 structured trace records, agent-step and LLM-call field completeness, replay linkage, and action-array shape validity were all 100%. All 4,591 LLM calls were valid after deterministic checks; 520 Qwen responses required normalization. Risk filtering changed proposed targets on 5,590 Qwen steps and 7,090 DeepSeek steps. No LLM timeout, API error, or downstream action fallback was observed in the formal runs. Qwen won 63/100 matches and DeepSeek won 60/100, but their matched outcome difference was not statistically supported.
+The primary evaluation uses 50 matched Lux environment seeds with role swapping for each of two local 32B backends, Qwen3 and DeepSeek-R1, producing 200 completed matches. Across 206,591 structured trace records, agent-step and LLM-call field completeness, replay linkage, and action-array shape validity were all 100%. All 4,591 LLM calls were valid after deterministic checks; 520 Qwen responses required normalization. Risk filtering changed proposed targets on 5,590 Qwen steps and 7,090 DeepSeek steps. No LLM timeout, API error, or downstream action fallback was observed in the formal runs. Qwen won 63/100 matches and DeepSeek won 60/100, but their matched outcome difference was not statistically supported. A supplementary direct Qwen-versus-DeepSeek experiment completed a further 100 role-swapped matches while both players used the framework; its complete traces and observable verifier interventions demonstrate simultaneous two-sided inspection without turning the study into a model-ranking exercise.
 
 The results show that structured traces make decision source and verifier intervention auditable, while rule-based verification provides a controlled boundary between model proposals and environment actions. The project does not claim a universal model ranking or leaderboard-level policy. Its contribution is a reproducible framework and evidence pipeline for examining how LLM-supported decisions are produced, checked, executed, and inspected.
 
@@ -88,35 +92,19 @@ The aim of the project is:
 
 > To develop a decision-trace and action-verification framework that supports the inspection and evaluation of LLM-based agents in Lux AI Season 3.
 
-This aim is divided into the following objectives.
+To keep the investigation focused, this aim is divided into three objectives.
 
-### Objective 1: Implement a working Lux AI Season 3 agent
+### Objective 1: Structure game state for bounded LLM planning
 
-The project must implement an agent that can receive observations, produce actions, complete matches, and record outcomes.
+Implement a working Lux AI Season 3 agent that transforms raw observations into compact state summaries and uses them to request high-level strategic proposals from an LLM.
 
-### Objective 2: Build a structured state summarisation pipeline
+### Objective 2: Verify and control LLM-generated proposals
 
-The system should convert raw Lux AI observations into compact structured summaries suitable for LLM-based strategic planning.
+Parse model output and apply deterministic normalization, rule-based verification, fallback, strategy caching, and risk-aware filtering before constructing executable actions.
 
-### Objective 3: Integrate LLM-based strategic planning
+### Objective 3: Trace, evaluate, and visually inspect agent behaviour
 
-The system should use an LLM to produce high-level strategic proposals, such as objectives, risk posture, target locations, and unit-level intents.
-
-### Objective 4: Verify and control LLM-generated decisions
-
-The system should parse LLM output and use rule-based verification, fallback, strategy caching, and risk-aware filtering before converting plans into executable actions.
-
-### Objective 5: Record decision traces and evaluation metrics
-
-The system should record decision-source information, LLM usage, fallback status, cache usage, errors, latency, score context, and match outcomes.
-
-### Objective 6: Evaluate multiple LLM backends
-
-The project should compare at least two LLM backends under the same framework to test whether the system can support different reasoning-oriented models.
-
-### Objective 7: Provide replay-grounded visual inspection
-
-The project should provide a viewer that connects replay frames with decision-trace information, allowing behaviour to be inspected visually.
+Record decision provenance and evaluation metrics, compare multiple LLM backends under controlled conditions, and connect decision traces to replay frames for visual inspection.
 
 ---
 
@@ -166,7 +154,7 @@ The system records whether decisions come from fresh LLM calls, cached LLM plans
 
 ### 1.6.4 Controlled evaluation with multiple LLM backends
 
-The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework using 50 matched environment seeds with role swapping. Each backend completed 100 matches, giving 200 formal matches in total. All 4,591 recorded LLM calls were valid after deterministic checks, and no LLM timeout, API error, or downstream action fallback was observed.
+The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework using 50 matched environment seeds with role swapping. Each backend completed 100 matches against the same rule-based opponent, giving 200 formal matches in the primary evaluation. All 4,591 recorded LLM calls were valid after deterministic checks. A supplementary 100-match experiment then placed the two LLM-assisted agents directly against each other with model roles swapped for every seed. This second experiment tests whether the framework can retain separate, valid traces and verifier evidence for two concurrent LLM-controlled players; it is not used to claim a universal model ranking.
 
 ### 1.6.5 Replay-grounded decision trace overlay
 
@@ -215,6 +203,8 @@ Across both backends, the evaluation contains 206,591 structured trace records. 
 
 The Qwen-versus-DeepSeek matched comparison found a mean outcome-score difference of 0.03 with a paired-bootstrap 95% interval of [-0.07, 0.13] and a McNemar exact p-value of 0.690. Therefore, the results support controlled framework evaluation but do not establish a general ranking between the two models.
 
+The supplementary direct experiment completed another 100 role-swapped matches. Qwen won 54 and DeepSeek won 46, with a seed-level exact sign p-value of 0.503. More importantly for the research question, all 4,676 fresh LLM calls were valid after deterministic checks, all 106,317 trace records were complete, and normalization and risk-filter interventions were recorded separately for both players. These results extend the operational evidence from one LLM-controlled side to two without changing the project focus from framework evaluation to model comparison.
+
 ---
 
 ## 1.9 Dissertation Structure
@@ -257,184 +247,216 @@ The next chapter introduces the background and related work needed to situate th
 
 ---
 
-﻿# Chapter 2: Background and Related Work
+# Chapter 2: Background and Related Work
 
-## 2.1 Introduction
+## 2.1 Introduction and Review Scope
 
-This chapter introduces the background and related work relevant to LuxLLM-Agent.
+This chapter establishes the academic context for LuxLLM-Agent and develops the argument for its three design priorities: bounded state representation, deterministic action verification, and replay-grounded decision tracing. The main research question is:
 
-The project investigates how structured decision tracing and rule-based action verification can support the inspection and evaluation of LLM-based agents in Lux AI Season 3. To place the project in context, this chapter discusses several related areas:
+> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
 
-* large language models as agents;
-* LLMs for planning and decision making;
+The review is organised around the concepts needed to answer this question rather than around a chronological list of papers. It covers:
+
+* LLMs as interactive agents;
+* state representation under partial observability;
+* language-model planning and its limitations;
 * game AI and sequential decision making;
-* hybrid LLM-rule systems;
-* action verification and safety boundaries;
-* explainability and decision traceability;
-* evaluation of LLM-based agents;
+* hybrid LLM-rule architectures;
+* grounding, action verification, and shielding;
+* decision provenance and the limits of generated explanations;
+* trajectory-level evaluation of LLM agents; and
 * Lux AI Season 3 as an experimental environment.
 
-The purpose of this chapter is not to provide a complete survey of all LLM-agent research. Instead, it identifies the concepts needed to understand the design choices of LuxLLM-Agent and explains how this project is positioned relative to prior work.
+The chapter is a focused narrative review, not a systematic literature review. Priority is given to peer-reviewed work from established AI, machine-learning, and human-computer-interaction venues, together with official Lux AI sources and model technical reports where necessary. The discussion does not assume that a method developed for robotics, reinforcement learning, or language interaction transfers directly to Lux AI. Instead, each comparison identifies both the relevant principle and the limits of the analogy.
 
 ---
 
-## 2.2 Large Language Models as Agents
+## 2.2 LLMs as Components of Interactive Agents
 
-Large language models are increasingly used as components of agent systems. In these systems, the model is not only used to answer a single question, but also to support planning, reasoning, tool use, environment interaction, and decision making.
-
-A typical LLM-based agent follows an interaction loop:
+An LLM-based agent differs from a single-turn text generator because it must repeatedly interpret observations, select objectives, act through an interface, and respond to the resulting state. A simplified interaction loop is:
 
 ```text
-Observation
-    |
-    v
-State interpretation
-    |
-    v
-Reasoning or planning
-    |
-    v
-Action selection
-    |
-    v
-Environment update
+observation -> state representation -> proposal -> verification
+            -> executable action -> environment transition -> new observation
 ```
 
-This loop is different from ordinary text generation because the model must respond to a changing environment over time. In a sequential decision-making task, each decision may affect future states.
+This distinction matters because fluent text is not sufficient evidence of competent agent behaviour. The model must maintain useful context across turns, produce output that can be grounded in the environment, and tolerate the consequences of earlier decisions.
 
-Recent work has explored several forms of LLM-based agents. ReAct shows that language models can interleave reasoning traces with task-specific actions in interactive decision-making settings (Yao et al., 2023a). Reflexion studies language agents that use verbal feedback and memory to improve future decisions (Shinn et al., 2023). Toolformer explores how language models can be extended through external tool use (Schick et al., 2023). Generative Agents demonstrates how LLMs can be integrated into architectures involving memory, reflection, and planning in interactive environments (Park et al., 2023). CAMEL studies communicative LLM-based agents in multi-agent settings (Li et al., 2023).
+Several influential systems demonstrate different ways to embed an LLM within a broader agent architecture. ReAct interleaves model-generated reasoning and task actions, allowing observations from the environment to influence later steps (Yao et al., 2023a). Reflexion adds verbal feedback and memory so that an agent can adapt after failure (Shinn et al., 2023). Generative Agents combines memory, reflection, and planning to produce persistent behaviour in an interactive simulation (Park et al., 2023). Toolformer investigates how a language model can learn to invoke external tools rather than relying only on its internal parameters (Schick et al., 2023). CAMEL studies role-conditioned communication between LLM agents (Li et al., 2023).
 
-These works show that LLMs can be useful beyond single-turn text generation. They can support interaction, reasoning, planning, memory, and external system use. However, they also show that LLM-based agents usually require surrounding system structures. The model output often needs to be interpreted, constrained, checked, or connected to external tools and environments.
+These systems support the general claim that LLMs can contribute reasoning, planning, memory, or tool selection within an agent. They do not establish that unconstrained model output is a reliable controller. In each case, the model operates through an architecture that supplies prompts, memory, actions, tools, feedback, or environment interfaces.
 
-LuxLLM-Agent follows this broader direction. However, it does not treat the LLM as a direct game controller. Instead, the LLM is used to produce strategic proposals, while deterministic components handle parsing, verification, fallback, action planning, logging, and evaluation.
-
----
-
-## 2.3 LLMs for Planning and Decision Making
-
-Planning is an important part of intelligent agent behaviour. A planning system must decide what objective to pursue, which actions to take, and how to adapt when the environment changes.
-
-LLMs can support planning because they can generate high-level strategies from structured context. For example, an LLM may suggest that an agent should explore unknown areas, secure a scoring location, avoid risk, or prioritise a particular target.
-
-However, LLM-based planning has several challenges.
-
-First, the LLM may not fully understand the environment rules. It may suggest actions that sound reasonable in natural language but are not legal in the game.
-
-Second, the LLM may produce plans that are too abstract. A plan such as "explore the map" still needs to be converted into unit-level actions.
-
-Third, LLM decisions may be unstable across steps. If the model is called repeatedly, it may change strategy too frequently.
-
-Fourth, LLM calls may be slow, especially when using large local or HPC-hosted models.
-
-Prior work supports the idea that LLM planning needs grounding and control. SayCan argues that language-model knowledge should be grounded in feasible actions or affordances before execution (Ahn et al., 2022). Voyager shows that an LLM-powered embodied agent can combine environment feedback, executable skills, and self-verification (Wang et al., 2023). Tree of Thoughts suggests that LLM reasoning can be improved by considering and evaluating multiple reasoning paths rather than relying only on a single left-to-right generation (Yao et al., 2023b).
-
-LuxLLM-Agent applies a related principle in Lux AI Season 3. The LLM does not directly output final game actions. Instead, it proposes a structured strategic plan. This plan is parsed, checked, cached when appropriate, and converted into executable actions by rule-based and planning components.
-
-The core design principle is:
-
-> The LLM output is treated as a strategic proposal, not as a directly executable game action.
-
-This principle makes the system more stable and easier to inspect.
+LuxLLM-Agent adopts this architectural view but gives the LLM a deliberately bounded role. The model proposes high-level strategic intents; deterministic components parse, normalize, verify, cache, replace, and translate those intents before any action reaches the game environment. This separation is central to the project because it enables the proposal and the executed behaviour to be inspected independently.
 
 ---
 
-## 2.4 Game AI and Sequential Decision Making
+## 2.3 State Representation under Partial Observability
 
-Game AI has long been used as a testbed for artificial intelligence. Games provide clear rules, measurable outcomes, controlled environments, and replayable behaviour.
+### 2.3.1 Why raw observations are insufficient
 
-Classic and modern game AI research has used games to study sequential decision making, planning, search, and learning. DQN demonstrated that deep reinforcement learning could learn policies directly from high-dimensional Atari game inputs (Mnih et al., 2015). Monte Carlo Tree Search has been widely studied as a search-based planning approach for games and other sequential decision problems (Browne et al., 2012). More complex strategy-game systems such as AlphaStar and OpenAI Five show that games can involve long horizons, partial observability, complex action spaces, and multi-agent interaction (Vinyals et al., 2019; Berner et al., 2019).
+Lux AI Season 3 is a sequential and partially observable environment. At each step, the agent sees only an observation of the underlying game state, while useful decisions may depend on earlier observations, inferred map structure, discovered relic locations, unit state, opponent visibility, score progression, and match phase.
 
-Lux AI Season 3 is smaller than environments such as StarCraft II or Dota 2, but it still includes several relevant properties:
+Partially observable Markov decision processes formalise the general problem of acting when the complete environment state is unavailable (Kaelbling et al., 1998). An agent may therefore require a belief or memory derived from observation history rather than treating the latest observation as a complete state. LuxLLM-Agent does not implement a formal Bayesian belief-state solver, but the POMDP perspective explains why a current raw observation is not an adequate strategic prompt.
 
-* repeated decision making;
-* multi-agent interaction;
-* hidden or uncertain information;
-* unit-level control;
-* scoring opportunities;
-* resource and target selection;
-* replayable match evidence.
+Passing the complete raw game state to an LLM would also create practical problems:
 
-This makes Lux AI Season 3 suitable for studying LLM-assisted agent decision making. The environment is complex enough to require strategic reasoning, but structured enough to support logging, evaluation, and replay analysis.
+* the representation would be large and repetitive;
+* implementation details could obscure strategically relevant facts;
+* coordinates and unit identifiers could be difficult to use consistently;
+* prompt length and inference latency would increase; and
+* changes between adjacent steps would be difficult to distinguish.
 
-In this project, Lux AI Season 3 is used not only as a game environment, but also as an experimental setting for studying how LLM-based decisions can be verified, traced, and inspected.
+### 2.3.2 Structured summaries as an interface
 
----
+Embodied-agent research provides evidence that language-model plans become more useful when connected to a restricted environment interface. Huang et al. (2022) show that high-level language plans often fail to map directly to admissible actions and improve executability by translating them into an available action set. SayCan similarly combines language-model preferences with affordance values that represent which robot skills are feasible in the current situation (Ahn et al., 2022).
 
-## 2.5 Hybrid LLM-rule Agent Architectures
+LuxLLM-Agent applies the interface principle at the input as well as the output. Its state summarizer converts environment observations and retained game knowledge into a compact schema containing strategically relevant fields. The aim is not to produce a lossless copy of the environment. It is to create a bounded interface between a numerical game state and a language model.
 
-A purely LLM-controlled agent may be difficult to make reliable in a rule-based game environment. The model may generate an invalid target, refer to a non-existent unit, produce a plan that cannot be executed, or change its strategy too frequently.
-
-Hybrid LLM-rule architectures address this problem by combining LLM reasoning with deterministic rule-based components.
-
-In a hybrid architecture, the LLM may handle:
-
-* high-level planning;
-* objective selection;
-* risk posture;
-* unit-level intent generation;
-* explanation of strategy.
-
-Rule-based components may handle:
-
-* action legality;
-* movement constraints;
-* fallback behaviour;
-* local tactical decisions;
-* safety filtering;
-* environment-specific execution.
-
-This type of design is related to prior work where LLMs are embedded inside larger systems rather than used alone. Toolformer studies LLMs that use external APIs and tools (Schick et al., 2023). SayCan combines high-level language-model reasoning with executable skill constraints (Ahn et al., 2022). Voyager connects LLM planning with executable code skills, feedback, and self-verification in Minecraft (Wang et al., 2023). ReAct connects reasoning and acting in interactive tasks (Yao et al., 2023a).
-
-LuxLLM-Agent is also a hybrid system, but its focus is different. It does not train a new language model, create a general-purpose tool-using model, or implement a lifelong-learning agent. Instead, it builds a practical framework for using LLM strategic proposals inside Lux AI Season 3 with verification, fallback, caching, and decision trace logging.
-
-This architecture has two advantages.
-
-First, it improves stability. The agent can still act if the LLM is disabled, invalid, slow, or unavailable.
-
-Second, it improves inspectability. Since the system records whether actions come from fresh LLM decisions, cached LLM plans, fallback, or rules, the behaviour can be analysed more carefully.
+This design supports RQ1, but it introduces an important trade-off. Compression improves prompt stability and inspectability, while omitted information may remove evidence required for a better strategy. The summarizer must therefore be evaluated as part of the agent rather than treated as a neutral preprocessing step. LuxLLM-Agent records prompt-related and state-related information so that later inspection can distinguish a poor proposal from a potentially incomplete representation.
 
 ---
 
-## 2.6 Action Verification and Safety Boundaries
+## 2.4 Language Models for Planning: Potential and Limitations
 
-Action verification is the process of checking whether a proposed action is legal, safe, and appropriate before execution.
+### 2.4.1 Evidence supporting high-level planning
 
-In LLM-based agents, action verification is important because the model output cannot be assumed to be correct. An LLM may produce an action that violates environment constraints, refers to unavailable information, or gives a plan that cannot be converted into legal game actions.
+Language models can express high-level objectives in a form that is useful to an agent. ReAct demonstrates that language reasoning can be combined with observations and actions in interactive tasks (Yao et al., 2023a). Huang et al. (2022) show that LMs can decompose natural-language goals into intermediate steps when the plans are subsequently mapped to admissible actions. Tree of Thoughts explores deliberate reasoning through the generation and evaluation of multiple candidate reasoning paths (Yao et al., 2023b). Voyager combines an LLM with environment feedback, an executable skill library, and iterative verification in Minecraft (Wang et al., 2023).
 
-This problem is closely related to the idea of grounding. SayCan argues that language-model outputs need to be grounded in feasible skills or affordances before a robot executes them (Ahn et al., 2022). Voyager also highlights the importance of executable skills, feedback, and self-verification for embodied LLM agents (Wang et al., 2023). Toolformer is relevant because it shows that LLMs can be embedded into systems that decide when and how to use external tools, rather than operating only as standalone text generators (Schick et al., 2023).
+Together, these studies suggest a useful role for an LLM as a source of semantic decomposition, heuristic guidance, or high-level strategy. This is the role used by LuxLLM-Agent: the model selects bounded intents such as exploring stale information, moving towards a candidate target, or exploiting a confirmed scoring location.
 
-In LuxLLM-Agent, the safety boundary is implemented through:
+### 2.4.2 Evidence against direct autonomous planning
 
-* structured output parsing;
-* rule-based action verification;
-* fallback behaviour;
-* strategy caching;
-* risk-aware action filtering;
-* action planning.
+Positive demonstrations must be balanced against evidence that fluent plans are not necessarily executable plans. Valmeekam et al. (2023) evaluate LLMs on planning domains and report limited autonomous plan correctness, while finding more promise when LLM output is used as heuristic guidance or checked by external verifiers. Huang et al. (2022) likewise report that naively generated plans often fail to match admissible environment actions.
 
-The core principle is:
+These findings challenge a design in which the model directly controls the environment. They also motivate three decisions in LuxLLM-Agent:
 
-> The LLM output is treated as a strategic proposal, not as a directly executable game action.
+1. the LLM produces a small structured proposal rather than a full low-level plan;
+2. deterministic logic checks and repairs the proposal before use; and
+3. a rule policy remains available when a proposal is invalid, stale, unavailable, or unsuitable.
 
-This principle reduces the risk of invalid LLM output affecting the environment. It also makes the system easier to evaluate because the pipeline records when a plan is accepted, cached, replaced, or supported by fallback.
+Strategy caching addresses a further sequential problem. Calling the model at every environment step may increase latency and cause rapid changes in objective. Reusing a previously verified strategy for a bounded interval can improve continuity, but a cached plan can itself become stale. The decision trace must therefore record whether a plan is fresh, cached, or replaced.
 
-Action verification is therefore not only a reliability mechanism. It is also part of the project’s evaluation framework.
+The literature does not justify the claim that LLM planning is generally reliable. It supports a narrower conclusion: LLMs can provide useful high-level guidance when their output is grounded, verified, and evaluated within a larger execution system.
 
 ---
 
-## 2.7 Explainability, Traceability, and Decision Provenance
+## 2.5 Game AI and Sequential Decision Making
 
-Explainability is important for systems where users need to understand how decisions are made. In agent systems, this is especially important because behaviour emerges over time through repeated interactions with the environment.
+Games are established testbeds for sequential decision making because they provide explicit rules, measurable outcomes, controllable experiments, and replayable trajectories. Different traditions illustrate the range of methods used in game AI.
 
-For LLM-based agents, explainability can be difficult. A final action may be influenced by a model response, cached strategy, fallback rule, local verifier, or action planner. Without logs, it is difficult to know which component produced the final behaviour.
+Monte Carlo Tree Search represents explicit search over possible future decisions and has been applied across many game and planning settings (Browne et al., 2012). DQN demonstrated that deep reinforcement learning could learn policies from high-dimensional Atari observations (Mnih et al., 2015). AlphaStar and OpenAI Five extended learning-based game agents to complex strategy games with long horizons, partial observability, large action spaces, and multi-agent interaction (Vinyals et al., 2019; Berner et al., 2019).
 
-Prior work has shown the value of recording or exposing intermediate agent information. ReAct uses reasoning traces alongside actions, which can make agent trajectories easier to interpret (Yao et al., 2023a). Generative Agents uses memory, reflection, and planning as part of an agent architecture (Park et al., 2023). Reflexion uses verbal reflections and feedback records to improve later decisions (Shinn et al., 2023).
+LuxLLM-Agent is not a replacement for search or reinforcement learning and does not claim their performance or formal properties. These systems are relevant because they show that game outcomes emerge from repeated decisions under controlled rules, and that evaluation must account for the environment, opponent, position, and experimental protocol.
 
-LuxLLM-Agent focuses on decision traceability and decision provenance.
+Lux AI Season 3 offers a smaller but still meaningful setting:
 
-Decision traceability means that the system records information about decisions over time. Decision provenance means that the system identifies the source of a decision.
+* decisions repeat across steps and matches;
+* information is incomplete and changes over time;
+* multiple units require coordinated action;
+* the opponent influences the value of a plan;
+* player role and environment seed can affect results; and
+* complete matches can be replayed and compared.
 
-In LuxLLM-Agent, important decision sources include:
+These properties make the environment suitable for studying a hybrid LLM-based agent. They also require controlled evaluation. A raw win percentage without matched seeds, role swapping, provenance, or failure information would conflate model behaviour with environment and system effects.
+
+---
+
+## 2.6 Hybrid LLM-Rule Architectures
+
+Prior agent systems repeatedly show that an LLM is most useful when surrounded by environment-specific mechanisms. Toolformer connects model generation to external APIs (Schick et al., 2023). ReAct connects language reasoning to a restricted action interface and observations (Yao et al., 2023a). SayCan separates semantic task relevance from skill feasibility (Ahn et al., 2022). Voyager couples planning with executable programs, feedback, and verification (Wang et al., 2023).
+
+The shared architectural pattern is not that rules and models perform identical work. It is that they provide different capabilities:
+
+| LLM contribution | Deterministic contribution |
+| --- | --- |
+| semantic interpretation | schema enforcement |
+| high-level objective selection | action legality and array construction |
+| flexible strategic proposal | coordinate, unit, and target validation |
+| context-dependent intent generation | risk filtering and local movement |
+| natural-language rationale field | fallback and bounded execution |
+
+This division has two advantages. First, it preserves a valid execution path when the LLM is unavailable or produces unusable output. Second, it creates observable boundaries: the system can record which component proposed, repaired, rejected, cached, or executed a decision.
+
+The division also limits attribution. A winning action may result from an LLM proposal, deterministic normalization, a cached strategy, a risk-filter change, or rule fallback. Therefore, LuxLLM-Agent does not equate the final agent with the LLM backend. The unit of study is the hybrid decision pipeline.
+
+---
+
+## 2.7 Action Grounding, Verification, and Safety Boundaries
+
+### 2.7.1 Grounding proposals in executable actions
+
+SayCan is especially relevant to action grounding. It ranks high-level language instructions using both semantic usefulness and learned affordance values, so an instruction must be useful and executable before selection (Ahn et al., 2022). Huang et al. (2022) similarly translate language-generated steps to actions admitted by the environment. These methods support the principle that semantic plausibility alone is insufficient for control.
+
+LuxLLM-Agent applies a related principle in a game-specific pipeline:
+
+```text
+LLM proposal
+    -> JSON parsing
+    -> schema and identifier normalization
+    -> intent validation
+    -> target and risk checks
+    -> deterministic action planning
+    -> Lux action array
+```
+
+The LLM is therefore a proposal generator, not an action authority.
+
+### 2.7.2 Relationship to shielding
+
+Safe reinforcement learning via shielding provides a stronger formal example of placing a corrective layer between a learned policy and an environment. Alshiekh et al. (2018) define a shield that monitors selected actions and corrects actions that would violate a temporal-logic safety specification. The concept is useful for LuxLLM-Agent because both architectures separate a learned decision source from a deterministic intervention layer.
+
+The analogy must not be overstated. LuxLLM-Agent's verifier is not a formally synthesised shield, and the project does not prove temporal-logic safety or global optimality. Its checks cover implemented schemas, identifiers, action construction, observable risks, and fallback conditions. The empirical question is whether these checks operate as documented and leave auditable evidence, not whether they guarantee every desirable property for every possible state.
+
+This distinction improves the precision of RQ2. The project evaluates:
+
+* whether model output satisfies the bounded schema;
+* whether deterministic normalization repairs specific deviations;
+* whether risk verification changes proposed targets;
+* whether fallback remains available;
+* whether legal action arrays are constructed in the observed runs; and
+* whether each intervention is recorded with its reason and provenance.
+
+The relevant contribution is observable runtime control. It is narrower than formal safety, but stronger than merely stating that a verifier exists.
+
+---
+
+## 2.8 Decision Tracing, Provenance, and Explanation Limits
+
+### 2.8.1 From generated text to operational provenance
+
+ReAct exposes model-generated reasoning alongside actions, while Reflexion and Generative Agents retain textual records that influence later behaviour (Yao et al., 2023a; Shinn et al., 2023; Park et al., 2023). These works show the practical value of retaining intermediate agent information.
+
+However, an agent log can support different kinds of claim:
+
+1. **Generation record:** what text or structured proposal the model returned.
+2. **Decision provenance:** which component supplied the plan used at a step.
+3. **Transformation record:** how deterministic components altered the proposal.
+4. **Execution record:** which action array was sent to the environment.
+5. **Causal explanation:** why the model internally produced a particular proposal.
+
+LuxLLM-Agent supplies the first four forms of evidence. It does not claim the fifth.
+
+### 2.8.2 Why a rationale is not automatically a faithful explanation
+
+Turpin et al. (2023) show that chain-of-thought explanations can omit factors that influenced a model's answer and can rationalise biased outputs. This is important because a plausible natural-language reason should not automatically be interpreted as a faithful account of the model's internal computation.
+
+LuxLLM-Agent therefore treats any model-provided `reason` field as part of the proposal record, not as privileged access to internal reasoning. Its stronger evidence comes from externally observable events:
+
+* the exact structured proposal;
+* whether parsing and schema checks succeeded;
+* whether normalization occurred;
+* whether a cached or fallback source was used;
+* whether risk filtering changed a target;
+* the resulting unit intents and action array; and
+* the replay state associated with the step.
+
+This operational definition makes “traceability” more defensible. The trace can show what the system received and did, even when it cannot prove why the model generated the content.
+
+### 2.8.3 Replay-grounded inspection
+
+A normal game replay shows state transitions but not the decision pipeline that produced them. A text log shows pipeline events but can be difficult to interpret without spatial and temporal context. LuxLLM-Agent links these two evidence sources through a decision-trace overlay.
+
+The overlay distinguishes sources such as:
 
 ```text
 llm_fresh
@@ -445,130 +467,106 @@ rule_player
 rule_only
 ```
 
-These decision sources allow the project to analyse whether behaviour came from a fresh LLM call, a cached LLM plan, fallback, or rule-based logic.
-
-The LLM Decision Trace Overlay extends this idea by showing decision trace information during replay playback. This makes the system more inspectable than a standard replay viewer.
+It also displays the proposal, verifier status, match phase, score context, unit intents, and executed state. This supports RQ3 by allowing an assessor to move from a quantitative summary to a specific replay step and inspect the recorded transformation chain.
 
 ---
 
-## 2.8 Evaluation of LLM-based Agents
+## 2.9 Evaluation of LLM-Based Agents
 
-Evaluating LLM-based agents is more complex than evaluating ordinary text generation systems.
+### 2.9.1 Why final success is insufficient
 
-A text generation system may be evaluated using output quality, correctness, or human preference. An agent system must also be evaluated by how it behaves in an environment over time.
+AgentBench evaluates LLMs across eight interactive environments and identifies long-term reasoning, decision making, and instruction following as important failure sources (Liu et al., 2024). It demonstrates the need to evaluate models through environment interaction rather than only static language tasks.
 
-For game agents, common evaluation metrics include:
+AgentBoard goes further by arguing that final success rate reveals little about behaviour during multi-turn interaction. It introduces fine-grained progress measures and interactive analysis for partially observable agent trajectories (Ma et al., 2024). This is closely aligned with the evaluation motivation of LuxLLM-Agent: a final win or loss cannot show whether the LLM output was valid, whether rules intervened, or which source controlled a particular step.
 
-* win rate;
-* reward;
-* number of completed matches;
-* score difference;
-* failure rate.
+### 2.9.2 Outcome, process, and reliability evidence
 
-However, these metrics are not sufficient for LLM-based agents. A final win or loss does not explain how the decision was made.
+For a hybrid LLM game agent, evaluation should separate at least three layers:
 
-This is especially important for hybrid systems. In LuxLLM-Agent, an executed action may come from a fresh LLM plan, a cached LLM plan, fallback logic, or rule-based behaviour. Therefore, evaluation should include both outcome metrics and process metrics.
+| Evidence layer | Example questions |
+| --- | --- |
+| Outcome | Did the agent complete the match, win, or score? |
+| Process | Was the strategy fresh, cached, normalized, filtered, or replaced? |
+| Reliability | Were calls valid, actions well formed, traces complete, and failures observable? |
 
-LuxLLM-Agent uses a broader evaluation approach, including:
+These layers answer different questions. A high win rate cannot prove trace completeness. A 100% post-check validity rate cannot prove that raw model output was always conforming. A large intervention count proves that the verifier changed proposals, but not that every change improved the outcome.
 
-* gameplay outcome metrics;
-* LLM execution metrics;
-* decision-source metrics;
-* fallback and verification metrics;
-* latency metrics;
-* replay-grounded inspection metrics;
-* qualitative failure-case analysis.
+### 2.9.3 Controlled comparison
 
-This evaluation approach supports the dissertation research question because it focuses on inspection and evaluation rather than only performance.
+Game evaluation must also control nuisance variables. LuxLLM-Agent uses matched environment seeds and role swapping so that each seed is evaluated with both player assignments. It reports uncertainty intervals and paired analyses rather than treating matches as context-free samples. Backend outcomes are secondary to the framework evidence because the hybrid pipeline, prompt, rule policy, environment, and inference settings all contribute to performance.
 
-The project’s primary controlled evidence uses 50 matched environment seeds with role swapping for qwen3:32b and DeepSeek-R1-32B (Yang et al., 2025; DeepSeek-AI et al., 2025). Each backend completed 100 matches. The design makes role effects and seed effects visible and supports paired comparison without treating the outcome as a hardware-independent model ranking.
-
-This shows why evaluation should distinguish between execution stability, strategic quality, and final outcome.
-
----
-
-## 2.9 Replay-based Analysis and Visual Inspection
-
-Replay-based analysis is useful in game AI because it allows behaviour to be inspected after a match. A replay can show how units moved, how the score changed, and how the game state evolved.
-
-However, a normal replay does not show why an agent made a decision.
-
-For LLM-based agents, this is a limitation. A user may see a unit move toward a target, but the replay alone does not reveal whether the action came from an LLM plan, a cached strategy, fallback logic, or rule-based movement.
-
-LuxLLM-Agent addresses this by adding an LLM Decision Trace Overlay to the Season 3 viewer.
-
-The overlay displays:
-
-* frame and step;
-* phase;
-* decision source;
-* LLM model;
-* objective;
-* risk posture;
-* fallback status;
-* risk filter status;
-* score context;
-* unit intents.
-
-This turns replay analysis into replay-grounded decision inspection.
-
-The overlay is important for the project because it connects implementation, evaluation, and demonstration. It provides visual evidence that the system can trace and inspect LLM-agent behaviour.
+The direct LLM-versus-LLM experiment is similarly bounded. It tests whether provenance and verification remain attributable when both players use LLM proposals. It is not designed to establish a hardware-independent or generally applicable model ranking.
 
 ---
 
 ## 2.10 Lux AI Season 3 as an Evaluation Environment
 
-Lux AI Season 3 was selected because it provides a structured but challenging environment for agent evaluation.
+Lux AI Season 3 was a NeurIPS 2024 multi-agent competition concerned with adaptation to changing game dynamics (Tao et al., 2024). The official Lux-Design-S3 repository provides the environment, kits, and specification used by this project (Lux AI Challenge, 2024). The specification defines a two-team game on a two-dimensional map, organised as a best-of-five sequence with 100 time steps per match.
 
-The official competition description presents Lux AI Season 3 as a NeurIPS 2024 multi-agent 1v1 competition designed around adaptation to changing game dynamics (Tao et al., 2024). The official Season 3 specification describes a two-team game on a 2D map, arranged as a best-of-5 match sequence, with each match lasting 100 time steps. The official Lux-Design-S3 repository provides the environment, kits, and specifications used by this project (Lux AI Challenge, 2024).
+The environment provides:
 
-These properties make Lux AI Season 3 suitable for this project because it includes:
-
-* sequential decision making;
-* hidden or uncertain information;
-* repeated action selection;
+* sequential decisions under partial observability;
+* repeated exploration and exploitation;
 * multiple controllable units;
-* scoring and exploration;
-* opponent interaction;
-* replay-based analysis;
-* measurable outcomes.
+* resource, target, and movement constraints;
+* direct opponent interaction;
+* measurable scores and winners; and
+* replayable state transitions.
 
-The environment also exposes the limitations of direct LLM control. Since actions must be legal and timely, the LLM cannot simply output arbitrary text. It must be integrated into a controlled action pipeline.
+These properties create a useful middle ground. The environment is substantially more structured than an open-ended embodied world, making deterministic action checks and repeated experiments feasible. At the same time, it is sufficiently dynamic to expose stale plans, role effects, opponent-dependent risks, and the limitations of direct language-model control.
 
-This makes Lux AI Season 3 a suitable environment for investigating the project’s research question.
+The official environment is the experimental object; the replay viewer is an analysis tool built around retained evidence. This distinction prevents the project from treating a visual demonstration as a substitute for controlled evaluation.
 
 ---
 
-## 2.11 Positioning of LuxLLM-Agent
+## 2.11 Comparative Synthesis and Research Gap
 
-LuxLLM-Agent is positioned as a framework for inspecting and evaluating LLM-based agents, rather than as a pure competition bot.
+### 2.11.1 Comparison with the most relevant prior work
 
-Its main distinguishing features are:
+| Work | Main contribution | Relevance to LuxLLM-Agent | Limitation relative to this project |
+| --- | --- | --- | --- |
+| ReAct (Yao et al., 2023a) | Interleaves reasoning and actions | Supports interactive proposal-action loops | Does not provide this project's game-specific verifier and replay-provenance audit |
+| SayCan (Ahn et al., 2022) | Grounds language instructions in feasible robot skills | Strong precedent for separating semantic preference from executability | Robotics affordance model rather than Lux rules, trace metrics, and role-swapped game evaluation |
+| Huang et al. (2022) | Maps high-level LM plans to admissible actions | Shows why raw language plans need an action interface | Focuses on embodied task planning rather than competitive multi-agent traces |
+| Voyager (Wang et al., 2023) | Uses executable skills, environment feedback, and self-verification | Supports hybrid LLM-plus-execution architecture | Focuses on open-ended skill acquisition rather than controlled matched-seed evaluation |
+| Valmeekam et al. (2023) | Critically evaluates autonomous LLM planning | Supports using LLMs as heuristic proposal sources with external verification | Evaluates symbolic planning domains rather than a real-time hybrid game agent |
+| Shielding (Alshiekh et al., 2018) | Corrects unsafe learned-policy actions using formal specifications | Provides a conceptual basis for an intervention layer | LuxLLM-Agent does not provide formal shielding guarantees |
+| AgentBench (Liu et al., 2024) | Benchmarks LLMs in interactive environments | Supports multi-environment agent evaluation and failure analysis | Emphasises benchmark performance rather than domain-specific proposal-to-action provenance |
+| AgentBoard (Ma et al., 2024) | Adds fine-grained progress and trajectory analysis | Closest evaluation precedent for moving beyond final success | Does not implement the Lux-specific verification and replay linkage used here |
+| Turpin et al. (2023) | Demonstrates unfaithful generated explanations | Motivates cautious interpretation of LLM rationale fields | Studies explanation faithfulness, not environment action provenance |
 
-* structured state summarisation;
-* LLM-based strategic planning;
-* rule-based verification;
-* fallback and caching;
-* risk-aware filtering;
-* decision-source logging;
-* controlled multi-run evaluation;
-* replay-grounded decision trace overlay.
+### 2.11.2 Identified gap
 
-This positioning is important because the project’s contribution is not only that an LLM can be connected to Lux AI Season 3. The contribution is that LLM decisions can be structured, verified, traced, evaluated, and visually inspected.
+The reviewed literature provides strong individual precedents for interactive LLM agents, admissible-action grounding, external verification, shielding, trajectory-level evaluation, and visual analysis. Within this focused review, however, no single work combines all of the following in Lux AI Season 3:
 
-This distinguishes the project from a simple LLM wrapper around an existing rule-based agent.
+1. a bounded structured representation of a partially observable game state;
+2. an LLM used only for high-level strategic proposals;
+3. deterministic normalization, risk checks, fallback, and action construction;
+4. explicit provenance across fresh, cached, fallback, and rule decisions;
+5. step-aligned linkage between proposals, verifier interventions, actions, and replay state; and
+6. matched-seed, role-swapped evaluation with retained machine-readable evidence.
+
+This gap defines the project's contribution. LuxLLM-Agent is not presented as a new foundation model, a formally safe controller, or a state-of-the-art competition agent. It is an artefact and evaluation framework that integrates these ideas so that LLM-assisted game behaviour can be inspected at the boundary between model proposal and environment execution.
+
+### 2.11.3 Alignment with the research questions
+
+| Research question | Main literature foundation | Project response |
+| --- | --- | --- |
+| RQ1: State summarisation | Partial observability; grounded environment interfaces (Kaelbling et al., 1998; Huang et al., 2022) | Compact structured summaries with retained strategic state |
+| RQ2: Verification and fallback | Affordance grounding, critical planning evidence, and shielding (Ahn et al., 2022; Valmeekam et al., 2023; Alshiekh et al., 2018) | Parsing, normalization, risk filtering, caching, fallback, and deterministic action construction |
+| RQ3: Replay-grounded evaluation | Interactive and trajectory-level agent evaluation; explanation limits (Liu et al., 2024; Ma et al., 2024; Turpin et al., 2023) | Provenance logs, verifier audits, controlled experiments, and a replay-linked trace overlay |
+
+This mapping ensures that the literature review motivates the actual methodology and evaluation rather than acting as a detached survey.
 
 ---
 
 ## 2.12 Summary
 
-This chapter introduced the background and related work relevant to LuxLLM-Agent.
+The literature supports a qualified case for LLM-based agents. LLMs can contribute semantic decomposition, strategic proposals, memory, and interaction, but direct autonomous planning remains unreliable. Environment-interacting agents therefore benefit from bounded interfaces, executable skills, deterministic checks, and fallback mechanisms.
 
-LLMs can support high-level planning, but they are difficult to use as direct controllers in sequential game environments. Game agents require valid actions, stable execution, and repeated decision making. Therefore, a hybrid architecture is needed.
+Research on shielding provides a conceptual precedent for monitoring and correcting learned decisions, while also clarifying that LuxLLM-Agent's empirical verifier should not be confused with a formally verified safety shield. Research on AgentBench and AgentBoard shows why agent evaluation should include interactive trajectories and process evidence rather than only final success. Work on unfaithful chain-of-thought explanations further motivates the project's emphasis on observable proposal, transformation, and execution records instead of claims about private model reasoning.
 
-LuxLLM-Agent addresses this by combining LLM strategic planning with rule-based verification, fallback, strategy caching, risk-aware filtering, decision trace logging, controlled evaluation, and replay-grounded inspection.
-
-The next chapter presents the project requirements and methodology in more detail. The consolidated reference list appears after Chapter 7.
+These findings justify the architecture and evaluation used in the following chapters. Chapter 3 translates the identified gap into requirements and methodology. Chapters 4 and 5 describe the implementation, Chapter 6 evaluates outcomes and trace-and-verification evidence, and Chapter 7 answers the research questions while stating the limits of the claims.
 
 ---
 
@@ -1174,6 +1172,8 @@ The primary experiment uses 50 matched Lux environment seeds per backend. For ea
 
 The quantitative analysis reports completion, decision validity, trace coverage, replay linkage, verification interventions, Wilson confidence intervals, seed-clustered bootstrap intervals, role effects, and matched backend comparison. Gameplay outcomes are secondary evidence; the primary evaluation concerns inspectability and action-verification behaviour.
 
+A supplementary direct LLM-versus-LLM experiment uses the same 50-seed, two-role structure. In one match Qwen controls `player_0` and DeepSeek controls `player_1`; the assignment is reversed in the paired match. Both agents use the same tracing and verification framework, while per-player logs and model assignments remain isolated. This experiment answers a narrower operational question: whether the framework can inspect and verify two concurrent LLM-assisted agents. The analysis therefore reports trace completeness, call validity, verifier interventions, role balance, and seed-clustered uncertainty. The observed model outcome is treated as contextual evidence rather than as a new research question or a general model ranking.
+
 ---
 
 ### 3.12.2 Decision-source evaluation
@@ -1261,6 +1261,10 @@ docs/demo_evidence/hpc_deepseek_r1_32b_50run/
 docs/analysis/qwen3_vs_deepseek_analysis.md
 
 docs/analysis/failure_case_analysis.md
+
+reports/dual_llm_trace_evaluation.md
+
+reports/dual_llm_verifier_audit.md
 
 ```
 
@@ -3237,6 +3241,10 @@ Risk filtering changed 31,128 Qwen targets across 5,590 steps and 34,379 DeepSee
 
 The audit does not claim that every changed target caused a better match outcome. It establishes a narrower and reproducible result: the framework detected recorded risk conditions, changed proposed targets before action construction, and retained the reason and provenance needed for inspection. The outputs are stored in `reports/verifier_intervention_audit.md`, `.json`, and `.csv`.
 
+![Formal framework evidence rates for Qwen3-32B and DeepSeek-R1-32B](../../reports/figures/framework_evidence_rates.png)
+
+**Figure 6.1:** Formal framework evidence rates. Trace completeness, post-check validity, raw-schema quality, and observed verifier intervention are shown separately so that successful execution is not confused with unmodified model output.
+
 ---
 
 ## 6.6 Historical qwen3:32b Fixed-role Evidence
@@ -3386,6 +3394,10 @@ The agent used:
 
 This is a strength of the evaluation because the system can explain decision provenance instead of only reporting final match outcomes.
 
+![Decision-source distribution for the formal matched-seed experiments](../../reports/figures/decision_source_distribution.png)
+
+**Figure 6.2:** Formal decision-source distribution. Fresh LLM decisions, cached strategies, and rule fallback are retained as separate provenance categories for both model backends.
+
 ---
 
 ## 6.10 Fallback and Verification Analysis
@@ -3513,6 +3525,10 @@ The viewer therefore supports the third sub-research question:
 > How can replay-grounded decision traces help analyse the relationship between LLM strategy, decision source, action execution, and game outcome?
 
 The overlay is particularly useful because final match results cannot show whether a visible action came from a fresh LLM decision, a cached plan, fallback, or rule-based logic.
+
+![Lux AI Season 3 isometric replay viewer used for qualitative inspection](../../paper/figures/figure_s3_replay_viewer.png)
+
+**Figure 6.3:** Run008 isometric replay viewer. The replay artefact provides the visual environment context to which step-level decision traces are aligned; the interactive repository version additionally exposes the detailed trace overlay.
 
 ---
 
@@ -4071,34 +4087,48 @@ This makes the project more than a game-playing agent. It is a framework for und
 
 Ahn, M., Brohan, A., Brown, N., Chebotar, Y., Cortes, O., David, B., Finn, C., Fu, C., Gopalakrishnan, K., Hausman, K., et al. (2022). *Do as I can, not as I say: Grounding language in robotic affordances*. arXiv:2204.01691. https://arxiv.org/abs/2204.01691
 
+Alshiekh, M., Bloem, R., Ehlers, R., Könighofer, B., Niekum, S., & Topcu, U. (2018). Safe reinforcement learning via shielding. *Proceedings of the AAAI Conference on Artificial Intelligence, 32*(1), 2669–2678. https://doi.org/10.1609/aaai.v32i1.11797
+
 Berner, C., Brockman, G., Chan, B., Cheung, V., Dębiak, P., Dennison, C., Farhi, D., Fischer, Q., Hashme, S., Hesse, C., et al. (2019). *Dota 2 with large scale deep reinforcement learning*. arXiv:1912.06680. https://arxiv.org/abs/1912.06680
 
-Browne, C. B., Powley, E., Whitehouse, D., Lucas, S. M., Cowling, P. I., Rohlfshagen, P., Tavener, S., Perez, D., Samothrakis, S., & Colton, S. (2012). A survey of Monte Carlo tree search methods. *IEEE Transactions on Computational Intelligence and AI in Games, 4*(1), 1-43. https://doi.org/10.1109/TCIAIG.2012.2186810
+Browne, C. B., Powley, E., Whitehouse, D., Lucas, S. M., Cowling, P. I., Rohlfshagen, P., Tavener, S., Perez, D., Samothrakis, S., & Colton, S. (2012). A survey of Monte Carlo tree search methods. *IEEE Transactions on Computational Intelligence and AI in Games, 4*(1), 1–43. https://doi.org/10.1109/TCIAIG.2012.2186810
 
 DeepSeek-AI, Guo, D., Yang, D., Zhang, H., Song, J., Zhang, R., Xu, R., Zhu, Q., Ma, S., Wang, P., et al. (2025). *DeepSeek-R1: Incentivizing reasoning capability in LLMs via reinforcement learning*. arXiv:2501.12948. https://arxiv.org/abs/2501.12948
 
+Huang, W., Abbeel, P., Pathak, D., & Mordatch, I. (2022). Language models as zero-shot planners: Extracting actionable knowledge for embodied agents. In *Proceedings of the 39th International Conference on Machine Learning* (pp. 9118–9147). PMLR. https://proceedings.mlr.press/v162/huang22a.html
+
+Kaelbling, L. P., Littman, M. L., & Cassandra, A. R. (1998). Planning and acting in partially observable stochastic domains. *Artificial Intelligence, 101*(1–2), 99–134. https://doi.org/10.1016/S0004-3702(98)00023-X
+
 Li, G., Hammoud, H. A. A. K., Itani, H., Khizbullin, D., & Ghanem, B. (2023). *CAMEL: Communicative agents for “mind” exploration of large language model society*. arXiv:2303.17760. https://arxiv.org/abs/2303.17760
+
+Liu, X., Yu, H., Zhang, H., Xu, Y., Lei, X., Lai, H., Gu, Y., Ding, H., Men, K., Yang, K., et al. (2024). AgentBench: Evaluating LLMs as agents. *International Conference on Learning Representations*. https://proceedings.iclr.cc/paper_files/paper/2024/hash/e9df36b21ff4ee211a8b71ee8b7e9f57-Abstract-Conference.html
 
 Lux AI Challenge. (2024). *Lux-Design-S3: Repository for the Lux AI Challenge, Season 3 at NeurIPS 2024* [Software repository]. https://github.com/Lux-AI-Challenge/Lux-Design-S3
 
-Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A. A., Veness, J., Bellemare, M. G., Graves, A., Riedmiller, M., Fidjeland, A. K., Ostrovski, G., et al. (2015). Human-level control through deep reinforcement learning. *Nature, 518*, 529-533. https://doi.org/10.1038/nature14236
+Ma, C., Zhang, J., Zhu, Z., Yang, C., Yang, Y., Jin, Y., Lan, Z., Kong, L., & He, J. (2024). AgentBoard: An analytical evaluation board of multi-turn LLM agents. *Advances in Neural Information Processing Systems, 37*. https://doi.org/10.52202/079017-2365
+
+Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A. A., Veness, J., Bellemare, M. G., Graves, A., Riedmiller, M., Fidjeland, A. K., Ostrovski, G., et al. (2015). Human-level control through deep reinforcement learning. *Nature, 518*, 529–533. https://doi.org/10.1038/nature14236
 
 Ollama. (2024). *Ollama* [Software]. https://ollama.com/
 
-Park, J. S., O’Brien, J. C., Cai, C. J., Morris, M. R., Liang, P., & Bernstein, M. S. (2023). *Generative agents: Interactive simulacra of human behavior*. arXiv:2304.03442. https://arxiv.org/abs/2304.03442
+Park, J. S., O'Brien, J. C., Cai, C. J., Morris, M. R., Liang, P., & Bernstein, M. S. (2023). Generative agents: Interactive simulacra of human behavior. In *Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology*. https://doi.org/10.1145/3586183.3606763
 
-Schick, T., Dwivedi-Yu, J., Dessì, R., Raileanu, R., Lomeli, M., Zettlemoyer, L., Cancedda, N., & Scialom, T. (2023). *Toolformer: Language models can teach themselves to use tools*. arXiv:2302.04761. https://arxiv.org/abs/2302.04761
+Schick, T., Dwivedi-Yu, J., Dessì, R., Raileanu, R., Lomeli, M., Hambro, E., Zettlemoyer, L., Cancedda, N., & Scialom, T. (2023). Toolformer: Language models can teach themselves to use tools. *Advances in Neural Information Processing Systems, 36*. https://proceedings.neurips.cc/paper_files/paper/2023/hash/d842425e4bf79ba039352da0f658a906-Abstract-Conference.html
 
-Shinn, N., Cassano, F., Berman, E., Gopinath, A., Narasimhan, K., & Yao, S. (2023). *Reflexion: Language agents with verbal reinforcement learning*. arXiv:2303.11366. https://arxiv.org/abs/2303.11366
+Shinn, N., Cassano, F., Gopinath, A., Narasimhan, K., & Yao, S. (2023). Reflexion: Language agents with verbal reinforcement learning. *Advances in Neural Information Processing Systems, 36*. https://doi.org/10.52202/075280-0377
 
 Tao, S., Kumar, A., Doerschuk-Tiberi, B., Pan, I., Howard, A., & Su, H. (2024). *Lux AI Season 3: Multi-agent meta learning at scale*. NeurIPS 2024 Competition Track. https://openreview.net/forum?id=7t8kWYbOcj
 
-Vinyals, O., Babuschkin, I., Czarnecki, W. M., Mathieu, M., Dudzik, A., Chung, J., Choi, D. H., Powell, R., Ewalds, T., Georgiev, P., et al. (2019). Grandmaster level in StarCraft II using multi-agent reinforcement learning. *Nature, 575*, 350-354. https://doi.org/10.1038/s41586-019-1724-z
+Turpin, M., Michael, J., Perez, E., & Bowman, S. R. (2023). Language models don't always say what they think: Unfaithful explanations in chain-of-thought prompting. *Advances in Neural Information Processing Systems, 36*. https://doi.org/10.52202/075280-3275
+
+Valmeekam, K., Marquez, M., Sreedharan, S., & Kambhampati, S. (2023). On the planning abilities of large language models: A critical investigation. *Advances in Neural Information Processing Systems, 36*. https://doi.org/10.52202/075280-3320
+
+Vinyals, O., Babuschkin, I., Czarnecki, W. M., Mathieu, M., Dudzik, A., Chung, J., Choi, D. H., Powell, R., Ewalds, T., Georgiev, P., et al. (2019). Grandmaster level in StarCraft II using multi-agent reinforcement learning. *Nature, 575*, 350–354. https://doi.org/10.1038/s41586-019-1724-z
 
 Wang, G., Xie, Y., Jiang, Y., Mandlekar, A., Xiao, C., Zhu, Y., Fan, L., & Anandkumar, A. (2023). *Voyager: An open-ended embodied agent with large language models*. arXiv:2305.16291. https://arxiv.org/abs/2305.16291
 
 Yang, A., Li, A., Yang, B., Zhang, B., Hui, B., Zheng, B., Yu, B., Gao, C., Huang, C., Lv, C., et al. (2025). *Qwen3 technical report*. arXiv:2505.09388. https://arxiv.org/abs/2505.09388
 
-Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2023a). *ReAct: Synergizing reasoning and acting in language models*. arXiv:2210.03629. https://arxiv.org/abs/2210.03629
+Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2023a). ReAct: Synergizing reasoning and acting in language models. *International Conference on Learning Representations*. https://openreview.net/forum?id=WE_vluYUL-X
 
-Yao, S., Yu, D., Zhao, J., Shafran, I., Griffiths, T. L., Cao, Y., & Narasimhan, K. (2023b). *Tree of thoughts: Deliberate problem solving with large language models*. arXiv:2305.10601. https://arxiv.org/abs/2305.10601
+Yao, S., Yu, D., Zhao, J., Shafran, I., Griffiths, T. L., Cao, Y., & Narasimhan, K. (2023b). Tree of thoughts: Deliberate problem solving with large language models. *Advances in Neural Information Processing Systems, 36*. https://proceedings.neurips.cc/paper_files/paper/2023/hash/271db9922b8d1f4dd7aaef84ed5ac703-Abstract-Conference.html

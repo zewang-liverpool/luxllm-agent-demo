@@ -301,6 +301,10 @@ Risk filtering changed 31,128 Qwen targets across 5,590 steps and 34,379 DeepSee
 
 The audit does not claim that every changed target caused a better match outcome. It establishes a narrower and reproducible result: the framework detected recorded risk conditions, changed proposed targets before action construction, and retained the reason and provenance needed for inspection. The outputs are stored in `reports/verifier_intervention_audit.md`, `.json`, and `.csv`.
 
+![Formal framework evidence rates for Qwen3-32B and DeepSeek-R1-32B](../../reports/figures/framework_evidence_rates.png)
+
+**Figure 6.1:** Formal framework evidence rates. Trace completeness, post-check validity, raw-schema quality, and observed verifier intervention are shown separately so that successful execution is not confused with unmodified model output.
+
 ---
 
 ## 6.6 Historical qwen3:32b Fixed-role Evidence
@@ -450,6 +454,10 @@ The agent used:
 
 This is a strength of the evaluation because the system can explain decision provenance instead of only reporting final match outcomes.
 
+![Decision-source distribution for the formal matched-seed experiments](../../reports/figures/decision_source_distribution.png)
+
+**Figure 6.2:** Formal decision-source distribution. Fresh LLM decisions, cached strategies, and rule fallback are retained as separate provenance categories for both model backends.
+
 ---
 
 ## 6.10 Fallback and Verification Analysis
@@ -577,6 +585,10 @@ The viewer therefore supports the third sub-research question:
 > How can replay-grounded decision traces help analyse the relationship between LLM strategy, decision source, action execution, and game outcome?
 
 The overlay is particularly useful because final match results cannot show whether a visible action came from a fresh LLM decision, a cached plan, fallback, or rule-based logic.
+
+![Lux AI Season 3 isometric replay viewer used for qualitative inspection](../../paper/figures/figure_s3_replay_viewer.png)
+
+**Figure 6.3:** Run008 isometric replay viewer. The replay artefact provides the visual environment context to which step-level decision traces are aligned; the interactive repository version additionally exposes the detailed trace overlay.
 
 ---
 

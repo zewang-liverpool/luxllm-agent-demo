@@ -1,5 +1,9 @@
 # Supervisor Review Summary
 
+**Student:** Ze Wang (`201868809`)
+
+**Supervisor:** Meng Fang
+
 ## Project Title
 
 **LuxLLM-Agent: A Decision-Trace and Action-Verification Framework for Inspecting and Evaluating LLM-based Agents in Lux AI Season 3**
@@ -88,69 +92,22 @@ This principle is important because Lux AI Season 3 requires valid and timely ac
 
 ## 5. Evaluation Evidence
 
-The project includes controlled evaluation evidence for two LLM backends.
+The primary evaluation uses 50 matched environment seeds per backend and swaps the LLM-controlled side for every seed. Each backend therefore completes 100 matches against the same rule-based policy.
 
-### qwen3:32b 50-run result
+| Model | Matches | LLM wins | Win rate | Wilson 95% CI | Valid LLM calls |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| qwen3:32b | 100 | 63 | 63% | 53.2%-71.8% | 2,286/2,286 |
+| deepseek-r1:32b | 100 | 60 | 60% | 50.2%-69.1% | 2,305/2,305 |
 
-| Metric            | Value |
-| ----------------- | ----: |
-| Total runs        |    50 |
-| player_0 wins     |    35 |
-| player_1 wins     |    15 |
-| player_0 win rate |   70% |
-| LLM errors        |     0 |
+Across these 200 primary matches, all 206,591 structured traces passed the recorded completeness checks, replay linkage and action-array shape validity were 100%, and no LLM timeout, API error, or downstream action fallback was observed. Deterministic checks normalized 520 Qwen responses, while the risk filter changed proposed targets on 5,590 Qwen steps and 7,090 DeepSeek steps. The matched backend difference was not statistically supported, so these outcomes are not presented as a general model ranking.
 
-### DeepSeek-R1-32B 50-run result
-
-| Metric                   |        Value |
-| ------------------------ | -----------: |
-| Total runs               |           50 |
-| player_0 wins            |           26 |
-| player_1 wins            |           24 |
-| player_0 win rate        |          52% |
-| Average player_0 reward  |          2.7 |
-| Average player_1 reward  |          2.3 |
-| Average fresh LLM calls  |         33.2 |
-| Average cached LLM turns |       412.62 |
-| Average fallback count   |       570.14 |
-| Average LLM errors       |          0.0 |
-| Average LLM latency      |  4143.595 ms |
-| Maximum LLM latency      | 10581.076 ms |
-| Average trace steps      |       1010.0 |
-
-The current results suggest that both LLM backends can complete controlled runs without LLM execution errors in this framework, but they produce different gameplay outcomes. This supports the dissertation argument that evaluation should not rely only on final win/loss. It should also consider decision source, fallback behaviour, caching, latency, and traceability.
+Following supervisor feedback, a supplementary direct LLM-versus-LLM experiment placed Qwen and DeepSeek against each other over another 50 role-swapped seed pairs. It completed all 100 matches, retained 106,317 complete traces, and recorded 4,676/4,676 valid fresh calls. Qwen won 54 matches and DeepSeek won 46, but the seed-level exact sign p-value was 0.503. The main value of this experiment is that tracing, normalization, and risk-filter interventions remained attributable when both players used LLM proposals concurrently.
 
 ---
 
-## 6. Decision-source Analysis
+## 6. Decision-source and Verifier Analysis
 
-For the DeepSeek-R1-32B 50-run evidence, the recorded decision-source distribution is:
-
-| Decision source | Count |
-| --------------- | ----: |
-| `rule_player`   | 25250 |
-| `fallback`      |    94 |
-| `rule_fallback` |  3163 |
-| `llm_fresh`     |  1362 |
-| `cached_llm`    | 20631 |
-
-Derived values:
-
-```text id="e02d12"
-
-Total decision-source events = 50500
-
-LLM-related decision events = 1362 + 20631 = 21993
-
-Fallback-related decision events = 94 + 3163 = 3257
-
-LLM decision-source rate = approximately 43.55%
-
-Fallback decision-source rate = approximately 6.45%
-
-```
-
-This supports the claim that LuxLLM-Agent can analyse not only whether the agent wins or loses, but also where its decisions come from.
+The retained traces distinguish fresh LLM calls, cached plans, rule fallback, normalization, and risk-filter interventions. This supports the central claim that LuxLLM-Agent can analyse not only whether an agent wins or loses, but also where a decision came from and whether deterministic components changed the proposal before action construction. The raw evidence, machine-readable summaries, and audit scripts are retained so the reported counts can be checked independently.
 
 ---
 
@@ -237,9 +194,9 @@ Completed:
 
 * risk-aware action filtering;
 
-* qwen3:32b 50-run evaluation;
+* 200-match primary matched-seed and role-swapped evaluation;
 
-* DeepSeek-R1-32B 50-run evaluation;
+* 100-match supplementary direct LLM-versus-LLM evaluation;
 
 * decision-source analysis;
 
@@ -289,7 +246,7 @@ I would like feedback on the following points:
 
 2. Is the project positioning clear enough as a decision-trace and action-verification framework, rather than only an LLM game bot?
 
-3. Is the evaluation scope acceptable with two 50-run LLM model evaluations?
+3. Is the evaluation scope acceptable with 200 primary matches and the 100-match direct LLM-versus-LLM supplementary experiment?
 
 4. Are the current metrics sufficient, including win rate, LLM errors, latency, fallback, cache, decision source, and replay-grounded inspection?
 
@@ -305,19 +262,15 @@ I would like feedback on the following points:
 
 The remaining work is limited to submission-quality preparation:
 
-1. polish the full dissertation draft;
+1. obtain the official COMP702 assessment brief and confirm its word limit and formatting rules;
 
-2. finalise citations and bibliography;
+2. add the confirmed student ID and exact programme title to the title page;
 
-3. prepare final figures and screenshots;
+3. convert the canonical Markdown draft into the required submission format;
 
-4. insert figure and table references;
+4. verify captions, cross-references, pagination, contents pages, and figure readability;
 
-5. check terminology consistency;
-
-6. check word count and chapter balance;
-
-7. prepare the final submitted document.
+5. perform one supervisor review and one final proofread before submission.
 
 No major new functionality or experiment expansion is planned unless requested.
 

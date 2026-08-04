@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapter 2 人工阅读与引用检查清单</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --panel: #fff;
+      --ink: #172033;
+      --muted: #65718a;
+      --line: #dfe5ef;
+      --blue: #2856d6;
+      --blue-soft: #eef3ff;
+      --green: #16805d;
+      --red: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.55;
+    }
+    header {
+      padding: 30px 24px;
+      color: #fff;
+      background: linear-gradient(120deg, #172d69, #2856d6 65%, #4b7ef0);
+    }
+    header > div, main, .toolbar-inner, footer { max-width: 1180px; margin: auto; }
+    h1 { margin: 0 0 8px; font-size: clamp(25px, 4vw, 38px); }
+    header p { margin: 4px 0; color: #eaf0ff; }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 11px 20px;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(9px);
+    }
+    .toolbar-inner { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .progress { flex: 1; min-width: 250px; }
+    .progress-label { display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; }
+    .track { height: 9px; margin-top: 5px; overflow: hidden; background: #e6ebf3; border-radius: 99px; }
+    .bar { width: 0; height: 100%; background: var(--green); transition: width .2s; }
+    button {
+      padding: 8px 12px;
+      border: 1px solid #cbd4e3;
+      border-radius: 9px;
+      color: var(--ink);
+      background: white;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    button:hover { color: var(--blue); border-color: var(--blue); }
+    button.primary { color: white; border-color: var(--blue); background: var(--blue); }
+    main { padding: 22px; }
+    .notice, section {
+      margin-bottom: 18px;
+      padding: 19px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(32,52,90,.07);
+    }
+    .notice { border-left: 5px solid var(--blue); }
+    code, .path { color: #173f9c; font-family: Consolas, "Cascadia Code", monospace; overflow-wrap: anywhere; }
+    h2 { margin: 0; font-size: 21px; }
+    .section-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 10px; }
+    .section-count { color: var(--muted); font-size: 13px; font-weight: 700; }
+    .row {
+      display: grid;
+      grid-template-columns: 34px minmax(240px, 1fr) minmax(280px, 1.25fr);
+      gap: 11px;
+      align-items: start;
+      padding: 12px 4px;
+      border-top: 1px solid #edf0f5;
+    }
+    .row:first-of-type { border-top: 0; }
+    input[type="checkbox"] { width: 22px; height: 22px; margin-top: 3px; accent-color: var(--green); cursor: pointer; }
+    .row.done .title { color: var(--green); text-decoration: line-through; }
+    .title { font-weight: 750; }
+    .id { display: inline-block; min-width: 35px; color: var(--blue); font-size: 12px; }
+    .criterion { margin-top: 3px; color: var(--muted); font-size: 14px; }
+    textarea {
+      width: 100%;
+      min-height: 54px;
+      padding: 8px 10px;
+      resize: vertical;
+      border: 1px solid #d5dce8;
+      border-radius: 8px;
+      background: #fbfcfe;
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+    }
+    textarea:focus { outline: 2px solid #bdccff; border-color: var(--blue); }
+    a { color: var(--blue); }
+    .file-list { display: grid; gap: 7px; margin-top: 10px; }
+    .source-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+    .source-card { padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fbfcff; }
+    .source-card label { display: flex; gap: 9px; font-weight: 700; }
+    .source-card a { display: block; margin: 6px 0 0 31px; font-size: 13px; overflow-wrap: anywhere; }
+    .final-box { min-height: 110px; }
+    .pending { color: var(--red); font-weight: 700; }
+    footer { padding: 0 22px 34px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 820px) {
+      .row { grid-template-columns: 32px 1fr; }
+      .row textarea { grid-column: 2; }
+    }
+    @media print {
+      body { background: white; }
+      header { color: black; background: white; }
+      header p { color: #333; }
+      .toolbar { display: none; }
+      main { max-width: none; padding: 0; }
+      section, .notice { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Chapter 2 人工阅读与引用格式检查</h1>
+      <p>LuxLLM-Agent · Key Literature and Background Reading 整改验收</p>
+      <p>可点击、自动保存、可导出检查结果</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="toolbar-inner">
+      <div class="progress">
+        <div class="progress-label"><span>总体进度</span><span id="progressText">0 / 0（0%）</span></div>
+        <div class="track"><div class="bar" id="progressBar"></div></div>
+      </div>
+      <button class="primary" id="exportBtn">导出检查结果</button>
+      <button id="printBtn">打印 / 保存 PDF</button>
+      <button id="resetBtn">清空全部</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="notice">
+      <strong>使用说明：</strong>点击每项左侧方框并填写备注，状态会自动保存在当前浏览器。完成后导出 JSON 作为人工验收记录。<br>
+      <span class="pending">不要因为一个链接能打开就直接通过：</span>还要核对标题、作者、年份、发表渠道以及文中概括是否准确。
+      <div class="file-list">
+        <div>第二章：<code>D:\PythonProject\lux_llm_agent\docs\dissertation\chapter_2_background_related_work.md</code></div>
+        <div>参考文献：<code>D:\PythonProject\lux_llm_agent\docs\dissertation\references.md</code></div>
+        <div>完整论文：<code>D:\PythonProject\lux_llm_agent\docs\dissertation\full_dissertation_draft.md</code></div>
+        <div>反馈响应：<code>D:\PythonProject\lux_llm_agent\docs\dissertation\specification_feedback_response_20260728.md</code></div>
+      </div>
+    </div>
+
+    <div id="sections"></div>
+
+    <section>
+      <div class="section-head"><h2>关键来源在线核验</h2><span class="section-count" id="sourceCount"></span></div>
+      <div class="source-grid" id="sources"></div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>最终结论</h2></div>
+      <p>仅当所有必查项通过，或每个未通过项均记录了修改决定时，才能填写 <code>READY FOR SUPERVISOR REVIEW</code>。</p>
+      <textarea class="final-box" id="finalConclusion" placeholder="状态：READY FOR SUPERVISOR REVIEW / REQUIRES REVISION&#10;未解决问题：&#10;检查人：&#10;日期："></textarea>
+    </section>
+  </main>
+
+  <footer>
+    当前权威引用文件为 <code>docs\dissertation\references.md</code>。正式模板确定后，再统一转换为学校要求的引用格式。
+  </footer>
+
+  <script>
+    const storageKey = "luxllm-literature-citation-audit-20260728";
+    const sections = [
+      {
+        title: "1. 检查前准备",
+        items: [
+          ["P1", "打开第二章", "文件正常显示，无乱码或截断。"],
+          ["P2", "打开参考文献", "能够看到 24 项参考文献。"],
+          ["P3", "打开完整论文", "新版 Chapter 2 位于 Chapters 1 与 3 之间。"],
+          ["P4", "复核评分表", "确认 Aims and Requirements 与 Key Literature and Background Reading 为 B。"],
+          ["P5", "准备问题记录", "每个问题记录文件、章节、原文、建议和复查结果。"],
+          ["P6", "锁定检查范围", "本轮不改实验数字，只检查文献、论证和引用格式。"]
+        ]
+      },
+      {
+        title: "2. 连续人工阅读",
+        items: [
+          ["R1", "完整连续阅读一次", "能清楚理解为何需要 summarisation、verification、tracing 和 process evaluation。"],
+          ["R2", "综述类型准确", "明确是 focused narrative review，不声称 systematic review。"],
+          ["R3", "章节逻辑顺序", "agents → state → planning → games → verification → provenance → evaluation → gap 过渡自然。"],
+          ["R4", "RQ1 文献基础", "部分可观测性和结构化接口能够支持 state summarisation。"],
+          ["R5", "RQ2 文献基础", "grounding、planning limitation 和 shielding 能够支持 verification/fallback。"],
+          ["R6", "RQ3 文献基础", "AgentBench、AgentBoard、解释边界和 replay 能够支持轨迹评估。"],
+          ["R7", "术语一致", "proposal、verification、normalization、fallback、trace、provenance 和 action 不混用。"],
+          ["R8", "控制重复", "重复内容只有在增加比较、限制或综合结论时保留。"],
+          ["R9", "段落有明确功能", "每段都在给证据、做比较、说明限制或连接项目。"],
+          ["R10", "章节过渡自然", "每节能解释下一主题为什么必要。"]
+        ]
+      },
+      {
+        title: "3. 批判性分析与边界",
+        items: [
+          ["A1", "正反证据平衡", "没有把 LLM planning 描述成普遍可靠。"],
+          ["A2", "ReAct 定位准确", "只作为相关架构，不声称项目实现 ReAct。"],
+          ["A3", "SayCan 类比有限", "机器人 affordance 不等同于 Lux verifier。"],
+          ["A4", "Shielding 边界明确", "不声称 temporal-logic safety 或 formal shield。"],
+          ["A5", "Reason 字段边界", "模型理由是 proposal record，不是真实内部推理证明。"],
+          ["A6", "结果归因谨慎", "不把胜率单独归因于 LLM。"],
+          ["A7", "双 LLM 仍为补充实验", "没有改写成模型排行榜研究。"],
+          ["A8", "Research gap 有边界", "使用 within this focused review 等谨慎表达。"],
+          ["A9", "贡献表述准确", "贡献是 trace-and-verification artefact/evaluation framework。"],
+          ["A10", "比较表公平", "准确说明范围差异，不贬低相关工作。"]
+        ]
+      },
+      {
+        title: "4. 文内引用与 References 对应",
+        items: [
+          ["C1", "核心作者均有条目", "Ahn、Alshiekh、Huang、Kaelbling、Liu、Ma、Turpin、Valmeekam 等均能对应。"],
+          ["C2", "Yao 2023a/2023b 正确", "2023a 只指 ReAct，2023b 只指 Tree of Thoughts。"],
+          ["C3", "每个文内引用有唯一条目", "不存在缺失、重复或无法判断的对应项。"],
+          ["C4", "Chapter 2 使用的条目均被引用", "没有为了增加数量而保留未讨论文献。"],
+          ["C5", "其他章节引用不被误删", "Qwen、DeepSeek、Ollama 等全篇需要的条目继续保留。"],
+          ["C6", "组合引用顺序一致", "同一括号中的多篇文献使用统一分隔和顺序。"],
+          ["C7", "组织作者一致", "Lux AI Challenge 在正文与 References 中名称完全一致。"],
+          ["C8", "年份与标题核对", "正文年份与来源页面一致。"]
+        ]
+      },
+      {
+        title: "5. 引用格式",
+        items: [
+          ["F1", "字母顺序", "按第一作者或组织名称排列。"],
+          ["F2", "作者拼写", "Dębiak、Könighofer、Dessì、O'Brien 等字符正确。"],
+          ["F3", "年份格式", "每项使用括号年份。"],
+          ["F4", "标题大小写", "论文标题统一使用 sentence case。"],
+          ["F5", "发表渠道格式", "期刊、会议或 proceedings 名称格式一致。"],
+          ["F6", "卷期和页码", "有资料时补充，页码使用 en dash。"],
+          ["F7", "DOI 优先", "存在 DOI 时优先 DOI，否则用稳定的官方页面。"],
+          ["F8", "URL 干净", "没有搜索链接和跟踪参数。"],
+          ["F9", "et al. 规则一致", "长作者列表使用同一缩写规则。"],
+          ["F10", "Markdown 正常", "斜体、表格、链接和代码均可正常显示。"],
+          ["F11", "暂不混用格式", "学校格式未确认前保持一种 APA-like 风格。"],
+          ["F12", "模板确认后统一转换", "不要逐项混合修改成不同风格。"]
+        ]
+      },
+      {
+        title: "6. 全文一致性与停止标准",
+        items: [
+          ["G1", "Chapter 1 一致", "贡献和 research gap 与 Chapter 2 兼容。"],
+          ["G2", "Chapter 3 一致", "方法由 Chapter 2 文献基础支持。"],
+          ["G3", "Chapter 6 不过度宣称", "intervention evidence 不等于 formal safety proof。"],
+          ["G4", "Chapter 7 回答相同 RQs", "结论遵守 Chapter 2 建立的边界。"],
+          ["G5", "References 只出现一次", "位于完整论文 Chapter 7 之后。"],
+          ["G6", "重新组装", "执行 python tools\\assemble_dissertation.py。"],
+          ["G7", "重新验证", "执行 python tools\\validate_project_evidence.py 并通过。"],
+          ["G8", "所有失败项已复查", "每个 FAIL 都有修改与二次检查记录。"],
+          ["G9", "无关键遗留问题", "没有断裂引用、无来源核心论断或乱码。"],
+          ["G10", "达到停止条件", "除导师提出具体缺口外，不再无限增加文献。"]
+        ]
+      }
+    ];
+
+    const sources = [
+      ["S1", "SayCan", "https://arxiv.org/abs/2204.01691"],
+      ["S2", "Safe Reinforcement Learning via Shielding", "https://doi.org/10.1609/aaai.v32i1.11797"],
+      ["S3", "Language Models as Zero-Shot Planners", "https://proceedings.mlr.press/v162/huang22a.html"],
+      ["S4", "POMDP foundation", "https://doi.org/10.1016/S0004-3702(98)00023-X"],
+      ["S5", "AgentBench", "https://proceedings.iclr.cc/paper_files/paper/2024/hash/e9df36b21ff4ee211a8b71ee8b7e9f57-Abstract-Conference.html"],
+      ["S6", "AgentBoard", "https://doi.org/10.52202/079017-2365"],
+      ["S7", "LLM planning limitations", "https://doi.org/10.52202/075280-3320"],
+      ["S8", "Unfaithful CoT explanations", "https://doi.org/10.52202/075280-3275"],
+      ["S9", "ReAct", "https://openreview.net/forum?id=WE_vluYUL-X"],
+      ["S10", "Reflexion", "https://doi.org/10.52202/075280-0377"],
+      ["S11", "Toolformer", "https://proceedings.neurips.cc/paper_files/paper/2023/hash/d842425e4bf79ba039352da0f658a906-Abstract-Conference.html"],
+      ["S12", "Tree of Thoughts", "https://proceedings.neurips.cc/paper_files/paper/2023/hash/271db9922b8d1f4dd7aaef84ed5ac703-Abstract-Conference.html"],
+      ["S13", "Lux AI Season 3 paper", "https://openreview.net/forum?id=7t8kWYbOcj"],
+      ["S14", "Official Lux-Design-S3 repository", "https://github.com/Lux-AI-Challenge/Lux-Design-S3"]
+    ];
+
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(storageKey) || "{}"); } catch { state = {}; }
+    state.checked ||= {};
+    state.notes ||= {};
+    state.finalConclusion ||= "";
+
+    const sectionRoot = document.getElementById("sections");
+    sections.forEach(section => {
+      const element = document.createElement("section");
+      element.innerHTML = `<div class="section-head"><h2>${section.title}</h2><span class="section-count"></span></div>`;
+      section.items.forEach(([id, title, criterion]) => {
+        const row = document.createElement("div");
+        row.className = "row";
+        row.dataset.id = id;
+        row.innerHTML = `
+          <input type="checkbox" id="check-${id}" ${state.checked[id] ? "checked" : ""}>
+          <label for="check-${id}">
+            <div class="title"><span class="id">${id}</span>${title}</div>
+            <div class="criterion">${criterion}</div>
+          </label>
+          <textarea placeholder="检查备注、问题位置或修改决定">${state.notes[id] || ""}</textarea>`;
+        if (state.checked[id]) row.classList.add("done");
+        element.appendChild(row);
+      });
+      sectionRoot.appendChild(element);
+    });
+
+    const sourceRoot = document.getElementById("sources");
+    sources.forEach(([id, title, url]) => {
+      const card = document.createElement("div");
+      card.className = "source-card";
+      card.dataset.id = id;
+      card.innerHTML = `
+        <label><input type="checkbox" id="check-${id}" ${state.checked[id] ? "checked" : ""}><span>${id} — ${title}</span></label>
+        <a href="${url}" target="_blank" rel="noreferrer">${url}</a>
+        <textarea placeholder="核对标题、作者、年份、渠道和支持的论断">${state.notes[id] || ""}</textarea>`;
+      sourceRoot.appendChild(card);
+    });
+
+    document.getElementById("finalConclusion").value = state.finalConclusion;
+
+    function allIds() {
+      return [...sections.flatMap(s => s.items.map(i => i[0])), ...sources.map(s => s[0])];
+    }
+    function save() {
+      state.finalConclusion = document.getElementById("finalConclusion").value;
+      localStorage.setItem(storageKey, JSON.stringify(state));
+      updateProgress();
+    }
+    function updateProgress() {
+      const ids = allIds();
+      const done = ids.filter(id => state.checked[id]).length;
+      const pct = ids.length ? Math.round(done * 100 / ids.length) : 0;
+      document.getElementById("progressText").textContent = `${done} / ${ids.length}（${pct}%）`;
+      document.getElementById("progressBar").style.width = `${pct}%`;
+      document.getElementById("sourceCount").textContent = `${sources.filter(s => state.checked[s[0]]).length} / ${sources.length}`;
+      document.querySelectorAll("#sections section").forEach((element, index) => {
+        const idsInSection = sections[index].items.map(item => item[0]);
+        const sectionDone = idsInSection.filter(id => state.checked[id]).length;
+        element.querySelector(".section-count").textContent = `${sectionDone} / ${idsInSection.length}`;
+      });
+    }
+
+    document.addEventListener("change", event => {
+      if (event.target.matches('input[type="checkbox"]')) {
+        const id = event.target.id.replace("check-", "");
+        state.checked[id] = event.target.checked;
+        const row = event.target.closest(".row");
+        if (row) row.classList.toggle("done", event.target.checked);
+        save();
+      }
+    });
+    document.addEventListener("input", event => {
+      if (event.target.matches(".row textarea, .source-card textarea")) {
+        state.notes[event.target.closest("[data-id]").dataset.id] = event.target.value;
+        save();
+      } else if (event.target.id === "finalConclusion") {
+        save();
+      }
+    });
+
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (!confirm("确定要清空全部勾选和备注吗？")) return;
+      localStorage.removeItem(storageKey);
+      location.reload();
+    });
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      save();
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        checklist: "Chapter 2 manual reading and citation audit",
+        progress: document.getElementById("progressText").textContent,
+        ...state
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "luxllm_chapter2_citation_audit.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+
+    updateProgress();
+  </script>
+</body>
+</html>

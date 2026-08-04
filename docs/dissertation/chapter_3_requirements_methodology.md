@@ -600,6 +600,8 @@ The primary experiment uses 50 matched Lux environment seeds per backend. For ea
 
 The quantitative analysis reports completion, decision validity, trace coverage, replay linkage, verification interventions, Wilson confidence intervals, seed-clustered bootstrap intervals, role effects, and matched backend comparison. Gameplay outcomes are secondary evidence; the primary evaluation concerns inspectability and action-verification behaviour.
 
+A supplementary direct LLM-versus-LLM experiment uses the same 50-seed, two-role structure. In one match Qwen controls `player_0` and DeepSeek controls `player_1`; the assignment is reversed in the paired match. Both agents use the same tracing and verification framework, while per-player logs and model assignments remain isolated. This experiment answers a narrower operational question: whether the framework can inspect and verify two concurrent LLM-assisted agents. The analysis therefore reports trace completeness, call validity, verifier interventions, role balance, and seed-clustered uncertainty. The observed model outcome is treated as contextual evidence rather than as a new research question or a general model ranking.
+
 ---
 
 ### 3.12.2 Decision-source evaluation
@@ -687,6 +689,10 @@ docs/demo_evidence/hpc_deepseek_r1_32b_50run/
 docs/analysis/qwen3_vs_deepseek_analysis.md
 
 docs/analysis/failure_case_analysis.md
+
+reports/dual_llm_trace_evaluation.md
+
+reports/dual_llm_verifier_audit.md
 
 ```
 
