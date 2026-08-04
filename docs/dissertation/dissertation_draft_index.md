@@ -43,7 +43,7 @@ The current dissertation draft consists of front matter and seven chapters. Run 
 | Chapter   | File                                                      | Status                           | Purpose                                                                                                                |
 | --------- | --------------------------------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Chapter 1 | `docs/dissertation/chapter_1_introduction.md`             | Draft complete                   | Introduces the project, motivation, problem, aim, RQ, contributions, and dissertation structure                        |
-| Chapter 2 | `docs/dissertation/chapter_2_background_related_work.md`  | References integrated            | Provides background on LLM agents, game AI, hybrid LLM-rule systems, action verification, traceability, and evaluation |
+| Chapter 2 | `docs/dissertation/chapter_2_background_related_work.md`  | Critical review complete         | Synthesises LLM-agent planning, grounding, verification, traceability, evaluation, limitations, and the research gap |
 | Chapter 3 | `docs/dissertation/chapter_3_requirements_methodology.md` | Draft complete                   | Defines requirements and methodology                                                                                   |
 | Chapter 4 | `docs/dissertation/chapter_4_system_design.md`            | Draft complete                   | Explains the system architecture and design rationale                                                                  |
 | Chapter 5 | `docs/dissertation/chapter_5_implementation.md`           | Draft complete                   | Describes implementation details and project files                                                                     |
@@ -272,7 +272,7 @@ The dissertation currently claims the following contributions:
 
 4. Decision-source logging for analysing whether actions come from fresh LLM decisions, cached plans, fallback, rule fallback, or rule-based policy.
 
-5. Controlled 50-run evidence for qwen3:32b and DeepSeek-R1-32B.
+5. Controlled matched-seed evidence for qwen3:32b and DeepSeek-R1-32B against a shared rule policy, plus a supplementary direct LLM-versus-LLM experiment.
 
 6. A replay-grounded LLM Decision Trace Overlay for visual inspection.
 
@@ -298,37 +298,29 @@ The dissertation should clearly acknowledge the following limitations:
 
 * Failure-case analysis is representative rather than exhaustive.
 
-* Chapter 2 still needs stronger citation support.
+* The official COMP702 assessment brief or module page must be checked for the applicable word limit and required submission template; no public COMP702 word limit was identified during the July 2026 review.
 
-* Figures and tables still need to be finalised.
+* The exact degree/programme title, formal submission date, declaration wording, and acknowledgement requirements must be confirmed before title-page formatting. Student ID `201868809` has been verified against the project feedback record.
+
+* Final pagination, caption placement, cross-references, and accessibility text depend on the eventual submission format.
 
 ---
 
 ## Next Revision Tasks
 
-The next revision stage should focus on quality improvement rather than adding major new features.
+The remaining revision stage is limited to submission-format validation rather than new features or further open-ended experiments.
 
 Priority tasks:
 
-1. Add real citations to Chapter 2.
+1. Obtain the official COMP702 assessment brief and confirm the word limit, title-page fields, declaration, formatting, and file-naming rules.
 
-2. Create a figure and table list.
+2. Add the confirmed student ID and exact degree/programme title to the final title page.
 
-3. Select final dissertation screenshots.
+3. Convert the canonical Markdown draft into the required submission format, then verify captions, cross-references, page breaks, contents pages, and accessibility text.
 
-4. Add architecture and pipeline diagrams.
+4. Review word count and chapter balance against the confirmed limit; shorten historical fixed-role evidence first if compression is required.
 
-5. Check terminology consistency across all chapters.
-
-6. Convert repeated technical text into polished dissertation prose.
-
-7. Add references and bibliography.
-
-8. Assemble a single full dissertation draft.
-
-9. Review word count and chapter balance.
-
-10. Prepare a supervisor review version.
+5. Complete one supervisor/content review and one final proofread. Stop adding experiments unless that review identifies a specific evidence gap.
 
 ---
 
@@ -396,33 +388,5 @@ efa3f38 Draft dissertation evaluation chapter
 
 ## Immediate Next Step
 
-The immediate next step is to improve Chapter 2 with citations and related work references.
-
-Recommended next file:
-
-```text
-
-docs/dissertation/chapter_2_background_related_work.md
-
-```
-
-Recommended task:
-
-```text
-
-Chapter 2 citation enhancement:
-
-- Add references for LLM agents.
-
-- Add references for ReAct-style reasoning and tool use.
-
-- Add references for planning with LLMs.
-
-- Add references for game AI and sequential decision making.
-
-- Add references for explainability, traceability, and evaluation.
-
-- Add references for Lux AI / competition environment if available.
-
-```
+Obtain the course assessment brief and confirm the submission constraints before performing any large prose reduction or final document conversion. The evidence base and dissertation argument are otherwise closed.
 

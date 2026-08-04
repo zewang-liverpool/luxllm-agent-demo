@@ -163,7 +163,7 @@ This figure helps the reader understand the overall architecture before reading 
 
 ### Status
 
-Needed.
+Source complete in Chapter 4.
 
 ---
 
@@ -235,7 +235,7 @@ This figure supports the key design principle:
 
 ### Status
 
-Needed.
+Source complete in Chapter 5.
 
 ---
 
@@ -271,7 +271,7 @@ This figure demonstrates that the project includes a visual replay artefact, not
 
 ### Status
 
-Needed.
+Complete. The selected screenshot is `paper/figures/figure_s3_replay_viewer.png` and is referenced in Chapter 6.
 
 ---
 
@@ -323,7 +323,7 @@ This figure directly supports RQ3:
 
 ### Status
 
-Needed.
+Optional supporting artefact. The interactive overlay is retained in the repository; it should be added to the submitted dissertation only if a legible full-page capture is available.
 
 ---
 
@@ -695,25 +695,19 @@ This is enough for a strong COMP702 dissertation without making it look overload
 
 ## 10. Remaining Figure/Table Tasks
 
-The remaining tasks are:
+The visual evidence set is closed. The remaining work belongs to final document production:
 
-1. Create Figure 1 system architecture diagram.
+1. Render the Mermaid architecture and decision-pipeline sources in the required submission format.
 
-2. Create Figure 2 LLM decision pipeline diagram.
+2. Confirm that the four completed PNG figures and the selected replay screenshot remain legible at final page size.
 
-3. Capture Figure 3 replay viewer screenshot.
+3. Number captions and add cross-references after conversion from Markdown.
 
-4. Capture Figure 4 decision trace overlay screenshot.
+4. Add alternative text or an equivalent textual description where required by the submission format.
 
-5. Optionally create Figure 5 decision-source distribution chart.
+5. Use the detailed overlay as Figure 6 only if it remains readable; otherwise retain it as a linked supporting artefact rather than adding another crowded screenshot.
 
-6. Decide whether Figure 6 failure-case screenshot is needed.
-
-7. Convert key Chapter 3 requirements into tables.
-
-8. Ensure Chapter 6 result tables are consistent with evidence files.
-
-9. Add figure and table references in the final assembled dissertation.
+No additional charts or tables should be created unless supervisor review identifies a specific missing argument.
 
 ---
 

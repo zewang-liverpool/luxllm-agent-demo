@@ -1,5 +1,7 @@
 # Chapter 2 Reference Plan
 
+> **Status (28 July 2026): completed.** Chapter 2 has been critically revised and the consolidated references have been updated. The revision added literature on partial observability, admissible-action grounding, limitations of autonomous LLM planning, runtime shielding, trajectory-level agent evaluation, and the faithfulness limits of generated explanations. This document is retained as an audit trail of the original reference-planning process.
+
 ## 1. Purpose of This Document
 
 This document plans the citation enhancement for:
@@ -10,7 +12,7 @@ docs/dissertation/chapter_2_background_related_work.md
 
 ```
 
-The current Chapter 2 draft provides a safe background and related work structure, but it still needs stronger academic references.
+The original Chapter 2 draft provided a safe background structure but needed stronger academic references and more critical synthesis. The completed revision now addresses that weakness.
 
 The goal of this reference plan is to identify:
 

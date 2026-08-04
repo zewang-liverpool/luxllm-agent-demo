@@ -60,35 +60,19 @@ The aim of the project is:
 
 > To develop a decision-trace and action-verification framework that supports the inspection and evaluation of LLM-based agents in Lux AI Season 3.
 
-This aim is divided into the following objectives.
+To keep the investigation focused, this aim is divided into three objectives.
 
-### Objective 1: Implement a working Lux AI Season 3 agent
+### Objective 1: Structure game state for bounded LLM planning
 
-The project must implement an agent that can receive observations, produce actions, complete matches, and record outcomes.
+Implement a working Lux AI Season 3 agent that transforms raw observations into compact state summaries and uses them to request high-level strategic proposals from an LLM.
 
-### Objective 2: Build a structured state summarisation pipeline
+### Objective 2: Verify and control LLM-generated proposals
 
-The system should convert raw Lux AI observations into compact structured summaries suitable for LLM-based strategic planning.
+Parse model output and apply deterministic normalization, rule-based verification, fallback, strategy caching, and risk-aware filtering before constructing executable actions.
 
-### Objective 3: Integrate LLM-based strategic planning
+### Objective 3: Trace, evaluate, and visually inspect agent behaviour
 
-The system should use an LLM to produce high-level strategic proposals, such as objectives, risk posture, target locations, and unit-level intents.
-
-### Objective 4: Verify and control LLM-generated decisions
-
-The system should parse LLM output and use rule-based verification, fallback, strategy caching, and risk-aware filtering before converting plans into executable actions.
-
-### Objective 5: Record decision traces and evaluation metrics
-
-The system should record decision-source information, LLM usage, fallback status, cache usage, errors, latency, score context, and match outcomes.
-
-### Objective 6: Evaluate multiple LLM backends
-
-The project should compare at least two LLM backends under the same framework to test whether the system can support different reasoning-oriented models.
-
-### Objective 7: Provide replay-grounded visual inspection
-
-The project should provide a viewer that connects replay frames with decision-trace information, allowing behaviour to be inspected visually.
+Record decision provenance and evaluation metrics, compare multiple LLM backends under controlled conditions, and connect decision traces to replay frames for visual inspection.
 
 ---
 
@@ -138,7 +122,7 @@ The system records whether decisions come from fresh LLM calls, cached LLM plans
 
 ### 1.6.4 Controlled evaluation with multiple LLM backends
 
-The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework using 50 matched environment seeds with role swapping. Each backend completed 100 matches, giving 200 formal matches in total. All 4,591 recorded LLM calls were valid after deterministic checks, and no LLM timeout, API error, or downstream action fallback was observed.
+The project evaluates qwen3:32b and DeepSeek-R1-32B under the same framework using 50 matched environment seeds with role swapping. Each backend completed 100 matches against the same rule-based opponent, giving 200 formal matches in the primary evaluation. All 4,591 recorded LLM calls were valid after deterministic checks. A supplementary 100-match experiment then placed the two LLM-assisted agents directly against each other with model roles swapped for every seed. This second experiment tests whether the framework can retain separate, valid traces and verifier evidence for two concurrent LLM-controlled players; it is not used to claim a universal model ranking.
 
 ### 1.6.5 Replay-grounded decision trace overlay
 
@@ -186,6 +170,8 @@ The primary evaluation uses the same 50 environment seeds for each backend and s
 Across both backends, the evaluation contains 206,591 structured trace records. Agent-step and LLM-call trace completeness, replay linkage, and action-array shape validity were all 100%. Qwen required 520 deterministic normalization interventions, while DeepSeek required none. The risk filter changed proposed targets on 5,590 Qwen steps and 7,090 DeepSeek steps, providing observable evidence that rule-based verification affected execution rather than merely existing in the architecture.
 
 The Qwen-versus-DeepSeek matched comparison found a mean outcome-score difference of 0.03 with a paired-bootstrap 95% interval of [-0.07, 0.13] and a McNemar exact p-value of 0.690. Therefore, the results support controlled framework evaluation but do not establish a general ranking between the two models.
+
+The supplementary direct experiment completed another 100 role-swapped matches. Qwen won 54 and DeepSeek won 46, with a seed-level exact sign p-value of 0.503. More importantly for the research question, all 4,676 fresh LLM calls were valid after deterministic checks, all 106,317 trace records were complete, and normalization and risk-filter interventions were recorded separately for both players. These results extend the operational evidence from one LLM-controlled side to two without changing the project focus from framework evaluation to model comparison.
 
 ---
 
