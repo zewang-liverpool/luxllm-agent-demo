@@ -56,12 +56,13 @@ Record the date, tester, and any observation directly in a copy of this checklis
 | --- | --- | --- | --- | --- |
 | D1 | Demo runbook | `docs\final_demo_runbook.md` | Presenter can follow it without additional instructions | ☐ |
 | D2 | Local server | `python -m http.server 8000` | Starts without a port error | ☐ |
-| D3 | Viewer | `http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html` | Replay loads; Lux AI Season 3 is prominent; proposal, verification, and executed-state sections are legible | ☐ |
+| D3 | Viewer | `http://localhost:8000/docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html` | Presentation Mode opens by default; the board is unobstructed; all three stages are visible without panel scrolling at 1280×720 | ☐ |
 | D4 | Replay data | `logs\isometric_replay_frames_v09n11.json` | Viewer timeline has data | ☐ |
 | D5 | Trace overlay data | `data\run008_decision_trace_overlay.json` | Trace panel displays step-aligned information | ☐ |
 | D6 | Backup video | `docs\demo_videos\LuxLLM_Agent_Final_Demo_Run008_Isometric_Visualization.mp4` | H.264/AAC video plays with sound for 75.33 seconds | ☐ |
 | D7 | Timing rehearsal | `docs\final_demo_runbook.md` | Complete presentation takes 7-10 minutes | ☐ |
-| D8 | Q&A rehearsal | Runbook question section | Presenter can answer all four questions clearly | ☐ |
+| D8 | Q&A rehearsal | Runbook question section | Presenter can answer all five questions clearly, including the direct LLM-versus-LLM scope question | ☐ |
+| D9 | Supervisor UI feedback | Viewer header and trace panel | `Lux AI Season 3` is prominent; `Proposal Context`, `Rule Verification`, and `Executed State` are visually distinct; rejected proposals are not labelled valid | ☐ |
 
 ## E. GitHub and final package
 

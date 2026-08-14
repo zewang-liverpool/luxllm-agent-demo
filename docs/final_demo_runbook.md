@@ -43,6 +43,12 @@ Primary evaluation report:
 D:\PythonProject\lux_llm_agent\reports\final_trace_evaluation.md
 ```
 
+Supplementary direct LLM-versus-LLM report:
+
+```text
+D:\PythonProject\lux_llm_agent\reports\dual_llm_trace_evaluation.md
+```
+
 Reproducibility guide:
 
 ```text
@@ -70,7 +76,7 @@ Complete these checks at least 30 minutes before presenting:
    ```
 
 6. Confirm the replay timeline loads and the decision-trace panel does not report a data-loading error.
-7. Open `reports/final_trace_evaluation.md` in a second window or browser tab.
+7. Open `reports/final_trace_evaluation.md` and `reports/dual_llm_trace_evaluation.md` in separate tabs.
 8. Open the backup MP4 and pause it at the beginning.
 9. Keep the repository README open as a fallback architecture explanation.
 
@@ -100,14 +106,15 @@ Emphasise that the LLM provides bounded unit intents and the deterministic layer
 
 Show the live viewer. Move through several replay steps and point out:
 
+- the **Lux AI Season 3** label and the three-stage **Proposal Context -> Rule Verification -> Executed State** layout;
 - current match and step;
 - score and player context;
-- fresh LLM versus cached or rule-fallback decision source;
+- the **Proposal attempt**, **Fallback checkpoint**, and **Final frame** shortcuts;
 - model objective, risk posture, and unit intents;
 - verifier or risk-filter intervention fields;
 - connection between the displayed state and recorded trace.
 
-State clearly that Run008 is a qualitative inspection example, while the aggregate trace metrics come from all 200 formal matches.
+State clearly that Run008 is a qualitative fallback replay and must not be used as proof of the formal call-validity result. Open **Final** to show the separately labelled aggregate evidence from all 200 primary matches and the 100 supplementary direct dual-LLM matches.
 
 ### 4:30-6:30 — Formal evidence
 
@@ -123,6 +130,8 @@ Open `reports/final_trace_evaluation.md` and explain:
 - no timeout, LLM error, or downstream action fallback was observed.
 
 Explain that these numbers are evidence of inspectability and verifier operation, not proof that all possible LLM outputs are safe.
+
+Briefly open `reports/dual_llm_trace_evaluation.md`. State that the supervisor-requested supplementary experiment completed 100/100 direct Qwen-versus-DeepSeek matches over 50 role-swapped seed pairs, retained 106,317 complete traces, and produced 4,676/4,676 valid fresh calls. Emphasise that this demonstrates simultaneous two-sided tracing and verification. Do not present the 54:46 outcome as a model ranking; the seed-level exact sign p-value was 0.503.
 
 ### 6:30-7:30 — Controlled outcomes and limitations
 
@@ -161,6 +170,10 @@ No. It shows no downstream action failure was observed in these runs. The trace 
 **Is Qwen better than DeepSeek?**
 
 Not established here. The matched comparison interval crosses zero and the McNemar test is not significant. The experiment demonstrates framework support for both backends.
+
+**Can one LLM-assisted agent play directly against another?**
+
+Yes. The supplementary experiment completed 100 role-swapped Qwen-versus-DeepSeek matches while keeping separate per-player traces. Its purpose is to test concurrent inspection and verification, not to replace the main research question with a model-ranking study.
 
 **Can the results be reproduced without a GPU?**
 

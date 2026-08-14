@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LuxLLM-Agent CA2 checklist</title>
+  <style>
+    :root { color-scheme: light; --ink:#111827; --muted:#5f6877; --line:#d9dee7; --blue:#2458d3; --green:#147a4a; --amber:#a35b00; --surface:#f6f8fb; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Inter, Segoe UI, Arial, sans-serif; color:var(--ink); background:#eef2f7; line-height:1.5; }
+    main { width:min(980px, calc(100% - 32px)); margin:32px auto 64px; background:white; border:1px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:0 18px 50px rgba(18,31,53,.10); }
+    header { padding:34px 38px 28px; background:linear-gradient(135deg,#0d1b36,#173d83); color:white; }
+    h1 { margin:0 0 8px; font-size:clamp(30px,5vw,48px); line-height:1.05; }
+    header p { margin:0; max-width:760px; color:#d9e5ff; }
+    .progress-wrap { padding:20px 38px; border-bottom:1px solid var(--line); display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; }
+    .bar { height:11px; background:#e6eaf1; border-radius:999px; overflow:hidden; grid-column:1/-1; }
+    .bar > div { height:100%; width:0; background:var(--blue); transition:width .2s ease; }
+    section { padding:28px 38px; border-bottom:1px solid var(--line); }
+    h2 { margin:0 0 6px; font-size:24px; }
+    .hint { margin:0 0 18px; color:var(--muted); }
+    .item { display:grid; grid-template-columns:30px 1fr; gap:12px; padding:16px 0; border-top:1px solid #edf0f4; }
+    .item:first-of-type { border-top:0; }
+    input[type=checkbox] { width:22px; height:22px; margin-top:2px; accent-color:var(--blue); cursor:pointer; }
+    input[disabled] { cursor:not-allowed; }
+    label { cursor:pointer; }
+    .done label { color:var(--muted); text-decoration:line-through; }
+    strong { display:block; margin-bottom:3px; }
+    code { font-family:Cascadia Code, Consolas, monospace; font-size:.92em; background:#eef1f5; padding:2px 6px; border-radius:5px; overflow-wrap:anywhere; }
+    .status { display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:.04em; }
+    .auto { color:var(--green); background:#e7f6ee; }
+    .manual { color:var(--amber); background:#fff1dd; }
+    .warning { margin-top:18px; padding:14px 16px; border-left:4px solid #d97706; background:#fff8ea; }
+    .actions { padding:22px 38px; display:flex; gap:12px; flex-wrap:wrap; }
+    button { border:0; border-radius:9px; padding:10px 15px; font-weight:700; cursor:pointer; }
+    .primary { background:var(--blue); color:white; }
+    .secondary { background:#e9edf4; color:var(--ink); }
+    footer { padding:0 38px 30px; color:var(--muted); font-size:14px; }
+    @media (max-width:640px) { header,section,.progress-wrap,.actions,footer { padding-left:20px; padding-right:20px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>COMP702 CA2 closeout</h1>
+    <p>LuxLLM-Agent · manual tasks are deliberately placed after completed automated checks. Your progress is saved locally in this browser.</p>
+  </header>
+
+  <div class="progress-wrap">
+    <strong id="progressText">0 of 0 manual tasks complete</strong>
+    <span class="status manual">MANUAL PHASE</span>
+    <div class="bar"><div id="progressBar"></div></div>
+  </div>
+
+  <section>
+    <h2>Automated preparation</h2>
+    <p class="hint">Already completed; no action is required from you.</p>
+    <div class="item done"><input type="checkbox" checked disabled><label><strong>Seven-slide CA2 presentation generated and rendered</strong><code>D:\PythonProject\lux_llm_agent\docs\ca2\LuxLLM_Agent_CA2_Presentation.pptx</code></label></div>
+    <div class="item done"><input type="checkbox" checked disabled><label><strong>Narration and live-screen actions prepared</strong><code>D:\PythonProject\lux_llm_agent\docs\ca2\CA2_NARRATION_SCRIPT.md</code></label></div>
+    <div class="item done"><input type="checkbox" checked disabled><label><strong>Likely Q&A answers prepared</strong><code>D:\PythonProject\lux_llm_agent\docs\ca2\CA2_QA_PREPARATION.md</code></label></div>
+    <div class="item done"><input type="checkbox" checked disabled><label><strong>Code and evidence checks passed</strong>28 tests passed; project evidence validator passed; PowerPoint overflow test passed.</label></div>
+    <div class="item done"><input type="checkbox" checked disabled><label><strong>Ethical category confirmed and inserted</strong><code>A0</code>: no human/animal-derived data and no human participants.</label></div>
+  </section>
+
+  <section id="manualList">
+    <h2>Manual tasks — complete in this order</h2>
+    <p class="hint">The ethics step is complete. Do not start the final recording until the first two tasks below are complete.</p>
+
+    <div class="item"><input id="m3" data-manual type="checkbox"><label for="m3"><strong>1. Prepare the live demonstration</strong>Open <code>D:\PythonProject\lux_llm_agent\docs\viewers\s3_isometric_battle_viewer_v09n12d_trace_overlay.html</code>. Confirm Presentation Mode is active and test <strong>Proposal attempt</strong>, <strong>Fallback checkpoint</strong>, <strong>Final frame</strong>, and <strong>Final</strong>. Also open <code>state_summarizer.py</code>, <code>llm_decider.py</code>, and <code>agent.py</code> or <code>action_planner.py</code>.</label></div>
+
+    <div class="item"><input id="m4" data-manual type="checkbox"><label for="m4"><strong>2. Rehearse with a timer</strong>Use <code>D:\PythonProject\lux_llm_agent\docs\ca2\CA2_NARRATION_SCRIPT.md</code>. Aim for 9:10–9:35 and stop if the rehearsal reaches 9:40. Speak naturally; do not speed-read.</label></div>
+
+    <div class="item"><input id="m5" data-manual type="checkbox"><label for="m5"><strong>3. Record using your own voice</strong>Record slides, viewer interaction, and selected source code. Text-to-speech narration is not allowed. Keep notifications hidden and make code and trace text large enough to read.</label></div>
+
+    <div class="item"><input id="m6" data-manual type="checkbox"><label for="m6"><strong>4. Perform the final human quality check</strong>Confirm duration is below 10:00; audio is clear in both headphones; no passwords, terminals with secrets, or personal notifications appear; ethical code A0 is visible; every empirical claim matches the reports.</label></div>
+
+    <div class="item"><input id="m7" data-manual type="checkbox"><label for="m7"><strong>5. Confirm Canvas details and submit</strong>Confirm the live deadline, accepted format, and maximum size in the CA2 assignment page. Upload before the deadline, then download or replay the uploaded copy and verify audio, video, duration, and file identity.</label></div>
+
+    <div class="item"><input id="m8" data-manual type="checkbox"><label for="m8"><strong>6. Prepare for and attend the Q&A</strong>Keep the repository, viewer, reports, and code open. Review <code>D:\PythonProject\lux_llm_agent\docs\ca2\CA2_QA_PREPARATION.md</code>. Attend the scheduled session with both markers and write down their verbal feedback afterwards.</label></div>
+
+    <div class="warning"><strong>Submission safety rule</strong>The video and Q&A are both required. Missing either part can result in zero for CA2. The previously recorded 75-second demo is only an insert or backup, not the complete submission.</div>
+  </section>
+
+  <div class="actions">
+    <button class="primary" onclick="window.print()">Print / save as PDF</button>
+    <button class="secondary" id="resetBtn">Reset manual ticks</button>
+  </div>
+  <footer>Checklist state is stored only in this browser using localStorage.</footer>
+</main>
+<script>
+  const boxes = [...document.querySelectorAll('[data-manual]')];
+  const key = 'luxllm-ca2-manual-checklist-v1';
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  boxes.forEach(box => {
+    box.checked = Boolean(saved[box.id]);
+    box.addEventListener('change', save);
+  });
+  function save() {
+    const state = Object.fromEntries(boxes.map(box => [box.id, box.checked]));
+    localStorage.setItem(key, JSON.stringify(state));
+    update();
+  }
+  function update() {
+    const complete = boxes.filter(box => box.checked).length;
+    document.getElementById('progressText').textContent = `${complete} of ${boxes.length} manual tasks complete`;
+    document.getElementById('progressBar').style.width = `${(complete / boxes.length) * 100}%`;
+    boxes.forEach(box => box.closest('.item').classList.toggle('done', box.checked));
+  }
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (!confirm('Reset all manual checklist ticks?')) return;
+    boxes.forEach(box => { box.checked = false; });
+    save();
+  });
+  update();
+</script>
+</body>
+</html>

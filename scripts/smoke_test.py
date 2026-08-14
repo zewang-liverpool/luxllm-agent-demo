@@ -45,12 +45,37 @@ def validate_demo_data() -> None:
         "isometric_replay_frames.json",
         "run008_decision_trace_overlay.json",
         "Lux AI Season 3",
-        "1 · LLM Proposal",
+        "Presentation Mode",
+        "1 · Proposal Context",
         "2 · Rule Verification",
         "3 · Executed State",
+        "Replay score",
+        "proposal rejected",
+        "Primary matched-seed evaluation",
     ):
         if required not in viewer:
             raise SystemExit(f"Viewer does not reference {required}")
+
+    for forbidden in (
+        "qwen3:32b 50-run evaluation result",
+        'badge("structured output valid"',
+        'badge("cached LLM plan"',
+    ):
+        if forbidden in viewer:
+            raise SystemExit(f"Viewer contains superseded or misleading UI text: {forbidden}")
+
+    if "replayFrame?.score0 ?? item.score_player_0" not in viewer:
+        raise SystemExit("Viewer score is not sourced from the authoritative replay frame")
+    if "Math.min(600, Math.max(440, w * 0.24))" not in viewer:
+        raise SystemExit("Viewer board does not reserve space for the trace inspector")
+    if "requestAnimationFrame(draw)" not in viewer:
+        raise SystemExit("Viewer board is not redrawn after a presentation-mode layout change")
+    if ".presentation .controls {" in viewer:
+        raise SystemExit("Viewer control bar position still changes in presentation mode")
+    if "Open Inspector (H)" not in viewer:
+        raise SystemExit("Viewer does not provide a visible way to reopen the inspector")
+    if 'byId("luxTraceToggleHint")?.addEventListener' not in viewer:
+        raise SystemExit("Viewer inspector reopen control is not wired")
 
 
 def validate_evidence_consistency() -> None:
