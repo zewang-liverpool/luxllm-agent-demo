@@ -35,6 +35,8 @@ Thumbs.db
 .vscode/
 .idea/
 tmp/
+.tmp/
+*.pptx.inspect.ndjson
 
 # Large generated experiment outputs
 docs/hpc_qwen3_gpu_e4_50run/

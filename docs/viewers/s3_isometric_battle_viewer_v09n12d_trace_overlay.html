@@ -426,15 +426,17 @@
 
     .controls {
       position: absolute;
-      left: 50%;
+      left: calc(50% - 210px);
       transform: translateX(-50%);
       bottom: 16px;
-      min-width: 540px;
-      max-width: 720px;
+      width: 760px;
+      min-width: 760px;
+      max-width: 760px;
+      box-sizing: border-box;
       background: var(--control-bg);
       color: #23313a;
       border-radius: 20px;
-      padding: 12px 16px;
+      padding: 12px 22px 12px 16px;
       box-shadow: var(--shadow);
       display: flex;
       align-items: center;
@@ -544,26 +546,14 @@
     }
 
     .presentation #timelinePanel,
-    .presentation #dataSourcePanel {
-      display: none !important;
-    }
-
+    .presentation #dataSourcePanel,
     .presentation #statusPanel {
-      width: 210px;
-      height: auto;
-      top: 18px;
-      bottom: auto;
-      padding: 12px;
-      gap: 8px;
-    }
-
-    .presentation .score-summary,
-    .presentation .legend {
       display: none !important;
     }
 
-    .presentation .controls {
-      min-width: 500px;
+    .presentation .frame-counter {
+      min-width: 88px;
+      padding-right: 4px;
     }
 
     .overlay {
@@ -582,6 +572,8 @@
 
     .overlay-card {
       width: min(760px, 90vw);
+      max-height: 90vh;
+      overflow-y: auto;
       background: rgba(14, 57, 71, 0.96);
       border-radius: 24px;
       box-shadow: 0 18px 48px rgba(0, 0, 0, 0.26);
@@ -704,6 +696,61 @@
       gap: 10px;
     }
 
+    @media (max-height: 780px) {
+      .overlay-card {
+        padding: 16px 20px 14px;
+      }
+
+      .overlay-title {
+        font-size: 22px;
+        margin-bottom: 4px;
+      }
+
+      .overlay-subtitle {
+        margin-bottom: 9px;
+      }
+
+      .overlay-main {
+        margin-bottom: 10px;
+      }
+
+      .overlay-team {
+        padding: 8px 12px;
+      }
+
+      .overlay-team-score {
+        font-size: 28px;
+      }
+
+      .overlay-winner {
+        padding: 7px 10px;
+        margin-bottom: 9px;
+        font-size: 14px;
+      }
+
+      .overlay-grid {
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .overlay-box {
+        padding: 7px 10px;
+      }
+
+      .overlay-box-value {
+        font-size: 16px;
+      }
+
+      .overlay-table th,
+      .overlay-table td {
+        padding: 6px 9px;
+      }
+
+      .overlay-footer {
+        margin-top: 8px;
+      }
+    }
+
     .empty-state {
       color: var(--muted);
       font-size: 12px;
@@ -731,10 +778,11 @@
 <style id="luxllm-trace-overlay-style">
   #luxTracePanel {
     position: fixed;
-    top: 78px;
+    top: 52px;
     right: 280px;
-    width: 340px;
-    max-height: calc(100vh - 110px);
+    width: 360px;
+    max-height: calc(100vh - 124px);
+    box-sizing: border-box;
     overflow-y: auto;
     z-index: 9999;
     background: rgba(9, 16, 28, 0.94);
@@ -761,10 +809,65 @@
     color: #ffffff;
   }
 
+  #luxTracePanel .trace-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  #luxTracePanel .trace-close {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #dbe8ff;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
   #luxTracePanel .trace-subtitle {
     font-size: 11px;
     color: #9fb4d6;
     margin-bottom: 10px;
+  }
+
+  #luxTracePanel .trace-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin: 8px 0;
+  }
+
+  #luxTracePanel .trace-nav button {
+    border: 1px solid rgba(120, 170, 255, 0.28);
+    border-radius: 9px;
+    padding: 6px 5px;
+    background: rgba(120, 170, 255, 0.10);
+    color: #dbe8ff;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  #luxTracePanel .trace-nav button:hover,
+  #luxTracePanel .trace-nav button:focus-visible {
+    background: rgba(120, 170, 255, 0.24);
+    outline: none;
+  }
+
+  #luxTracePanel .trace-integrity-note {
+    margin: 7px 0 8px;
+    padding: 7px 8px;
+    border-left: 3px solid #ffd166;
+    border-radius: 8px;
+    background: rgba(255, 209, 102, 0.08);
+    color: #ffe9b5;
+    font-size: 10.5px;
   }
 
   #luxTracePanel .trace-row {
@@ -846,6 +949,12 @@
     background: rgba(255, 255, 255, 0.035);
   }
 
+  #luxTracePanel .trace-stage-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
   #luxTracePanel .trace-stage.proposal {
     border-left: 3px solid #4f82ff;
   }
@@ -895,6 +1004,144 @@
     padding-top: 8px;
   }
 
+  .presentation #luxTracePanel {
+    top: 18px;
+    right: 16px;
+    bottom: auto;
+    width: 400px;
+    height: auto;
+    max-height: calc(100vh - 102px);
+    padding: 13px 13px 10px;
+    overflow-y: auto;
+    z-index: 18;
+  }
+
+  .presentation #luxTracePanel .trace-row {
+    grid-template-columns: 94px 1fr;
+    padding: 2px 0;
+  }
+
+  .presentation #luxTracePanel .trace-stage {
+    margin-top: 7px;
+    padding: 7px 8px 6px;
+  }
+
+  .presentation #luxTracePanel .trace-stage-grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  .presentation #luxTracePanel .trace-stage-grid .trace-row {
+    grid-template-columns: 66px 1fr;
+  }
+
+  .presentation #luxTracePanel .trace-intent {
+    padding: 5px 7px;
+    margin-top: 4px;
+  }
+
+  .presentation #luxTracePanel .trace-subtitle,
+  .presentation #luxTracePanel .trace-footer,
+  .presentation #luxTracePanel .trace-reason-row,
+  .presentation #luxTracePanel .trace-player-row {
+    display: none;
+  }
+
+  .presentation #luxTracePanel .trace-nav {
+    margin: 5px 0;
+  }
+
+  .presentation #luxTracePanel .trace-badges {
+    margin: 5px 0;
+  }
+
+  .presentation #luxTracePanel .trace-integrity-note {
+    margin: 5px 0;
+    padding: 5px 7px;
+  }
+
+  @media (min-width: 1101px) and (min-height: 800px) {
+    .presentation #luxTracePanel {
+      width: 430px;
+      padding: 15px 15px 13px;
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .presentation #luxTracePanel .trace-title {
+      font-size: 18px;
+    }
+
+    .presentation #luxTracePanel .trace-nav button {
+      padding: 7px 6px;
+      font-size: 11.5px;
+    }
+
+    .presentation #luxTracePanel .trace-badge {
+      padding: 4px 9px;
+      font-size: 11.5px;
+    }
+
+    .presentation #luxTracePanel .trace-integrity-note {
+      font-size: 12px;
+    }
+
+    .presentation #luxTracePanel .trace-row {
+      grid-template-columns: 108px 1fr;
+      gap: 10px;
+      padding: 3px 0;
+    }
+
+    .presentation #luxTracePanel .trace-stage-grid .trace-row {
+      grid-template-columns: 74px 1fr;
+      gap: 8px;
+    }
+
+    .presentation #luxTracePanel .trace-key {
+      font-size: 12.5px;
+    }
+
+    .presentation #luxTracePanel .trace-stage-title {
+      font-size: 12.5px;
+    }
+
+    .presentation #luxTracePanel .trace-section-title,
+    .presentation #luxTracePanel .trace-intent {
+      font-size: 13px;
+    }
+
+    .presentation #traceStep,
+    .presentation #tracePhase,
+    .presentation #traceScore {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 900;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .presentation #luxTracePanel {
+      width: 350px;
+    }
+
+    .controls {
+      left: calc(50% - 180px);
+      width: min(680px, calc(100vw - 390px));
+      min-width: 470px;
+      max-width: 680px;
+    }
+  }
+
+  @media (max-height: 680px) {
+    .presentation #luxTracePanel {
+      font-size: 11px;
+    }
+
+    .presentation #luxTracePanel .trace-section-title {
+      display: none;
+    }
+  }
+
   #luxTraceToggleHint {
     position: fixed;
     right: 300px;
@@ -907,7 +1154,16 @@
     padding: 7px 11px;
     font-family: Inter, Segoe UI, Arial, sans-serif;
     font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+  }
+
+  #luxTraceToggleHint:hover,
+  #luxTraceToggleHint:focus-visible {
+    background: rgba(20, 38, 61, 0.96);
+    border-color: rgba(120, 170, 255, 0.62);
+    outline: none;
   }
 </style>
 
@@ -1024,7 +1280,7 @@
     <div class="controls">
       <button id="restartBtn" class="btn btn-neutral">Restart</button>
       <button id="playBtn" class="btn btn-primary">Play</button>
-      <button id="presentationBtn" class="btn btn-neutral">Presentation</button>
+      <button id="presentationBtn" class="btn btn-neutral" aria-pressed="false">Presentation Mode</button>
       <button id="finalBtn" class="btn btn-neutral">Final</button>
 
       <div class="range-wrap">
@@ -1043,8 +1299,8 @@
 
     <div id="finalOverlay" class="overlay">
       <div class="overlay-card">
-        <div class="overlay-title">Final Match Result</div>
-        <div class="overlay-subtitle">qwen3:32b 50-run evaluation result with Run008 replay context</div>
+        <div class="overlay-title">Evidence Summary</div>
+        <div class="overlay-subtitle">Run008 is a qualitative replay; formal matched-seed results are reported separately below.</div>
 
         <div class="overlay-main">
           <div class="overlay-team">
@@ -1066,15 +1322,15 @@
             <div class="overlay-box-value" id="overlayFrames">0</div>
           </div>
           <div class="overlay-box">
-            <div class="overlay-box-label">Strategy use rate</div>
+            <div class="overlay-box-label">Both-player frames</div>
             <div class="overlay-box-value" id="overlayBothRate">0.00%</div>
           </div>
           <div class="overlay-box">
-            <div class="overlay-box-label">Fallback rate</div>
+            <div class="overlay-box-label">Risk-filter target changes</div>
             <div class="overlay-box-value" id="overlayRiskChanges">0</div>
           </div>
           <div class="overlay-box">
-            <div class="overlay-box-label">50-run wins</div>
+            <div class="overlay-box-label">Replay match wins</div>
             <div class="overlay-box-value" id="overlayMatchWins">0 : 0</div>
           </div>
           <div class="overlay-box">
@@ -1082,7 +1338,7 @@
             <div class="overlay-box-value" id="overlayDraws">0</div>
           </div>
           <div class="overlay-box">
-            <div class="overlay-box-label">Win summary</div>
+            <div class="overlay-box-label">Cumulative replay score</div>
             <div class="overlay-box-value" id="overlayTotalScore">0 : 0</div>
           </div>
         </div>
@@ -1097,6 +1353,11 @@
           </thead>
           <tbody id="overlayTableBody"></tbody>
         </table>
+
+        <div class="overlay-subtitle" style="margin:14px 0 0;">
+          Formal sources: <a href="../../reports/final_trace_evaluation.md" style="color:#aeefff;">primary evaluation</a>
+          and <a href="../../reports/dual_llm_trace_evaluation.md" style="color:#aeefff;">direct dual-LLM evaluation</a>.
+        </div>
 
         <div class="overlay-footer">
           <button id="closeOverlayBtn" class="btn btn-primary">Close</button>
@@ -1589,81 +1850,42 @@
     }
 
     function renderOverlay() {
-      const paperCtx = state.paperResultContext || null;
-      const hasPaperCtx = paperCtx && typeof paperCtx === "object";
-
       const replayScore0 = state.finalResult.final_score_team0;
       const replayScore1 = state.finalResult.final_score_team1;
       const replayWinner = state.finalResult.winner;
 
+      overlayScoreP0.textContent = replayScore0;
+      overlayScoreP1.textContent = replayScore1;
+      overlayWinner.textContent = `Current Run008 replay: ${replayWinner} (${replayScore0} : ${replayScore1})`;
       overlayFrames.textContent = `${state.summary.frame_count}`;
-
-      if (hasPaperCtx) {
-        const evalMatches = safeNumber(paperCtx.total_matches, 0);
-        const evalP0Wins = safeNumber(paperCtx.player_0_wins, 0);
-        const evalP1Wins = safeNumber(paperCtx.player_1_wins, 0);
-        const evalDraws = safeNumber(paperCtx.draws, 0);
-        const strategyUseRate = safeNumber(paperCtx.strategy_use_rate, 0);
-        const fallbackRate = safeNumber(paperCtx.fallback_rate, 0);
-        const llmErrors = safeNumber(paperCtx.llm_errors, 0);
-
-        const evalWinner =
-          evalP0Wins > evalP1Wins ? "player_0" :
-          evalP1Wins > evalP0Wins ? "player_1" : "tied";
-
-        overlayScoreP0.textContent = evalP0Wins;
-        overlayScoreP1.textContent = evalP1Wins;
-        overlayWinner.textContent = `50-run evaluation winner: ${evalWinner} | Run008 replay score: ${replayScore0} : ${replayScore1}, ${replayWinner}`;
-
-        overlayBothRate.textContent = pctText(strategyUseRate);
-        overlayRiskChanges.textContent = pctText(fallbackRate);
-        overlayMatchWins.textContent = `${evalP0Wins} : ${evalP1Wins}`;
-        overlayDraws.textContent = `${evalDraws}`;
-        overlayTotalScore.textContent = `${evalP0Wins} : ${evalP1Wins}`;
-
-        overlayTableBody.innerHTML = `
-          <tr>
-            <td>Run008 replay</td>
-            <td>${replayScore0} : ${replayScore1}</td>
-            <td>${replayWinner}</td>
-          </tr>
-          <tr>
-            <td>50-run evaluation</td>
-            <td>${evalP0Wins} : ${evalP1Wins}</td>
-            <td>${evalWinner}</td>
-          </tr>
-          <tr>
-            <td>Strategy use</td>
-            <td>${pctText(strategyUseRate)}</td>
-            <td>${evalMatches} matches</td>
-          </tr>
-          <tr>
-            <td>Fallback / errors</td>
-            <td>${pctText(fallbackRate)}</td>
-            <td>${llmErrors} LLM errors</td>
-          </tr>
-        `;
-        return;
-      }
-
       overlayBothRate.textContent = pctText(state.summary.both_player_frame_rate);
       overlayRiskChanges.textContent = `${state.summary.total_risk_changes}`;
       overlayMatchWins.textContent = `${state.matchSummary.p0_wins} : ${state.matchSummary.p1_wins}`;
       overlayDraws.textContent = `${state.matchSummary.draws}`;
       overlayTotalScore.textContent = `${state.matchSummary.total_score_team0} : ${state.matchSummary.total_score_team1}`;
 
-      overlayTableBody.innerHTML = (state.matchSummary.matches || []).map(m => {
-        const winner =
-          m.winner === "p0" || m.winner === "player_0" ? "player_0" :
-          m.winner === "p1" || m.winner === "player_1" ? "player_1" : "draw";
-        return `
-          <tr>
-            <td>M${m.match_idx}</td>
-            <td>${m.score_team0} : ${m.score_team1}</td>
-            <td>${winner}</td>
-          </tr>
-        `;
-      }).join("");
+      overlayTableBody.innerHTML = `
+        <tr>
+          <td>Run008 qualitative replay</td>
+          <td>${state.matchSummary.match_count} matches</td>
+          <td>Trace-linked visual inspection</td>
+        </tr>
+        <tr>
+          <td>Primary matched-seed evaluation</td>
+          <td>Qwen 63/100 · DeepSeek 60/100</td>
+          <td>4,591/4,591 valid after checks</td>
+        </tr>
+        <tr>
+          <td>Supplementary direct dual-LLM</td>
+          <td>Qwen 54 · DeepSeek 46</td>
+          <td>4,676/4,676 valid after checks</td>
+        </tr>
+        <tr>
+          <td>Interpretation</td>
+          <td>Inspection + verification evidence</td>
+          <td>Not a general model ranking</td>
+        </tr>
+      `;
     }
 
     function escapeHtml(text) {
@@ -1912,7 +2134,15 @@
       const tileH = tileW * 0.48;
       const islandScale = 1.0;
 
-      const originX = w * 0.50;
+      const tracePanel = document.getElementById("luxTracePanel");
+      const tracePanelVisible = Boolean(tracePanel && !tracePanel.classList.contains("hidden"));
+      const standardInspectorReservation = tracePanelVisible
+        ? Math.min(600, Math.max(440, w * 0.24))
+        : 0;
+      const inspectorReservation = state.presentation
+        ? Math.min(450, w * 0.36)
+        : standardInspectorReservation;
+      const originX = (w - inspectorReservation) * 0.50;
       const originY = h * 0.14;
 
       const top = isoProject(0, 0, tileW, tileH, originX, originY);
@@ -2044,9 +2274,13 @@
     function setPresentationMode(enabled) {
       state.presentation = enabled;
       app.classList.toggle("presentation", enabled);
+      document.body.classList.toggle("presentation", enabled);
       presentationBtn.classList.toggle("btn-active", enabled);
       presentationBtn.classList.toggle("btn-neutral", !enabled);
+      presentationBtn.textContent = enabled ? "Exit Presentation" : "Presentation Mode";
+      presentationBtn.setAttribute("aria-pressed", String(enabled));
       draw();
+      requestAnimationFrame(draw);
     }
 
     function showFinalOverlay(show) {
@@ -2113,42 +2347,60 @@
 
     window.addEventListener("resize", resizeCanvas);
 
+    window.luxllmRedrawBoard = draw;
+
     resizeCanvas();
+    setPresentationMode(true);
     tryLoadDefaultSource();
   </script>
 
-<div id="luxTracePanel">
-  <div class="trace-title">Decision-to-Action Inspector</div>
-  <div class="trace-subtitle">Lux AI Season 3 · replay-grounded evidence · press <b>H</b> to hide/show</div>
+<div id="luxTracePanel" role="region" aria-label="Decision-to-Action Inspector">
+  <div class="trace-header">
+    <div>
+      <div class="trace-title">Decision-to-Action Inspector</div>
+      <div class="trace-subtitle">Lux AI Season 3 · replay-grounded evidence · press <b>H</b> to hide/show</div>
+
+    </div>
+    <button id="traceCloseBtn" class="trace-close" type="button" aria-label="Hide decision inspector">×</button>
+  </div>
+
+  <div class="trace-nav" aria-label="Replay evidence shortcuts">
+    <button type="button" data-trace-jump="proposal">Proposal attempt</button>
+    <button type="button" data-trace-jump="fallback">Fallback checkpoint</button>
+    <button type="button" data-trace-jump="final">Final frame</button>
+  </div>
 
   <div class="trace-badges" id="traceBadges"></div>
+  <div id="traceIntegrityNote" class="trace-integrity-note">Loading trace provenance...</div>
 
   <div class="trace-row"><div class="trace-key">Frame / Step</div><div class="trace-value" id="traceStep">Loading...</div></div>
   <div class="trace-row"><div class="trace-key">Phase</div><div class="trace-value" id="tracePhase">-</div></div>
 
   <div class="trace-stage proposal">
-    <div class="trace-stage-title">1 · LLM Proposal</div>
-    <div class="trace-row"><div class="trace-key">Player</div><div class="trace-value" id="tracePlayer">-</div></div>
+    <div class="trace-stage-title" id="traceProposalTitle">1 · Proposal Context</div>
+    <div class="trace-row trace-player-row"><div class="trace-key">Player</div><div class="trace-value" id="tracePlayer">-</div></div>
     <div class="trace-row"><div class="trace-key">Source</div><div class="trace-value" id="traceSource">-</div></div>
     <div class="trace-row"><div class="trace-key">Model</div><div class="trace-value" id="traceModel">-</div></div>
     <div class="trace-row"><div class="trace-key">Objective</div><div class="trace-value" id="traceObjective">-</div></div>
-    <div class="trace-row"><div class="trace-key">Reason</div><div class="trace-value" id="traceReason">-</div></div>
+    <div class="trace-row trace-reason-row"><div class="trace-key">Reason</div><div class="trace-value" id="traceReason">-</div></div>
     <div class="trace-section-title">Structured unit intents</div>
     <div id="traceIntents"></div>
   </div>
 
-  <div class="trace-stage verification">
+  <div class="trace-stage-grid">
+    <div class="trace-stage verification">
     <div class="trace-stage-title">2 · Rule Verification</div>
     <div class="trace-row"><div class="trace-key">Schema check</div><div class="trace-value" id="traceValidity">-</div></div>
     <div class="trace-row"><div class="trace-key">Risk posture</div><div class="trace-value" id="traceRisk">-</div></div>
     <div class="trace-row"><div class="trace-key">Fallback</div><div class="trace-value" id="traceFallback">-</div></div>
     <div class="trace-row"><div class="trace-key">Risk filter</div><div class="trace-value" id="traceRiskFilter">-</div></div>
-  </div>
+    </div>
 
-  <div class="trace-stage execution">
-    <div class="trace-stage-title">3 · Executed State</div>
-    <div class="trace-row"><div class="trace-key">Score</div><div class="trace-value" id="traceScore">-</div></div>
-    <div class="trace-row"><div class="trace-key">Summary</div><div class="trace-value" id="traceSummary">-</div></div>
+    <div class="trace-stage execution">
+      <div class="trace-stage-title">3 · Executed State</div>
+      <div class="trace-row"><div class="trace-key">Replay score</div><div class="trace-value" id="traceScore">-</div></div>
+      <div class="trace-row"><div class="trace-key">Summary</div><div class="trace-value" id="traceSummary">-</div></div>
+    </div>
   </div>
 
   <div class="trace-footer">
@@ -2156,7 +2408,7 @@
   </div>
 </div>
 
-<div id="luxTraceToggleHint">H: toggle decision trace overlay</div>
+<button id="luxTraceToggleHint" class="hidden" type="button" aria-label="Open decision inspector">Open Inspector (H)</button>
 
 
 <script id="luxllm-trace-overlay-script">
@@ -2249,31 +2501,38 @@
 
   function renderBadges(item) {
     const badges = [];
+    const exactProposal = Boolean(item.has_exact_llm_decision);
+    const cachedPlan = item.decision_source === "cached_llm" || Boolean(item.cached_llm_turn);
+    const rulePath = item.decision_source === "rule_only" || item.decision_source === "rule_fallback";
 
-    if (item.decision_source === "llm_fresh" || item.has_exact_llm_decision) {
-      badges.push(badge("fresh LLM proposal", "fresh"));
-    } else if (item.decision_source === "cached_llm" || item.has_recent_llm_decision) {
-      badges.push(badge("cached LLM plan", "cached"));
-    } else {
-      badges.push(badge("rule fallback", "rule"));
+    if (exactProposal) {
+      badges.push(badge("proposal attempt", "fresh"));
+    } else if (cachedPlan) {
+      badges.push(badge("cached verified plan", "cached"));
+    } else if (rulePath) {
+      badges.push(badge("rule-generated action", "rule"));
     }
 
-    if (item.fallback_used) {
-      badges.push(badge("fallback", "warn"));
+    if (exactProposal) {
+      badges.push(
+        item.llm_valid
+          ? badge("structured proposal valid", "good")
+          : badge("proposal rejected", "bad")
+      );
     }
 
     if (item.timed_out || item.llm_error) {
       badges.push(badge("LLM issue", "bad"));
-    } else if (item.llm_valid || item.has_exact_llm_decision || item.has_recent_llm_decision) {
-      badges.push(badge("structured output valid", "good"));
-    } else {
-      badges.push(badge("no fresh schema check", ""));
+    }
+
+    if (item.fallback_used) {
+      badges.push(badge("deterministic fallback", "warn"));
     }
 
     if (item.risk_filter_changed) {
       badges.push(badge("verifier changed target", "warn"));
-    } else {
-      badges.push(badge("verifier: no change", "good"));
+    } else if (item.risk_filter_enabled) {
+      badges.push(badge("risk check: no target change", ""));
     }
 
     const el = byId("traceBadges");
@@ -2286,11 +2545,18 @@
 
     const intents = Array.isArray(item.intents) ? item.intents : [];
     if (!intents.length) {
-      el.innerHTML = `<div class="trace-intent">No unit intent recorded for this frame.</div>`;
+      const message = item.fallback_used
+        ? "No structured unit intent was accepted; the deterministic rule path supplied the action."
+        : "No unit intent was recorded for this frame.";
+      el.innerHTML = `<div class="trace-intent">${escapeHtml(message)}</div>`;
       return;
     }
 
-    el.innerHTML = intents.map((it) => {
+    const maxVisible = document.getElementById("app")?.classList.contains("presentation") ? 2 : 4;
+    const visibleIntents = intents.slice(0, maxVisible);
+    const remaining = Math.max(0, intents.length - visibleIntents.length);
+
+    el.innerHTML = visibleIntents.map((it) => {
       const target = Array.isArray(it.target) ? `[${it.target.join(", ")}]` : "-";
       return `
         <div class="trace-intent">
@@ -2299,7 +2565,9 @@
           <div>${escapeHtml(it.reason || "")}</div>
         </div>
       `;
-    }).join("");
+    }).join("") + (remaining
+      ? `<div class="trace-intent">+ ${remaining} additional recorded unit intent(s)</div>`
+      : "");
   }
 
   function renderTracePanel() {
@@ -2309,6 +2577,16 @@
     if (!item) return;
 
     const plan = item.global_plan || {};
+    const replayIndex = getCurrentFrameIndex();
+    const replayFrame = (
+      typeof state !== "undefined" &&
+      Array.isArray(state.frames) &&
+      replayIndex >= 0 &&
+      replayIndex < state.frames.length
+    ) ? state.frames[replayIndex] : null;
+    const exactProposal = Boolean(item.has_exact_llm_decision);
+    const cachedPlan = item.decision_source === "cached_llm" || Boolean(item.cached_llm_turn);
+    const rulePath = item.decision_source === "rule_only" || item.decision_source === "rule_fallback";
 
     renderBadges(item);
 
@@ -2320,25 +2598,60 @@
     text("traceObjective", plan.main_objective || "-");
     text("traceRisk", plan.risk_posture || "-");
     text("traceReason", plan.reason || "-");
+
+    const proposalTitle = byId("traceProposalTitle");
+    if (proposalTitle) {
+      proposalTitle.textContent = exactProposal
+        ? "1 · Proposal Attempt"
+        : cachedPlan
+          ? "1 · Verified Plan Context"
+          : "1 · Decision Context";
+    }
+
     text(
       "traceValidity",
-      item.llm_called
-        ? (item.llm_valid ? "valid structured proposal" : "invalid; deterministic fallback")
-        : (item.has_recent_llm_decision ? "previous verified plan reused" : "not applicable")
+      exactProposal
+        ? (item.llm_valid ? "passed post-check" : "rejected")
+        : cachedPlan
+          ? "previous verified plan reused"
+          : rulePath
+            ? "not accepted (rule path active)"
+            : "not applicable"
     );
 
     const fallbackText = item.fallback_used
-      ? `Yes${item.fallback_reason ? ": " + item.fallback_reason : ""}`
+      ? `Yes${item.fallback_reason ? " — " + item.fallback_reason : ""}`
       : "No";
     text("traceFallback", fallbackText);
 
     const riskFilterText = item.risk_filter_enabled
-      ? `enabled, changed=${Boolean(item.risk_filter_changed)}, targets=${item.risk_filter_changed_targets ?? 0}`
-      : "disabled";
+      ? (item.risk_filter_changed
+          ? `changed ${item.risk_filter_changed_targets ?? 0} target(s)`
+          : "checked; unchanged")
+      : "not active";
     text("traceRiskFilter", riskFilterText);
 
-    text("traceScore", `P0 ${item.score_player_0 ?? 0} : P1 ${item.score_player_1 ?? 0}`);
-    text("traceSummary", item.overlay_summary || "-");
+    const replayScore0 = replayFrame?.score0 ?? item.score_player_0 ?? 0;
+    const replayScore1 = replayFrame?.score1 ?? item.score_player_1 ?? 0;
+    text("traceScore", `P0 ${replayScore0} : P1 ${replayScore1}`);
+    const executedSummary = item.fallback_used
+      ? `Fallback executed${item.active_action_count ? `; ${item.active_action_count} active action(s)` : ""}.`
+      : rulePath
+        ? "Rule-generated actions executed."
+        : (item.overlay_summary || "-");
+    text("traceSummary", executedSummary);
+
+    const integrityNote = byId("traceIntegrityNote");
+    if (integrityNote) {
+      const presentationMode = byId("app")?.classList.contains("presentation");
+      integrityNote.textContent = item.fallback_used
+        ? (presentationMode
+            ? "This replay frame used deterministic fallback; open Final for formal aggregate results."
+            : "Replay provenance: this frame executed the deterministic fallback. Formal valid-call results are reported separately in the evidence summary.")
+        : item.risk_filter_changed
+          ? "Replay provenance: the verifier changed an unsafe proposed target before action execution."
+          : "Replay provenance: labels below are derived directly from the recorded trace fields.";
+    }
 
     renderIntents(item);
   }
@@ -2362,11 +2675,55 @@
     }
   }
 
+  function setTracePanelVisible(visible) {
+    tracePanelVisible = visible;
+    const panel = byId("luxTracePanel");
+    if (panel) panel.classList.toggle("hidden", !tracePanelVisible);
+    const openButton = byId("luxTraceToggleHint");
+    if (openButton) openButton.classList.toggle("hidden", tracePanelVisible);
+    window.luxllmRedrawBoard?.();
+  }
+
+  function jumpToEvidence(kind) {
+    const range = byId("frameRange");
+    if (!range || !traceItems.length) return;
+
+    let targetIndex = 0;
+    if (kind === "proposal") {
+      targetIndex = traceItems.findIndex((item) => item.has_exact_llm_decision);
+    } else if (kind === "fallback") {
+      targetIndex = traceItems.findIndex(
+        (item, index) => index > 0 && item.has_exact_llm_decision && item.fallback_used
+      );
+    } else if (kind === "final") {
+      targetIndex = Number(range.max);
+    }
+
+    if (!Number.isFinite(targetIndex) || targetIndex < 0) targetIndex = 0;
+    targetIndex = Math.min(Number(range.max), targetIndex);
+    range.value = String(targetIndex);
+    range.dispatchEvent(new Event("input", { bubbles: true }));
+    renderTracePanel();
+  }
+
+  document.querySelectorAll("[data-trace-jump]").forEach((button) => {
+    button.addEventListener("click", () => jumpToEvidence(button.dataset.traceJump));
+  });
+
+  byId("traceCloseBtn")?.addEventListener("click", () => setTracePanelVisible(false));
+  byId("luxTraceToggleHint")?.addEventListener("click", () => setTracePanelVisible(true));
+
+  byId("presentationBtn")?.addEventListener("click", () => {
+    if (byId("app")?.classList.contains("presentation")) {
+      setTracePanelVisible(true);
+    }
+  });
+
+  byId("frameRange")?.addEventListener("input", renderTracePanel);
+
   document.addEventListener("keydown", function (event) {
     if (event.key && event.key.toLowerCase() === "h") {
-      tracePanelVisible = !tracePanelVisible;
-      const panel = byId("luxTracePanel");
-      if (panel) panel.classList.toggle("hidden", !tracePanelVisible);
+      setTracePanelVisible(!tracePanelVisible);
     }
   });
 
@@ -2375,6 +2732,7 @@
     reload: loadTraceOverlay,
     render: renderTracePanel,
     getCurrentFrameIndex,
+    jumpToEvidence,
   };
 
   loadTraceOverlay();

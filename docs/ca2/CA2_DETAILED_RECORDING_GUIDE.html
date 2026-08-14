@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LuxLLM-Agent CA2 详细录制指南</title>
+  <style>
+    :root{color-scheme:light;--ink:#142033;--muted:#5d6879;--line:#dbe2ec;--blue:#315ee9;--soft:#f5f7fb;--green:#147a4a;--amber:#9a5a00;--red:#b42318}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#edf1f7;color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif;line-height:1.58}
+    main{width:min(1120px,calc(100% - 30px));margin:24px auto 64px;background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(23,36,61,.12)}
+    header{padding:34px 42px 30px;color:#fff;background:linear-gradient(135deg,#102348,#244da8 64%,#2d67d5)}h1{margin:0 0 8px;font-size:clamp(30px,4.5vw,48px);line-height:1.1}header p{max-width:820px;margin:0;color:#dce7ff}
+    .metrics{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}.metric{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.14);font-weight:800}
+    .sticky{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto;gap:10px 18px;align-items:center;padding:15px 42px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
+    .bar{grid-column:1/-1;height:9px;overflow:hidden;border-radius:999px;background:#e4e9f1}.bar>div{width:0;height:100%;background:var(--blue);transition:width .2s ease}
+    nav{padding:16px 42px;display:flex;flex-wrap:wrap;gap:8px;background:var(--soft);border-bottom:1px solid var(--line)}nav a{color:#244da8;text-decoration:none;font-weight:800;padding:6px 10px;background:#fff;border:1px solid var(--line);border-radius:8px}
+    section{padding:30px 42px;border-bottom:1px solid var(--line)}h2{margin:0 0 7px;font-size:26px;line-height:1.2}h3{margin:24px 0 8px;font-size:19px}p{margin:8px 0}.hint{color:var(--muted)}
+    .callout{margin:16px 0;padding:14px 17px;border-radius:10px;border-left:4px solid var(--blue);background:#edf2ff}.warning{border-color:#d38400;background:#fff5df;color:#6d4100}.stop{border-color:var(--red);background:#fff0ee;color:#7a1b14}.good{border-color:var(--green);background:#e8f7ef;color:#0e5b38}
+    code{font-family:"Cascadia Code",Consolas,monospace;font-size:.92em;background:#eef1f5;padding:2px 6px;border-radius:5px;overflow-wrap:anywhere}pre{padding:15px 17px;overflow-x:auto;border-radius:10px;background:#101b2e;color:#eaf0ff}pre code{padding:0;background:transparent;color:inherit}
+    table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:14px}th,td{padding:10px 11px;border:1px solid var(--line);vertical-align:top;text-align:left}th{background:#f1f4f9}td:first-child,th:first-child{white-space:nowrap}
+    .item{display:grid;grid-template-columns:30px 1fr;gap:10px;padding:12px 0;border-top:1px solid #edf0f4}.item:first-of-type{border-top:0}input[type=checkbox]{width:21px;height:21px;margin:3px 0 0;accent-color:var(--blue);cursor:pointer}label{cursor:pointer}.done label{color:var(--muted);text-decoration:line-through}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;padding:24px 42px}button,.button-link{border:0;border-radius:9px;padding:10px 15px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none}.primary{color:#fff;background:var(--blue)}.secondary{color:var(--ink);background:#e8edf4}footer{padding:0 42px 34px;color:var(--muted);font-size:13px}
+    @media(max-width:700px){header,section,.sticky,nav,.actions,footer{padding-left:20px;padding-right:20px}.sticky{grid-template-columns:1fr}table{font-size:12px}th,td{padding:7px}}@media print{body{background:#fff}main{width:100%;margin:0;border:0;box-shadow:none}.sticky,nav,.actions{display:none}section{break-inside:avoid}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>LuxLLM-Agent CA2 详细录制指南</h1>
+    <p>用于完成COMP702 Project Video。按照本页从上到下执行；所有勾选状态会自动保存在当前浏览器中。</p>
+    <div class="metrics"><span class="metric">目标成片 9:20</span><span class="metric">人工上限 9:40</span><span class="metric">必须低于 10:00</span><span class="metric">必须使用本人声音</span></div>
+  </header>
+  <div class="sticky"><strong id="progressText">0 / 0 项已完成</strong><span>录制前逐项确认</span><div class="bar"><div id="progressBar"></div></div></div>
+  <nav><a href="#rules">硬性要求</a><a href="#files">文件与启动</a><a href="#prepare">录制前准备</a><a href="#timeline">9:20时间轴</a><a href="#viewer">Viewer镜头</a><a href="#code">代码镜头</a><a href="#record">Windows录屏</a><a href="#voice">配音剪辑</a><a href="#final">最终验收</a></nav>
+
+  <section id="rules">
+    <h2>1. CA2硬性要求</h2>
+    <div class="item"><input id="r1" data-task type="checkbox"><label for="r1"><strong>最终视频低于10分钟</strong>目标为9:20；导出后检查实际文件时长，不把10:00当作可接受边界。</label></div>
+    <div class="item"><input id="r2" data-task type="checkbox"><label for="r2"><strong>旁白必须是本人声音</strong>可以后期配音，但不能使用文字转语音或AI语音替代本人讲解。</label></div>
+    <div class="item"><input id="r3" data-task type="checkbox"><label for="r3"><strong>包含介绍、软件演示和开发环境</strong>不能只提交Viewer短视频，也不能只播放幻灯片。</label></div>
+    <div class="item"><input id="r4" data-task type="checkbox"><label for="r4"><strong>标题页包含伦理声明</strong>本项目为A0：Data category A，Participant category 0。</label></div>
+    <div class="item"><input id="r5" data-task type="checkbox"><label for="r5"><strong>视频与Q&amp;A都必须完成</strong>缺少其中任何一项都可能导致CA2记零分。</label></div>
+    <div class="callout warning"><strong>方向：</strong>核心始终是structured decision tracing与rule-based action verification如何支持检查和评估。胜率和模型对战只能作为证据，不能把视频讲成模型排行榜。</div>
+  </section>
+
+  <section id="files">
+    <h2>2. 文件与Viewer启动</h2>
+    <table><thead><tr><th>用途</th><th>本地路径</th></tr></thead><tbody>
+      <tr><td>CA2幻灯片</td><td><code>D:\PythonProject\lux_llm_agent\docs\ca2\LuxLLM_Agent_CA2_Presentation.pptx</code></td></tr>
+      <tr><td>英文旁白</td><td><code>D:\PythonProject\lux_llm_agent\docs\ca2\CA2_NARRATION_SCRIPT.md</code></td></tr>
+      <tr><td>Viewer</td><td><code>D:\PythonProject\lux_llm_agent\docs\viewers\s3_isometric_battle_viewer_v09n12d_trace_overlay.html</code></td></tr>
+      <tr><td>状态摘要</td><td><code>D:\PythonProject\lux_llm_agent\src\agent\state_summarizer.py</code></td></tr>
+      <tr><td>LLM解析</td><td><code>D:\PythonProject\lux_llm_agent\src\agent\llm_decider.py</code></td></tr>
+      <tr><td>Agent控制</td><td><code>D:\PythonProject\lux_llm_agent\src\agent\agent.py</code></td></tr>
+      <tr><td>正式报告</td><td><code>D:\PythonProject\lux_llm_agent\reports\final_trace_evaluation.md</code></td></tr>
+      <tr><td>双LLM报告</td><td><code>D:\PythonProject\lux_llm_agent\reports\dual_llm_trace_evaluation.md</code></td></tr>
+      <tr><td>视频目录</td><td><code>D:\PythonProject\lux_llm_agent\docs\demo_videos</code></td></tr>
+    </tbody></table>
+    <h3>启动命令</h3>
+    <pre><code>cd D:\PythonProject\lux_llm_agent
+.\.venv\Scripts\python.exe -m http.server 8000 --bind 127.0.0.1</code></pre>
+    <p>保持PowerShell运行，然后点击：</p>
+    <p><a class="button-link primary" href="http://127.0.0.1:8000/docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html?v=20260808-recording" target="_blank">打开录制版Viewer</a></p>
+    <div class="callout stop"><strong>停止录制条件：</strong>显示1/1、Loading、Failed to load、比分一直不变、地图被面板遮挡、白色控制栏切换时移动。先Ctrl+F5或重新打开上面的带版本地址。</div>
+  </section>
+
+  <section id="prepare">
+    <h2>3. 录制前30分钟</h2>
+    <div class="item"><input id="p1" data-task type="checkbox"><label for="p1">连接电源；关闭Discord、邮件、系统更新和所有通知。</label></div>
+    <div class="item"><input id="p2" data-task type="checkbox"><label for="p2">关闭无关标签页；画面中没有密码、私人聊天、API key或个人信息。</label></div>
+    <div class="item"><input id="p3" data-task type="checkbox"><label for="p3">确认浏览器与VS Code文字在录制后全屏播放时可读。</label></div>
+    <div class="item"><input id="p4" data-task type="checkbox"><label for="p4">标题页显示Ze Wang、Dr Meng Fang、Lux AI Season 3和A0伦理类别。</label></div>
+    <div class="item"><input id="p5" data-task type="checkbox"><label for="p5">Viewer显示1/505；Play后帧数和Replay score正常更新。</label></div>
+    <div class="item"><input id="p6" data-task type="checkbox"><label for="p6">切换Presentation Mode后地图无遮挡，白色控制栏位置不变。</label></div>
+    <div class="item"><input id="p7" data-task type="checkbox"><label for="p7">关闭Inspector后出现Open Inspector (H)，点击可以恢复。</label></div>
+    <div class="item"><input id="p8" data-task type="checkbox"><label for="p8">VS Code预先打开三个代码文件并定位到要展示的函数。</label></div>
+    <div class="item"><input id="p9" data-task type="checkbox"><label for="p9">完整朗读旁白计时；超过9:40就删减，不要快速朗读。</label></div>
+    <div class="item"><input id="p10" data-task type="checkbox"><label for="p10">磁盘至少保留5GB空间，创建素材和最终输出文件夹。</label></div>
+  </section>
+
+  <section id="timeline">
+    <h2>4. 9分20秒时间轴</h2>
+    <table><thead><tr><th>最终时间</th><th>时长</th><th>画面</th><th>内容</th></tr></thead><tbody>
+      <tr><td>0:00–0:35</td><td>35秒</td><td>幻灯片1</td><td>姓名、项目、导师、Season 3、A0伦理声明。</td></tr>
+      <tr><td>0:35–1:35</td><td>60秒</td><td>幻灯片2</td><td>动机、win rate局限、总体研究问题。</td></tr>
+      <tr><td>1:35–2:10</td><td>35秒</td><td>幻灯片3</td><td>state summary→LLM proposal→verification→action→trace。</td></tr>
+      <tr><td>2:10–2:25</td><td>15秒</td><td>幻灯片4</td><td>预告Viewer中的Proposal、Verification和Executed State。</td></tr>
+      <tr><td>2:25–5:10</td><td>2分45秒</td><td>Viewer</td><td>Proposal、Verification、Executed State、fallback、Final evidence。</td></tr>
+      <tr><td>5:10–5:25</td><td>15秒</td><td>幻灯片5</td><td>说明三个代码边界。</td></tr>
+      <tr><td>5:25–6:35</td><td>1分10秒</td><td>VS Code</td><td>summary、schema/normalisation、risk filter/fallback。</td></tr>
+      <tr><td>6:35–8:25</td><td>1分50秒</td><td>幻灯片6/报告</td><td>200 primary matches和100 dual-LLM matches。</td></tr>
+      <tr><td>8:25–9:20</td><td>55秒</td><td>幻灯片7</td><td>局限性、贡献、回答研究问题、Thank you。</td></tr>
+    </tbody></table>
+    <div class="callout good">每段开头和结尾各留2秒稳定画面，已包含在时长中。加入转场后控制在9:20–9:35。</div>
+  </section>
+
+  <section id="viewer">
+    <h2>5. Viewer镜头（2分45秒）</h2>
+    <table><thead><tr><th>片段时间</th><th>操作</th><th>停顿与检查</th></tr></thead><tbody>
+      <tr><td>0:00–0:15</td><td>完整界面静止</td><td>展示Season 3、棋盘和Inspector三阶段。</td></tr>
+      <tr><td>0:15–0:27</td><td>Play约12秒后Pause</td><td>确认帧数和Replay score变化。</td></tr>
+      <tr><td>0:27–1:02</td><td>Proposal attempt</td><td>停留35秒；指向source、model、objective和fallback badges。</td></tr>
+      <tr><td>1:02–1:37</td><td>Fallback checkpoint</td><td>停留35秒；指向schema、risk posture、fallback、executed state。</td></tr>
+      <tr><td>1:37–1:52</td><td>Final frame</td><td>停留15秒；展示最终Replay score和执行摘要。</td></tr>
+      <tr><td>1:52–2:30</td><td>底部Final</td><td>停留38秒；说明200场primary与100场supplementary证据。</td></tr>
+      <tr><td>2:30–2:45</td><td>关闭Final摘要</td><td>保持最终棋盘和Inspector静止15秒。</td></tr>
+    </tbody></table>
+    <div class="item"><input id="v1" data-task type="checkbox"><label for="v1">Viewer片段没有1/1、Loading、失败信息、遮挡或控制栏移动。</label></div>
+    <div class="item"><input id="v2" data-task type="checkbox"><label for="v2">没有把Run008定性fallback回放误述为正式valid-call证据。</label></div>
+    <div class="item"><input id="v3" data-task type="checkbox"><label for="v3">Final明确区分primary evaluation和supplementary dual-LLM evaluation。</label></div>
+  </section>
+
+  <section id="code">
+    <h2>6. 代码镜头（1分25秒）</h2>
+    <p>录成三个独立片段；每次切换文件后先静止3秒，滚动速度要慢。</p>
+    <table><thead><tr><th>文件</th><th>时长</th><th>展示重点</th></tr></thead><tbody>
+      <tr><td>state_summarizer.py</td><td>约28秒</td><td>phase、score、units、relics、exploration和risk context。</td></tr>
+      <tr><td>llm_decider.py</td><td>约28秒</td><td>结构化JSON、schema、key normalisation、有效性与错误处理。</td></tr>
+      <tr><td>agent.py</td><td>约29秒</td><td>缓存、risk filter、fallback、合法action array和trace。</td></tr>
+    </tbody></table>
+    <div class="callout warning">不要快速浏览所有源码。只展示最能证明设计贡献的三处实现。</div>
+  </section>
+
+  <section id="record">
+    <h2>7. Windows自带录屏</h2>
+    <p>Xbox Game Bar围绕当前应用录制，因此幻灯片、浏览器和VS Code分别录制，后期更容易拼接。</p>
+    <ol><li>点击需要录制的应用窗口。</li><li>按<code>Win + G</code>打开Game Bar。</li><li>按<code>Win + Alt + R</code>开始录制。</li><li>静止2–3秒后再操作。</li><li>片段结尾静止2秒，再按<code>Win + Alt + R</code>停止。</li><li>立即播放素材，检查清晰度和完整性。</li></ol>
+    <div class="item"><input id="w1" data-task type="checkbox"><label for="w1">没有Game Bar浮窗、通知、任务栏弹窗或私人内容。</label></div>
+    <div class="item"><input id="w2" data-task type="checkbox"><label for="w2">Viewer文字和VS Code代码在全屏播放时可读。</label></div>
+    <div class="item"><input id="w3" data-task type="checkbox"><label for="w3">素材按01_title、02_problem、03_architecture、04_viewer等顺序命名。</label></div>
+  </section>
+
+  <section id="voice">
+    <h2>8. 本人配音、剪辑与导出</h2>
+    <h3>配音</h3><ul><li>按7段分别录制本人英文旁白。</li><li>每段开头和结尾保留约0.5秒安静部分。</li><li>语速正常；放不下就删减文字，不加速音频。</li><li>不使用TTS，不需要背景音乐。</li><li>音量一致，无削波、喷麦、键盘声或持续噪声。</li></ul>
+    <h3>剪辑</h3><ul><li>先按时间轴排列画面，再加入旁白。</li><li>只使用短淡入淡出，避免花哨转场。</li><li>删除加载、误点、长空白和重复操作。</li><li>不能增加报告中没有支持的新结论。</li></ul>
+    <h3>推荐导出</h3>
+    <table><tbody><tr><th>容器</th><td>MP4</td></tr><tr><th>视频</th><td>H.264，30fps</td></tr><tr><th>分辨率</th><td>优先1920×1080；若保持原宽屏，确认播放器不裁剪</td></tr><tr><th>音频</th><td>AAC，48kHz</td></tr><tr><th>文件名</th><td><code>Ze_Wang_COMP702_CA2_LuxLLM_Agent.mp4</code></td></tr></tbody></table>
+  </section>
+
+  <section id="final">
+    <h2>9. 最终验收与提交</h2>
+    <div class="item"><input id="f1" data-task type="checkbox"><label for="f1"><strong>时长：</strong>实际文件低于10:00，建议9:20–9:35。</label></div>
+    <div class="item"><input id="f2" data-task type="checkbox"><label for="f2"><strong>开头：</strong>35秒内包含姓名、项目、导师和A0。</label></div>
+    <div class="item"><input id="f3" data-task type="checkbox"><label for="f3"><strong>研究问题：</strong>全过程围绕一个总体研究问题。</label></div>
+    <div class="item"><input id="f4" data-task type="checkbox"><label for="f4"><strong>Viewer：</strong>播放正常、地图无遮挡、控制栏固定、Inspector可恢复。</label></div>
+    <div class="item"><input id="f5" data-task type="checkbox"><label for="f5"><strong>代码：</strong>三处关键实现可读，没有密钥或私人内容。</label></div>
+    <div class="item"><input id="f6" data-task type="checkbox"><label for="f6"><strong>数字：</strong>200/200、100/100、trace和valid-call数字与报告一致。</label></div>
+    <div class="item"><input id="f7" data-task type="checkbox"><label for="f7"><strong>措辞：</strong>没有声称绝对安全或通用模型排名。</label></div>
+    <div class="item"><input id="f8" data-task type="checkbox"><label for="f8"><strong>声音：</strong>全程本人声音；用耳机和扬声器各检查一次。</label></div>
+    <div class="item"><input id="f9" data-task type="checkbox"><label for="f9"><strong>隐私：</strong>没有通知、密码、聊天、API key或无关窗口。</label></div>
+    <div class="item"><input id="f10" data-task type="checkbox"><label for="f10"><strong>Canvas：</strong>确认截止时间、格式和大小限制，提前上传。</label></div>
+    <div class="item"><input id="f11" data-task type="checkbox"><label for="f11"><strong>上传后：</strong>播放或下载已上传文件，复核视频、音频和版本。</label></div>
+    <div class="callout stop"><strong>不要提交：</strong>静音成片、AI配音、超过10分钟、只有Viewer的短片、加载失败画面、私人通知或没有伦理声明的版本。</div>
+  </section>
+
+  <div class="actions"><button class="primary" onclick="window.print()">打印 / 保存为PDF</button><button class="secondary" id="resetBtn">重置全部勾选</button><a class="button-link secondary" href="CA2_NARRATION_SCRIPT.md" target="_blank">打开英文旁白</a></div>
+  <footer>进度只保存在当前浏览器的localStorage中，不会上传。最终提交仍以Canvas最新要求为准。</footer>
+</main>
+<script>
+  const boxes=[...document.querySelectorAll('[data-task]')];const key='luxllm-ca2-detailed-recording-guide-v1';const saved=JSON.parse(localStorage.getItem(key)||'{}');
+  boxes.forEach(box=>{box.checked=Boolean(saved[box.id]);box.addEventListener('change',save)});
+  function save(){localStorage.setItem(key,JSON.stringify(Object.fromEntries(boxes.map(box=>[box.id,box.checked]))));update()}
+  function update(){const done=boxes.filter(box=>box.checked).length;document.getElementById('progressText').textContent=`${done} / ${boxes.length} 项已完成`;document.getElementById('progressBar').style.width=`${boxes.length?(done/boxes.length)*100:0}%`;boxes.forEach(box=>box.closest('.item')?.classList.toggle('done',box.checked))}
+  document.getElementById('resetBtn').addEventListener('click',()=>{if(!confirm('确定要清除本页所有勾选状态吗？'))return;boxes.forEach(box=>box.checked=false);save()});update();
+</script>
+</body>
+</html>

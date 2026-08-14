@@ -1,0 +1,27 @@
+CA2 deck source notes
+
+Slide 1
+- User-provided COMP702 CA2 instructions: title slide must identify ethical data and participant categories and state compliance.
+- University of Liverpool Ethical Guidance screenshots supplied by the student on 3 August 2026: category A means no data derived from humans or animals; category 0 means no use of human participants in any activity. Combined category: A0.
+- paper/main.tex, Ethics Statement: no personal data and no decisions about real users.
+
+Slide 2
+- docs/technical/system_architecture.md: project purpose, research question, and separation between LLM proposals and executable actions.
+- Current local Viewer screenshot captured on 14 August 2026: Lux AI Season 3 board with the Decision-to-Action Inspector.
+
+Slide 3
+- docs/technical/system_architecture.md: state summarisation, LLM decision, structured parser, rule-based verifier, cache, fallback, risk filter, action planner, logging, and replay inspection.
+
+Slide 4
+- Current local Viewer screenshot captured on 14 August 2026: focused Proposal / Verification / Executed State inspection.
+- docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html: current replay-grounded Viewer implementation.
+
+Slide 5
+- src/agent/state_summarizer.py: bounded state construction.
+- src/agent/llm_decider.py: structured LLM request, parsing, validation, and normalisation.
+- src/agent/agent.py: cache, verifier, risk-filter, fallback, and legal-action boundary.
+
+Slides 6 and 7
+- reports/final_trace_evaluation.md: 200 completed primary matches; 4,591 calls valid after checks; 520 Qwen normalisation interventions; 206,591 primary trace records.
+- reports/dual_llm_trace_evaluation.md: 100 completed direct model-versus-model matches; 4,676 valid calls after checks; 106,317 traces; 54:46 result and seed-level sign p-value 0.5034.
+- reports/verifier_intervention_audit.md and reports/dual_llm_verifier_audit.md: 28,401 risk-filter changed steps across the three formal studies.

@@ -195,6 +195,9 @@ The tracked reports are [`reports/dual_llm_trace_evaluation.md`](reports/dual_ll
 The overall supervisor-facing project report is available at
 [`docs/supervisor_project_report_20260716.md`](docs/supervisor_project_report_20260716.md).
 
+For the latest review status, earlier weaknesses, implemented improvements, formal evidence, and remaining limitations, see
+[`docs/project_review_summary_20260814.md`](docs/project_review_summary_20260814.md). The current CA2 presentation and recording materials are under [`docs/ca2/`](docs/ca2/).
+
 ---
 
 ## Historical Development Results (Superseded)
