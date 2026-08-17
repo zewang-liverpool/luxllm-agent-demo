@@ -208,6 +208,10 @@ def run_match(
             "LUX_LLM_SEED": str(seed),
             "LUX_LLM_TIMEOUT_SECONDS": str(args.timeout),
             "LUX_PRINT_AGENT_DEBUG": "0",
+            # Both Lux players are separate processes. Isolated directories
+            # prevent cross-process JSONL contention on Barkla's shared home
+            # filesystem while retaining complete two-sided step traces.
+            "LUX_SEPARATE_PLAYER_LOGS": "1",
         }
     )
     env.update(method_environment(args.method))

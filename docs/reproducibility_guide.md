@@ -61,7 +61,7 @@ The smoke test compiles every tracked Python utility without creating
 Expected result:
 
 ```text
-34 tests passed
+35 tests passed
 ```
 
 GitHub Actions runs the same checks on Python 3.10 and 3.11 for pushes and pull

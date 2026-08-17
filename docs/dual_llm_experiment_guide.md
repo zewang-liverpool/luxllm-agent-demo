@@ -28,7 +28,7 @@ Run before transferring the source to Barkla2:
 Expected minimum result:
 
 ```text
-34 tests pass
+35 tests pass
 2/2 mock matches complete
 1 matched seed pair complete
 both players and both mock models present in every run

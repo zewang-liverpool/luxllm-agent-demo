@@ -1,3 +1,4 @@
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -30,6 +31,16 @@ class ExperimentRunnerTests(unittest.TestCase):
     def test_dtav_method_enables_project_interventions(self):
         env = method_environment("dtav")
         self.assertTrue(all(value == "1" for key, value in env.items() if key != "LUX_DECISION_METHOD"))
+
+    @mock.patch.dict(
+        "run_paired_experiment.os.environ",
+        {"LUX_SEPARATE_PLAYER_LOGS": "1"},
+    )
+    def test_player_log_isolation_is_available_for_paired_runs(self):
+        self.assertEqual(
+            os.environ["LUX_SEPARATE_PLAYER_LOGS"],
+            "1",
+        )
 
     def test_method_validator_rejects_mislabeled_direct_prompt_settings(self):
         metadata = {

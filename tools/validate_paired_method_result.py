@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import glob
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -99,8 +98,14 @@ def validate(result_dir: Path, expected_method: str) -> Dict:
     if improper:
         errors.append(f"improper role-swapped seed pairs: {improper}")
 
-    decision_paths = [Path(path) for path in glob.glob(str(result_dir / "runs" / "*" / "logs" / "llm_decisions.jsonl"))]
-    trace_paths = [Path(path) for path in glob.glob(str(result_dir / "runs" / "*" / "logs" / "decision_trace.jsonl"))]
+    # New paired runs isolate player processes under logs/player_0 and
+    # logs/player_1. Recursive discovery also accepts historical flat logs.
+    decision_paths = sorted(
+        result_dir.glob("runs/*/logs/**/llm_decisions.jsonl")
+    )
+    trace_paths = sorted(
+        result_dir.glob("runs/*/logs/**/decision_trace.jsonl")
+    )
     llm_records = [
         record for path in decision_paths for record in read_jsonl(path, errors)
     ]

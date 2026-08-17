@@ -19,10 +19,6 @@ def _lock_descriptor(descriptor: int) -> None:
                 return
             except OSError:
                 time.sleep(0.005)
-    else:
-        import fcntl
-
-        fcntl.flock(descriptor, fcntl.LOCK_EX)
 
 
 def _unlock_descriptor(descriptor: int) -> None:
@@ -31,19 +27,15 @@ def _unlock_descriptor(descriptor: int) -> None:
 
         os.lseek(descriptor, 0, os.SEEK_SET)
         msvcrt.locking(descriptor, msvcrt.LK_UNLCK, 1)
-    else:
-        import fcntl
-
-        fcntl.flock(descriptor, fcntl.LOCK_UN)
 
 
 def append_jsonl_atomic(path: str, data: Dict) -> None:
     """Append one complete UTF-8 JSON record with a single OS write.
 
-    A Lux match launches one process per player. Both processes intentionally
-    write to the same evidence files, so buffered text writes can interleave
-    when a record is large. A platform file lock plus one ``os.write`` keeps
-    each record contiguous on Windows and Barkla/Linux.
+    A Lux match launches one process per player. Experiment runners isolate
+    their player log directories on Linux/Barkla, where locks on the shared
+    home filesystem are prohibitively slow. Windows retains a short file lock
+    for legacy shared-log runs. In both cases a record uses one ``os.write``.
     """
     directory = os.path.dirname(path)
     if directory:
@@ -53,15 +45,17 @@ def append_jsonl_atomic(path: str, data: Dict) -> None:
     flags |= getattr(os, "O_BINARY", 0)
     descriptor = os.open(path, flags, 0o666)
     try:
-        _lock_descriptor(descriptor)
+        if os.name == "nt":
+            _lock_descriptor(descriptor)
         written = os.write(descriptor, payload)
         if written != len(payload):
             raise OSError(
                 f"Incomplete JSONL append to {path}: wrote {written} of {len(payload)} bytes"
             )
     finally:
-        try:
-            _unlock_descriptor(descriptor)
-        except OSError:
-            pass
+        if os.name == "nt":
+            try:
+                _unlock_descriptor(descriptor)
+            except OSError:
+                pass
         os.close(descriptor)

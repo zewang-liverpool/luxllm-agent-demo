@@ -6,7 +6,7 @@ Updated and revalidated on 14 August 2026.
 
 | Check | Result | Evidence |
 |---|---|---|
-| Project unit tests | PASS | `34 passed` |
+| Project unit tests | PASS | `35 passed` |
 | Project evidence validator | PASS | `Project evidence validation passed.` |
 | Existing CA2 PowerPoint file | NEEDS UPDATE | The seven-slide deck passed the earlier rendering and overflow checks, but predates the 14 August research-question and DTAV framing revision |
 | Current narration and recording guide | PASS | Updated to the player-first Viewer, current research question, and project-specific DTAV terminology |
