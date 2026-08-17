@@ -12,7 +12,7 @@ The purpose of this comparison is not to create a general-purpose LLM leaderboar
 
 This analysis supports the main research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 The comparison is also relevant to the dissertation evaluation chapter because it shows how different LLMs behave when placed inside the same structured decision pipeline.
 
@@ -367,5 +367,5 @@ The qwen3:32b and DeepSeek-R1-32B comparison strengthens LuxLLM-Agent as a disse
 
 qwen3:32b achieved a higher win rate in the current 50-run evidence, while DeepSeek-R1-32B produced a closer 26-24 result. Both models completed 50 controlled runs with zero LLM errors.
 
-The key conclusion is not that one model is universally better. Instead, the evidence shows that the LuxLLM-Agent framework can support different LLM backends while preserving stable execution, structured decision tracing, fallback handling, and replay-grounded evaluation.
+The key conclusion is not that one model is universally better. Instead, the evidence shows that the LuxLLM-Agent framework can support different LLM backends while preserving stable execution, the project-specific DTAV decision-trace approach, fallback handling, and replay-grounded evaluation.
 

@@ -3,9 +3,9 @@
 ## Purpose
 
 This document prevents unlimited project modification. Work stops when the
-high-priority engineering and evidence criteria below are satisfied. Cosmetic
-polish, additional models, larger repeated runs, leaderboard optimisation, and
-new viewer features are outside this closeout.
+high-priority engineering and evidence criteria below are satisfied. The
+14 August supervisor feedback adds one bounded comparison--direct prompting
+versus DTAV--but does not reopen unlimited model, experiment, or UI expansion.
 
 ## Required stopping criteria
 
@@ -53,12 +53,23 @@ The project is considered technically closed when all of the following hold:
    - No additional GPU experiment is required unless a retained result fails
      validation or the supervisor identifies a specific missing comparison.
 
+7. **Direct-prompting comparison requested on 14 August 2026**
+   - The repository exposes `dtav` and `direct_prompt` through the same paired
+     runner and records the method in environment, match, call, and step logs.
+   - Local unit, mock-LLM, smoke, and consistency tests pass.
+   - One matched formal comparison is run with the same source commit, model,
+     seeds, roles, temperature, generation budget, and call schedule.
+   - Reporting distinguishes the unavoidable Lux action adapter/fallback from
+     DTAV's normalisation, strategy reuse, and risk-aware filtering.
+   - Development stops after the formal comparison is validated and integrated;
+     extra models remain optional rather than required.
+
 ## Explicit non-requirements
 
 The following are not required to close the project:
 
 - additional LLM backends;
-- another repeated 50-run or 100-run experiment;
+- repeated experiments beyond the single direct-prompt versus DTAV comparison;
 - live 32B inference during the demonstration;
 - a leaderboard-level Lux policy;
 - a formal human-subject user study;

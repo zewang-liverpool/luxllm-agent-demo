@@ -4,7 +4,7 @@ This directory contains the working materials for the COMP702 second assessment 
 
 ## Files prepared automatically
 
-- `LuxLLM_Agent_CA2_Presentation.pptx` — final seven-slide deck using the current Viewer, implementation boundaries, formal evidence, limitations, and conclusion.
+- `LuxLLM_Agent_CA2_Presentation.pptx` - editable seven-slide deck that passed the earlier layout checks but must be updated to the 14 August research question and DTAV framing before final recording.
 - `CA2_NARRATION_SCRIPT.md` — an English narration script targeting approximately 9 minutes 20 seconds, including screen actions.
 - `CA2_QA_PREPARATION.md` — concise answers to likely marker questions.
 - `CA2_RECORDING_AND_SUBMISSION_CHECKLIST.html` — a local interactive checklist whose ticked state is saved in the browser.

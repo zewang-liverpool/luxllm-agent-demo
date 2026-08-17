@@ -1,12 +1,12 @@
 # LuxLLM-Agent
 
-**LuxLLM-Agent** is an interactive decision-trace and evaluation platform for inspecting LLM-based agents in **Lux AI Season 3**.
+**LuxLLM-Agent** is an interactive platform for developing and evaluating LLM-based decision making in **Lux AI Season 3**.
 
-The project combines a Lux AI Season 3 agent, structured game-state summarisation, LLM-based strategic decision generation, rule-based action verification, fallback handling, decision provenance logging, controlled-run evaluation, and an isometric replay viewer.
+The project combines a Lux AI Season 3 agent, compact game-state summarisation, LLM-based strategic proposals, deterministic action verification, fallback handling, decision provenance logging, controlled evaluation, and an isometric replay viewer.
 
-The project is designed for an MSc dissertation and research-demo style artifact. Its main goal is not simply to build an agent that plays Lux AI, but to investigate how LLM-based game-agent decisions can be structured, verified, traced, and evaluated.
+The project is designed for an MSc dissertation and research-demo style artifact. Its main goal is to test how effectively directly prompted LLMs can make decisions in this type of game and whether the project-specific Decision-Trace and Action-Verification (DTAV) method addresses the observed limitations.
 
-> **Project status:** `LuxLLM-Agent COMP702 Submission Freeze v1`. The core system, controlled experiments, supervisor-requested dual-LLM supplementary experiment, decision-trace viewer, and dissertation drafts are complete. Current work is limited to evidence integration, supervisor feedback, presentation rehearsal, formatting, and final submission preparation.
+> **Project status:** the earlier controlled studies and dual-LLM supplementary study are complete. Following supervisor feedback on 14 August 2026, a controlled direct-prompting baseline has been added for the final DTAV comparison. Its local mock validation is part of the repository; formal GPU results must be reported only after that comparison has been run and validated.
 
 ---
 
@@ -14,15 +14,17 @@ The project is designed for an MSc dissertation and research-demo style artifact
 
 This project investigates the following research question:
 
-> **How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?**
+> **How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?**
 
-Model backends and match outcomes are evaluated as controlled case studies of this framework, not as a general-purpose model leaderboard. Win rate is therefore a secondary outcome measure. The primary evidence concerns trace completeness, decision provenance, structured-output validity, rule-based verification and fallback behaviour, and the ability to connect recorded decisions with executed actions and replay outcomes.
+Lux AI Season 3 is used because it combines incomplete observations, multiple controlled units, long-horizon state, adversarial interaction, and strict action rules. It is an adversarial multi-agent strategy game, not a social-interaction study. Model backends and match outcomes remain controlled case studies rather than a general-purpose model leaderboard.
 
-The system is built around three sub-questions:
+The investigation has three objectives:
 
-1. How can raw Lux AI Season 3 game states be transformed into compact structured inputs for LLM-based strategic decision making?
-2. How can rule-based verification and fallback mechanisms reduce invalid or unstable LLM-generated actions?
-3. How can replay-grounded decision traces help inspect the relationship between LLM reasoning, selected strategies, executed actions, and game outcomes?
+1. Establish a controlled direct-prompting baseline with matched seeds, role swapping, and the same model settings.
+2. Implement DTAV so LLM proposals can be normalised, reused, checked, filtered, or replaced before legal action construction.
+3. Compare direct prompting and DTAV using validity, fallback/intervention rates, reliability, latency, match outcomes, and replay-linked inspection.
+
+“DTAV” names the method developed in this project. Its decision trace is a predefined operational audit record, not the model's hidden chain of thought. The canonical scope is recorded in [`docs/research_scope_20260814.md`](docs/research_scope_20260814.md).
 
 ---
 
@@ -417,6 +419,7 @@ role-swapped experiment runner are tracked in the repository.
 powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
 .\.venv\Scripts\python.exe scripts\smoke_test.py
 .\.venv\Scripts\python.exe scripts\run_rule_smoke.py --seed 42
+.\.venv\Scripts\python.exe scripts\run_mock_direct_prompt_smoke.py
 ```
 
 The setup scripts detect an unusable `.venv` left by a removed Python
@@ -425,6 +428,16 @@ installation and rebuild it with an available supported interpreter.
 For the full setup, 100-match paired protocol, Barkla2 instructions, generated
 files, and acceptance criteria, see
 [`docs/reproducibility_guide.md`](docs/reproducibility_guide.md).
+
+The same paired runner now exposes the two controlled method conditions:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_paired_experiment.py --method direct_prompt --model qwen3:32b --pairs 1
+.\.venv\Scripts\python.exe scripts\run_paired_experiment.py --method dtav --model qwen3:32b --pairs 1
+```
+
+The formal matched protocol and interpretation boundary are documented in
+[`docs/direct_prompt_dtav_experiment_guide.md`](docs/direct_prompt_dtav_experiment_guide.md).
 
 ---
 
@@ -457,6 +470,8 @@ LUX_FORCE_FALLBACK
 LUX_LLM_MODEL
 LUX_LLM_BASE_URL
 LUX_EXPERIMENT_TAG
+LUX_DECISION_METHOD
+LUX_NORMALIZE_LLM_OUTPUT
 LUX_ENABLE_RULE_FALLBACK
 LUX_ENABLE_STRATEGY_CACHE
 LUX_ENABLE_RISK_AWARE_ACTION_FILTER
@@ -484,7 +499,7 @@ LUX_LLM_MODEL=deepseek-r1:32b
 
 The current results support the following dissertation-level interpretation:
 
-1. **Structured decision tracing** makes the LLM-agent behaviour inspectable beyond final match scores.
+1. **The project-specific DTAV audit record** makes the LLM-agent behaviour inspectable beyond final match scores.
 2. **Rule-based action verification** allows LLM outputs to be used as strategic proposals rather than unsafe direct actions.
 3. **Fallback and caching** improve runtime stability and reduce the cost of repeated LLM calls.
 4. **Replay-grounded inspection** connects state, decision source, action execution, and outcome.
@@ -514,7 +529,7 @@ This repository supports an MSc dissertation with the following likely structure
 
 The strongest dissertation angle is:
 
-> LuxLLM-Agent investigates how LLM-based game agents can be made more inspectable and reliable through structured decision tracing, rule-based action verification, and replay-grounded evaluation.
+> LuxLLM-Agent investigates direct LLM decision making in a partially observable, multi-agent, long-horizon, rule-constrained strategy game and evaluates whether the project-specific DTAV method improves validity, reliability, and inspectability.
 
 ---
 
@@ -546,6 +561,7 @@ The strongest dissertation angle is:
     <tr><td align="center">Automated tests and GitHub Actions CI</td><td align="center">Complete</td></tr>
     <tr><td align="center">Rule-only end-to-end smoke test</td><td align="center">Complete</td></tr>
     <tr><td align="center">Matched-seed role-swap experiment pipeline</td><td align="center">Complete</td></tr>
+    <tr><td align="center">Direct-prompt versus DTAV comparison pipeline</td><td align="center">Implemented; formal GPU comparison pending</td></tr>
     <tr><td align="center">Qwen3 paired 100-match evidence</td><td align="center">Complete</td></tr>
     <tr><td align="center">DeepSeek-R1 paired 100-match evidence</td><td align="center">Complete</td></tr>
     <tr><td align="center">Combined decision-trace/action-verification audit</td><td align="center">Complete</td></tr>

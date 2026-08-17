@@ -4,7 +4,7 @@
 
 This chapter establishes the academic context for LuxLLM-Agent and develops the argument for its three design priorities: bounded state representation, deterministic action verification, and replay-grounded decision tracing. The main research question is:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 The review is organised around the concepts needed to answer this question rather than around a chronological list of papers. It covers:
 
@@ -63,7 +63,7 @@ Embodied-agent research provides evidence that language-model plans become more 
 
 LuxLLM-Agent applies the interface principle at the input as well as the output. Its state summarizer converts environment observations and retained game knowledge into a compact schema containing strategically relevant fields. The aim is not to produce a lossless copy of the environment. It is to create a bounded interface between a numerical game state and a language model.
 
-This design supports RQ1, but it introduces an important trade-off. Compression improves prompt stability and inspectability, while omitted information may remove evidence required for a better strategy. The summarizer must therefore be evaluated as part of the agent rather than treated as a neutral preprocessing step. LuxLLM-Agent records prompt-related and state-related information so that later inspection can distinguish a poor proposal from a potentially incomplete representation.
+This design supports the first research objective, but it introduces an important trade-off. Compression improves prompt stability and inspectability, while omitted information may remove evidence required for a better strategy. The summarizer must therefore be evaluated as part of the agent rather than treated as a neutral preprocessing step. LuxLLM-Agent records prompt-related and state-related information so that later inspection can distinguish a poor proposal from a potentially incomplete representation.
 
 ---
 
@@ -158,7 +158,7 @@ Safe reinforcement learning via shielding provides a stronger formal example of 
 
 The analogy must not be overstated. LuxLLM-Agent's verifier is not a formally synthesised shield, and the project does not prove temporal-logic safety or global optimality. Its checks cover implemented schemas, identifiers, action construction, observable risks, and fallback conditions. The empirical question is whether these checks operate as documented and leave auditable evidence, not whether they guarantee every desirable property for every possible state.
 
-This distinction improves the precision of RQ2. The project evaluates:
+This distinction improves the precision of the DTAV intervention objective. The project evaluates:
 
 * whether model output satisfies the bounded schema;
 * whether deterministic normalization repairs specific deviations;
@@ -218,7 +218,7 @@ rule_player
 rule_only
 ```
 
-It also displays the proposal, verifier status, match phase, score context, unit intents, and executed state. This supports RQ3 by allowing an assessor to move from a quantitative summary to a specific replay step and inspect the recorded transformation chain.
+It also displays the proposal, verifier status, match phase, score context, unit intents, and executed state. This supports the comparison and inspection objective by allowing an assessor to move from a quantitative summary to a specific replay step and inspect the recorded transformation chain.
 
 ---
 
@@ -303,9 +303,9 @@ This gap defines the project's contribution. LuxLLM-Agent is not presented as a 
 
 | Research question | Main literature foundation | Project response |
 | --- | --- | --- |
-| RQ1: State summarisation | Partial observability; grounded environment interfaces (Kaelbling et al., 1998; Huang et al., 2022) | Compact structured summaries with retained strategic state |
-| RQ2: Verification and fallback | Affordance grounding, critical planning evidence, and shielding (Ahn et al., 2022; Valmeekam et al., 2023; Alshiekh et al., 2018) | Parsing, normalization, risk filtering, caching, fallback, and deterministic action construction |
-| RQ3: Replay-grounded evaluation | Interactive and trajectory-level agent evaluation; explanation limits (Liu et al., 2024; Ma et al., 2024; Turpin et al., 2023) | Provenance logs, verifier audits, controlled experiments, and a replay-linked trace overlay |
+| Objective 1: Direct-prompt baseline | Partial observability; grounded environment interfaces; limits of autonomous planning (Kaelbling et al., 1998; Huang et al., 2022; Valmeekam et al., 2023) | Same compact state and call schedule with DTAV interventions disabled |
+| Objective 2: DTAV interventions | Affordance grounding and shielding (Ahn et al., 2022; Alshiekh et al., 2018) | Parsing, normalisation, risk filtering, strategy reuse, fallback, and deterministic action construction |
+| Objective 3: Comparison and inspection | Interactive and trajectory-level evaluation; explanation limits (Liu et al., 2024; Ma et al., 2024; Turpin et al., 2023) | Matched method comparison, provenance logs, verifier audits, and a replay-linked audit overlay |
 
 This mapping ensures that the literature review motivates the actual methodology and evaluation rather than acting as a detached survey.
 

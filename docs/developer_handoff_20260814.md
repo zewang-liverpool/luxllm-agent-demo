@@ -78,7 +78,7 @@ LLM 只提出受限的高层单位意图，不直接输出最终可执行 Lux �
 |---|---|---|
 | 核心 Agent 管线 | 完成 | 状态摘要、LLM 决策、规范化、缓存、回退、风险过滤、动作规划均已实现 |
 | 可复现安装 | 完成 | Windows/Linux setup、依赖清单和锁定环境已保留 |
-| 自动化测试 | 完成 | 2026-08-14 本机验证为 `28 passed in 0.31s`；smoke test 与证据校验同时通过 |
+| 自动化测试 | 完成 | 2026-08-14 本机验证为 `34 passed`；smoke test 与证据校验同时通过 |
 | CI | 完成 | GitHub Actions 覆盖 Python 3.10/3.11 的无 GPU 检查 |
 | 正式单模型实验 | 完成 | Qwen 与 DeepSeek 各 100 场，共 200 场 |
 | 双 LLM 直接对战 | 完成 | 100 场、50 个 matched seeds、角色互换 |
@@ -162,7 +162,7 @@ powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
 期望结果：
 
 ```text
-28 passed
+34 passed
 Project evidence validation passed.
 ```
 

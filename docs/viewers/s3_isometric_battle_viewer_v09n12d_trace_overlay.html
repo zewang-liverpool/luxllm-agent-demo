@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LuxLLM-Agent | Lux AI Season 3 Decision-Trace Viewer</title>
+  <title>LuxLLM-Agent | Lux AI Season 3 Player Viewer and DTAV Inspector</title>
   <style>
     :root {
       --bg-top: #5dc7d4;
@@ -172,7 +172,7 @@
     }
 
     #dataSourcePanel {
-      bottom: 18px;
+      bottom: 92px;
       left: 16px;
       width: 230px;
       padding: 14px 14px 16px 14px;
@@ -773,6 +773,12 @@
         min-width: 500px;
       }
     }
+
+    @media (max-height: 800px) {
+      #statusPanel .legend {
+        display: none;
+      }
+    }
   </style>
 
 <style id="luxllm-trace-overlay-style">
@@ -1186,7 +1192,7 @@
       </div>
       <div class="title-tag">
         <span class="season-badge">Lux AI Season 3</span>
-        Decision Trace + Rule Verification
+        Player View + DTAV Inspection
       </div>
     </div>
 
@@ -1280,7 +1286,7 @@
     <div class="controls">
       <button id="restartBtn" class="btn btn-neutral">Restart</button>
       <button id="playBtn" class="btn btn-primary">Play</button>
-      <button id="presentationBtn" class="btn btn-neutral" aria-pressed="false">Presentation Mode</button>
+      <button id="presentationBtn" class="btn btn-neutral" aria-pressed="false">Inspection View</button>
       <button id="finalBtn" class="btn btn-neutral">Final</button>
 
       <div class="range-wrap">
@@ -2277,7 +2283,7 @@
       document.body.classList.toggle("presentation", enabled);
       presentationBtn.classList.toggle("btn-active", enabled);
       presentationBtn.classList.toggle("btn-neutral", !enabled);
-      presentationBtn.textContent = enabled ? "Exit Presentation" : "Presentation Mode";
+      presentationBtn.textContent = enabled ? "Exit Inspection" : "Inspection View";
       presentationBtn.setAttribute("aria-pressed", String(enabled));
       draw();
       requestAnimationFrame(draw);
@@ -2350,18 +2356,18 @@
     window.luxllmRedrawBoard = draw;
 
     resizeCanvas();
-    setPresentationMode(true);
+    setPresentationMode(false);
     tryLoadDefaultSource();
   </script>
 
-<div id="luxTracePanel" role="region" aria-label="Decision-to-Action Inspector">
+<div id="luxTracePanel" role="region" aria-label="DTAV Inspector">
   <div class="trace-header">
     <div>
-      <div class="trace-title">Decision-to-Action Inspector</div>
-      <div class="trace-subtitle">Lux AI Season 3 · replay-grounded evidence · press <b>H</b> to hide/show</div>
+      <div class="trace-title">DTAV Inspector</div>
+      <div class="trace-subtitle">Project-specific method | operational audit record | press <b>H</b> to hide/show</div>
 
     </div>
-    <button id="traceCloseBtn" class="trace-close" type="button" aria-label="Hide decision inspector">×</button>
+    <button id="traceCloseBtn" class="trace-close" type="button" aria-label="Hide DTAV inspector">×</button>
   </div>
 
   <div class="trace-nav" aria-label="Replay evidence shortcuts">
@@ -2377,19 +2383,19 @@
   <div class="trace-row"><div class="trace-key">Phase</div><div class="trace-value" id="tracePhase">-</div></div>
 
   <div class="trace-stage proposal">
-    <div class="trace-stage-title" id="traceProposalTitle">1 · Proposal Context</div>
+    <div class="trace-stage-title" id="traceProposalTitle">1 - LLM Proposal</div>
     <div class="trace-row trace-player-row"><div class="trace-key">Player</div><div class="trace-value" id="tracePlayer">-</div></div>
     <div class="trace-row"><div class="trace-key">Source</div><div class="trace-value" id="traceSource">-</div></div>
     <div class="trace-row"><div class="trace-key">Model</div><div class="trace-value" id="traceModel">-</div></div>
     <div class="trace-row"><div class="trace-key">Objective</div><div class="trace-value" id="traceObjective">-</div></div>
     <div class="trace-row trace-reason-row"><div class="trace-key">Reason</div><div class="trace-value" id="traceReason">-</div></div>
-    <div class="trace-section-title">Structured unit intents</div>
+    <div class="trace-section-title">Recorded unit intents</div>
     <div id="traceIntents"></div>
   </div>
 
   <div class="trace-stage-grid">
     <div class="trace-stage verification">
-    <div class="trace-stage-title">2 · Rule Verification</div>
+    <div class="trace-stage-title">2 - Deterministic Checks</div>
     <div class="trace-row"><div class="trace-key">Schema check</div><div class="trace-value" id="traceValidity">-</div></div>
     <div class="trace-row"><div class="trace-key">Risk posture</div><div class="trace-value" id="traceRisk">-</div></div>
     <div class="trace-row"><div class="trace-key">Fallback</div><div class="trace-value" id="traceFallback">-</div></div>
@@ -2397,7 +2403,7 @@
     </div>
 
     <div class="trace-stage execution">
-      <div class="trace-stage-title">3 · Executed State</div>
+      <div class="trace-stage-title">3 - Executed State</div>
       <div class="trace-row"><div class="trace-key">Replay score</div><div class="trace-value" id="traceScore">-</div></div>
       <div class="trace-row"><div class="trace-key">Summary</div><div class="trace-value" id="traceSummary">-</div></div>
     </div>
@@ -2408,7 +2414,7 @@
   </div>
 </div>
 
-<button id="luxTraceToggleHint" class="hidden" type="button" aria-label="Open decision inspector">Open Inspector (H)</button>
+<button id="luxTraceToggleHint" class="hidden" type="button" aria-label="Open DTAV inspector">Open DTAV Inspector (H)</button>
 
 
 <script id="luxllm-trace-overlay-script">
@@ -2716,6 +2722,8 @@
   byId("presentationBtn")?.addEventListener("click", () => {
     if (byId("app")?.classList.contains("presentation")) {
       setTracePanelVisible(true);
+    } else {
+      setTracePanelVisible(false);
     }
   });
 
@@ -2736,6 +2744,7 @@
   };
 
   loadTraceOverlay();
+  setTracePanelVisible(false);
   setInterval(renderTracePanel, 250);
 })();
 </script>

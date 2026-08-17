@@ -29,6 +29,35 @@ sys.path.insert(0, str(TOOLS_PATH))
 from evaluation_stats import summarise_records  # noqa: E402
 
 
+DECISION_METHODS = ("dtav", "direct_prompt")
+
+
+def method_environment(method: str) -> Dict[str, str]:
+    """Return the controlled feature switches for a decision method.
+
+    Direct prompting retains the minimal action adapter and fallback required
+    by the Lux runner, but removes DTAV's proposal normalization, strategy
+    reuse, and risk-aware target filtering.
+    """
+    if method == "direct_prompt":
+        return {
+            "LUX_DECISION_METHOD": "direct_prompt",
+            "LUX_NORMALIZE_LLM_OUTPUT": "0",
+            "LUX_ENABLE_STRATEGY_CACHE": "0",
+            "LUX_LLM_REUSE_LAST_INTENTS": "0",
+            "LUX_ENABLE_RISK_AWARE_ACTION_FILTER": "0",
+        }
+    if method == "dtav":
+        return {
+            "LUX_DECISION_METHOD": "dtav",
+            "LUX_NORMALIZE_LLM_OUTPUT": "1",
+            "LUX_ENABLE_STRATEGY_CACHE": "1",
+            "LUX_LLM_REUSE_LAST_INTENTS": "1",
+            "LUX_ENABLE_RISK_AWARE_ACTION_FILTER": "1",
+        }
+    raise ValueError(f"Unsupported decision method: {method!r}")
+
+
 def parse_rewards(text: str) -> Tuple[Optional[int], Optional[int]]:
     patterns = {
         "player_0": [
@@ -102,6 +131,8 @@ def runtime_metadata(args: argparse.Namespace, inventory: List[Dict]) -> Dict:
         "python_executable": sys.executable,
         "platform": platform.platform(),
         "model": args.model,
+        "decision_method": args.method,
+        "decision_method_settings": method_environment(args.method),
         "ollama_base_url": args.ollama_base_url,
         "ollama_version": ollama_version,
         "ollama_models": [str(item.get("name")) for item in inventory],
@@ -179,6 +210,7 @@ def run_match(
             "LUX_PRINT_AGENT_DEBUG": "0",
         }
     )
+    env.update(method_environment(args.method))
     command = [
         sys.executable,
         "-m",
@@ -219,6 +251,7 @@ def run_match(
         "llm_player": llm_player,
         "fallback_player": fallback_player,
         "model": args.model,
+        "decision_method": args.method,
         "status": status,
         "return_code": completed.returncode,
         "winner": winner,
@@ -242,13 +275,19 @@ def run_match(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", default="qwen3:32b")
+    parser.add_argument(
+        "--method",
+        choices=DECISION_METHODS,
+        default="dtav",
+        help="Full DTAV method or controlled direct-prompt comparison",
+    )
     parser.add_argument("--pairs", type=int, default=50, help="Matched seeds; 50 pairs = 100 matches")
     parser.add_argument("--seed-start", type=int, default=20260701)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument("--ollama-base-url", default="http://127.0.0.1:11434")
     parser.add_argument("--output-dir", type=Path)
-    parser.add_argument("--experiment-tag", default="matched_seed_role_swap_v1")
+    parser.add_argument("--experiment-tag")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--save-replays", action="store_true")
     parser.add_argument("--keep-console", action="store_true")
@@ -258,6 +297,8 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if not args.experiment_tag:
+        args.experiment_tag = f"matched_seed_role_swap_{args.method}_v1"
     if args.pairs < 1:
         raise SystemExit("--pairs must be at least 1")
     if importlib.util.find_spec("luxai_runner.cli") is None:
@@ -274,7 +315,9 @@ def main() -> int:
         raise SystemExit(f"Model {args.model!r} not found in Ollama. Available models: {models}")
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = args.output_dir or ROOT / "results" / f"{timestamp}_{args.model.replace(':', '_')}_paired"
+    output_dir = args.output_dir or ROOT / "results" / (
+        f"{timestamp}_{args.model.replace(':', '_')}_{args.method}_paired"
+    )
     output_dir = output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     history_path = output_dir / "match_history.jsonl"

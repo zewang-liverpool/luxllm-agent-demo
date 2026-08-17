@@ -16,7 +16,7 @@ The dissertation is positioned as an artefact-based computer science project. It
 
 ## Main Research Question
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 ---
 
@@ -256,7 +256,7 @@ This supports replay-grounded decision inspection.
 
 The central argument of the dissertation is:
 
-> LuxLLM-Agent demonstrates that LLM-based game agents can be made more stable, inspectable, and evaluable by treating LLM outputs as strategic proposals rather than directly executable actions. Structured decision tracing, rule-based verification, fallback, caching, and replay-grounded inspection make it possible to analyse how LLM-backed agents behave in Lux AI Season 3.
+> LuxLLM-Agent demonstrates that LLM-based game agents can be made more stable, inspectable, and evaluable by treating LLM outputs as strategic proposals rather than directly executable actions. The project-specific DTAV decision-trace approach, rule-based verification, fallback, caching, and replay-grounded inspection make it possible to analyse how LLM-backed agents behave in Lux AI Season 3.
 
 ---
 

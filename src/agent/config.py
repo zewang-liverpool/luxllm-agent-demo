@@ -15,7 +15,7 @@ v0.9-E1 note:
 import os
 
 
-AGENT_VERSION = "v0.10-dual-llm-trace-metrics"
+AGENT_VERSION = "v0.11-dtav-direct-prompt-baseline"
 
 
 # ============================================================
@@ -99,6 +99,17 @@ ABLATION_METRICS_LOG = os.path.join(LOG_DIR, "ablation_metrics.jsonl")
 #   qwen3_32b_no_cache
 #   qwen3_32b_forced_fallback
 EXPERIMENT_TAG = get_env_str("LUX_EXPERIMENT_TAG", "qwen3_32b_full")
+
+# Project-specific decision method. ``dtav`` is the full Decision-Trace and
+# Action-Verification method developed in this project. ``direct_prompt`` is
+# the controlled comparison condition: the same compact state and LLM call
+# schedule are used, but output normalization, strategy reuse, and the
+# risk-aware target filter are disabled. The unavoidable action adapter and
+# deterministic fallback remain so that every Lux runner action has the
+# official shape.
+DECISION_METHOD = get_env_str("LUX_DECISION_METHOD", "dtav").lower()
+if DECISION_METHOD not in {"dtav", "direct_prompt"}:
+    DECISION_METHOD = "dtav"
 
 
 # ============================================================
@@ -224,6 +235,14 @@ LLM_NUM_PREDICT = get_env_int("LUX_LLM_NUM_PREDICT", 384)
 # disable that trace and request JSON output explicitly.
 LLM_THINK = get_env_bool("LUX_LLM_THINK", False)
 LLM_JSON_MODE = get_env_bool("LUX_LLM_JSON_MODE", True)
+
+# DTAV can repair two common schema variations (``u3`` keys and string-valued
+# intents). The direct-prompt comparison turns this off so that raw schema
+# failures remain observable instead of being silently repaired.
+NORMALIZE_LLM_OUTPUT = get_env_bool(
+    "LUX_NORMALIZE_LLM_OUTPUT",
+    DECISION_METHOD == "dtav",
+)
 
 # If the LLM fails or returns invalid JSON, rule policy takes over.
 ENABLE_RULE_FALLBACK = get_env_bool("LUX_ENABLE_RULE_FALLBACK", True)

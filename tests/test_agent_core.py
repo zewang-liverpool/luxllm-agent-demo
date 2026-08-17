@@ -17,6 +17,7 @@ from llm_decider import (
     extract_json_object,
     extract_ollama_response,
     infer_fallback_reason,
+    has_valid_strategy,
     normalize_unit_intent_keys,
 )
 from lux_state import parse_units
@@ -113,6 +114,20 @@ class AgentCoreTests(unittest.TestCase):
         self.assertEqual(
             parsed["unit_intents"]["0"]["intent"],
             "EXPLORE_STALE_TILE",
+        )
+
+    def test_unknown_intent_is_not_counted_as_valid_strategy(self):
+        self.assertFalse(
+            has_valid_strategy(
+                {"unit_intents": {"0": {"intent": "INVENT_A_NEW_ACTION"}}}
+            )
+        )
+
+    def test_non_numeric_unit_key_requires_dtav_normalization(self):
+        self.assertFalse(
+            has_valid_strategy(
+                {"unit_intents": {"u3": {"intent": "HOLD_POSITION"}}}
+            )
         )
 
     def test_timeout_has_explicit_fallback_reason(self):

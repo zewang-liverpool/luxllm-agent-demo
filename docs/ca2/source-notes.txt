@@ -7,7 +7,7 @@ Slide 1
 
 Slide 2
 - docs/technical/system_architecture.md: project purpose, research question, and separation between LLM proposals and executable actions.
-- Current local Viewer screenshot captured on 14 August 2026: Lux AI Season 3 board with the Decision-to-Action Inspector.
+- Current local Viewer screenshot captured on 14 August 2026: Lux AI Season 3 player view with the project-specific DTAV Inspector.
 
 Slide 3
 - docs/technical/system_architecture.md: state summarisation, LLM decision, structured parser, rule-based verifier, cache, fallback, risk filter, action planner, logging, and replay inspection.
