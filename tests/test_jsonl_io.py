@@ -14,7 +14,9 @@ from jsonl_io import append_jsonl_atomic
 
 class JsonlIoTests(unittest.TestCase):
     def test_concurrent_large_records_remain_one_json_object_per_line(self):
-        with tempfile.TemporaryDirectory(dir=ROOT / "results") as directory:
+        results_dir = ROOT / "results"
+        results_dir.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=results_dir) as directory:
             path = Path(directory) / "shared.jsonl"
 
             def write_record(index: int) -> None:
