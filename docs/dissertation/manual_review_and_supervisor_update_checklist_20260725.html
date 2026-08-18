@@ -232,7 +232,7 @@
         title: "1. 查验前准备",
         items: [
           ["P1", "项目目录能够打开", projectRoot],
-          ["P2", "当前分支正确", "git status -sb 显示 codex/dissertation-final-closeout"],
+          ["P2", "当前分支正确", "git status -sb 显示 main...origin/main"],
           ["P3", "完整论文能够打开", "full_dissertation_draft.md 包含摘要、Chapter 1–7 和 References"],
           ["P4", "分章节文件完整", "docs\\dissertation 中 Chapter 1–7 均存在"],
           ["P5", "已建立问题记录方式", "每个未通过项都记录文件、章节、问题和处理决定"]
@@ -481,7 +481,7 @@
       save();
       const data = JSON.parse(localStorage.getItem(storageKey) || "{}");
       data.project = "LuxLLM-Agent";
-      data.branch = "codex/dissertation-final-closeout";
+      data.branch = "main";
       data.exportedAt = new Date().toISOString();
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);

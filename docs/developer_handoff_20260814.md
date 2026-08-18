@@ -1,6 +1,8 @@
 # LuxLLM-Agent 开发交接文档
 
-更新时间：2026-08-14（Europe/London）
+原始编写：2026-08-14
+
+最终状态更新：2026-08-18（Europe/London）
 
 本地项目根目录：`D:\PythonProject\lux_llm_agent`
 
@@ -12,14 +14,14 @@ GitHub：<https://github.com/zewang-liverpool/luxllm-agent-demo>
 
 1. 完成 CA2 视频、演示排练和 Q&A 准备；
 2. 人工核对毕业论文事实、引用、图表和学校格式；
-3. 以 GitHub 当前审查分支为交接基线，修改前先同步并运行验证；
+3. 以 GitHub `main` 为唯一交接基线，修改前先同步并运行验证；
 4. 只在测试失败、证据不一致、导师指出事实错误或出现提交阻断问题时重新修改核心代码。
 
 ### 当前 Git 交接基线
 
-- 当前分支：`codex/dissertation-final-closeout`
+- 当前权威分支：`main`
 - 当前准确提交请运行 `git log -1 --oneline`；不要依赖本文中的历史哈希。
-- 在该分支合并前，只克隆 GitHub `main` 可能无法得到最新的论文、Viewer 和 CA2 收口内容。
+- 最新论文、Viewer、正式实验报告和 CA2 收口内容均已合并到 `main`。
 - 最新状态和问题修复摘要见 `docs/project_review_summary_20260814.md`。
 - `.tmp/` 是生成和渲染产生的临时目录，不应提交。
 - 接手人不得执行 `git reset --hard`、`git clean -fd`、强制切换覆盖文件或删除未跟踪文件。
@@ -39,11 +41,11 @@ git log -1 --oneline
 
 项目名称：
 
-> LuxLLM-Agent: A Decision-Trace and Action-Verification Framework for Inspecting and Evaluating LLM-based Agents in Lux AI Season 3
+> LuxLLM-Agent: A Decision-Trace and Action-Verification Method for LLM Decision-Making in Lux AI Season 3
 
 主研究问题：
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 项目所有者：Ze Wang，University of Liverpool，`Z.Wang300@liverpool.ac.uk`
 
@@ -66,11 +68,13 @@ Lux observation
 
 LLM 只提出受限的高层单位意图，不直接输出最终可执行 Lux 动作。确定性代码保留执行控制权，并负责解析、规范化、缓存、回退、风险过滤和动作数组构造。
 
-### 子研究问题
+### 三个研究目标
 
-- RQ1：如何把原始 Lux AI Season 3 observation 转换为适合 LLM 战略决策的紧凑结构化输入？
-- RQ2：规则验证、回退和策略缓存如何降低无效或不稳定的 LLM 决策？
-- RQ3：基于 replay 对齐的 decision trace 如何支持对决策来源、动作执行和结果关系的分析？
+1. 使用相同模型设置、紧凑 Lux observation、matched seeds 和角色互换建立受控 Direct Prompt 基线。
+2. 实现项目自定义的 DTAV 方法，使 LLM proposal 在构造合法 Lux action 前可以被规范化、复用、检查、过滤或替换。
+3. 使用 validity、fallback/intervention、reliability、latency、match outcome 和 replay-linked inspection 比较 Direct Prompt 与 DTAV。
+
+DTAV 是本项目提出的方法名称，而不是既有研究领域术语。Decision trace 是预定义的运行审计记录，不是模型隐藏的 chain of thought。
 
 ## 2. 当前完成度
 
@@ -79,10 +83,11 @@ LLM 只提出受限的高层单位意图，不直接输出最终可执行 Lux �
 | 核心 Agent 管线 | 完成 | 状态摘要、LLM 决策、规范化、缓存、回退、风险过滤、动作规划均已实现 |
 | 可复现安装 | 完成 | Windows/Linux setup、依赖清单和锁定环境已保留 |
 | 自动化测试 | 完成 | 2026-08-17 本机验证为 `35 passed`；smoke test 与证据校验同时通过 |
-| CI | 完成 | GitHub Actions 覆盖 Python 3.10/3.11 的无 GPU 检查 |
+| CI | 完成 | GitHub Actions 覆盖 Python 3.10/3.11/3.12 的无 GPU 检查 |
 | 正式单模型实验 | 完成 | Qwen 与 DeepSeek 各 100 场，共 200 场 |
 | 双 LLM 直接对战 | 完成 | 100 场、50 个 matched seeds、角色互换 |
-| 原始运行证据 | 完成 | 三个大型归档及解压结果均保存在本地 |
+| Direct Prompt–DTAV 正式比较 | 完成 | 每种方法 100 场；matched analysis 与 trace analysis 均通过验证 |
+| 原始运行证据 | 完成 | 四组正式研究的原始归档或解压结果均保存在本地 |
 | 证据分析与一致性校验 | 完成 | 机器可读报告、干预审计、验证脚本均已保留 |
 | Replay viewer | 完成 | 可本地直接启动，无需 GPU 或 Ollama |
 | 毕业论文草稿 | 主体完成，待人工收口 | 七章和完整合并稿已存在；需事实、引用、格式和最终 PDF 检查 |
@@ -132,20 +137,37 @@ LLM 只提出受限的高层单位意图，不直接输出最终可执行 Lux �
 
 该实验用于证明两个 LLM-assisted agent 同时对战时，框架仍能进行双侧 tracing 和 verification。54:46 不应描述为 Qwen 的通用优势。
 
+### 3.3 主要方法比较：Direct Prompt 对 DTAV
+
+实验协议：Qwen3-32B、相同 prompt budget、temperature、call schedule、50 个 matched seeds，并进行角色互换；每种方法 100 场。
+
+| 指标 | Direct Prompt | DTAV |
+|---|---:|---:|
+| 完成比赛 | 100 / 100 | 100 / 100 |
+| 获胜场数 | 48 | 63 |
+| Post-check structured-valid calls | 1,966 / 2,284（86.1%） | 2,323 / 2,325（99.9%） |
+| Cached-decision steps | 0 | 45,645（89.8%） |
+| Observable rule-fallback steps | 48,576（95.5%） | 2,833（5.6%） |
+| Risk-filter changed steps | 0 | 5,706（11.2%） |
+| Trace / replay / action-shape coverage | 100% | 100% |
+
+在 100 个 matched seed-role strata 中，Direct-Prompt-only wins 为 6，DTAV-only wins 为 21；McNemar exact `p = 0.0059`。DTAV 的估计优势为 15 个百分点，paired-bootstrap 95% 区间为 6–25 个百分点。该结果只适用于记录的模型、prompt、seed、role、软件和硬件配置，并且评估的是完整 DTAV method bundle，不是单个组件的独立因果效应。
+
 ## 4. 五分钟接手路径
 
 接手人按以下顺序阅读即可建立正确心智模型：
 
-1. `D:\PythonProject\lux_llm_agent\docs\developer_handoff_20260814.md`：本交接文档。
-2. `D:\PythonProject\lux_llm_agent\README.md`：项目定位、架构和正式结果总览。
-3. `D:\PythonProject\lux_llm_agent\docs\project_closeout_standard.md`：什么时候停止修改。
-4. `D:\PythonProject\lux_llm_agent\docs\reproducibility_guide.md`：安装、测试、运行和证据再生成。
-5. `D:\PythonProject\lux_llm_agent\docs\technical\system_architecture.md`：系统架构。
-6. `D:\PythonProject\lux_llm_agent\docs\technical\llm_decision_pipeline.md`：LLM 决策管线。
-7. `D:\PythonProject\lux_llm_agent\reports\final_trace_evaluation.md`：主要正式证据。
-8. `D:\PythonProject\lux_llm_agent\reports\dual_llm_trace_evaluation.md`：双 LLM 补充证据。
-9. `D:\PythonProject\lux_llm_agent\docs\dissertation\dissertation_draft_index.md`：论文结构和章节入口。
-10. `D:\PythonProject\lux_llm_agent\docs\ca2\README.md`：CA2 文件入口。
+1. `D:\PythonProject\lux_llm_agent\README.md`：项目定位、架构和正式结果总览。
+2. `D:\PythonProject\lux_llm_agent\docs\README.md`：当前文档、历史材料和用途导航。
+3. `D:\PythonProject\lux_llm_agent\docs\developer_handoff_20260814.md`：本交接文档。
+4. `D:\PythonProject\lux_llm_agent\docs\project_closeout_standard.md`：什么时候停止修改。
+5. `D:\PythonProject\lux_llm_agent\docs\reproducibility_guide.md`：安装、测试、运行和证据再生成。
+6. `D:\PythonProject\lux_llm_agent\docs\technical\system_architecture.md`：系统架构。
+7. `D:\PythonProject\lux_llm_agent\reports\direct_prompt_vs_dtav_trace_analysis.md`：主要方法比较证据。
+8. `D:\PythonProject\lux_llm_agent\reports\final_trace_evaluation.md`：早期模型对规则基线的支持证据。
+9. `D:\PythonProject\lux_llm_agent\reports\dual_llm_trace_evaluation.md`：双 LLM 补充证据。
+10. `D:\PythonProject\lux_llm_agent\docs\dissertation\dissertation_draft_index.md`：论文结构和章节入口。
+11. `D:\PythonProject\lux_llm_agent\docs\ca2\README.md`：CA2 文件入口。
 
 ## 5. 环境安装与本地验收
 
@@ -506,8 +528,8 @@ CA2 根目录：`D:\PythonProject\lux_llm_agent\docs\ca2`
 以下条件已经满足时停止技术扩展：
 
 - clean setup 能恢复环境；
-- smoke 和 28 项测试通过；
-- 200 场主要实验和 100 场双 LLM 实验都完整保留；
+- smoke 和 35 项测试通过；
+- 200 场 Direct Prompt–DTAV 主方法比较、200 场模型对规则基线和 100 场双 LLM 补充实验都完整保留；
 - trace、schema validity、normalization、risk intervention、action shape、timeout/error 和 replay linkage 都有可再生证据；
 - viewer、报告和规范文档一致；
 - 双 LLM 实验被解释为补充 framework evidence，而不是模型 leaderboard。
@@ -527,7 +549,8 @@ CA2 根目录：`D:\PythonProject\lux_llm_agent\docs\ca2`
 
 ```powershell
 cd D:\PythonProject\lux_llm_agent
-git switch codex/dissertation-final-closeout
+git switch main
+git pull --ff-only origin main
 git status -sb
 .\.venv\Scripts\python.exe scripts\smoke_test.py
 .\.venv\Scripts\python.exe -m pytest -q
@@ -553,11 +576,11 @@ git diff --cached --check
 git clone https://github.com/zewang-liverpool/luxllm-agent-demo.git
 cd luxllm-agent-demo
 git fetch origin
-git switch --track origin/codex/dissertation-final-closeout
+git switch main
 powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
 ```
 
-如果分支尚未推送，则必须额外传递本地工作区或 patch；只发送 GitHub `main` 链接会遗漏当前论文和 CA2 改动。大型 Barkla 原始归档也必须通过独立存储传递，不能依赖 GitHub。
+GitHub `main` 已包含当前代码、紧凑报告、论文草稿、Viewer 和 CA2 材料。大型 Barkla 原始归档仍须通过独立存储传递，不能依赖 GitHub。
 
 ## 17. 快速定位全部文件
 
@@ -587,10 +610,10 @@ rg -n "63|60|54|46|206,591|106,317" README.md docs reports
 - [ ] 已阅读 README、收口标准、可复现指南和本交接文档。
 - [ ] 已查看未提交改动，没有覆盖或删除它们。
 - [ ] `scripts/smoke_test.py` 通过。
-- [ ] `pytest -q` 显示 28 项通过。
+- [ ] `pytest -q` 显示 35 项通过。
 - [ ] `tools/validate_project_evidence.py` 通过。
 - [ ] viewer 能通过本地 HTTP server 加载 replay 和 trace。
-- [ ] 已理解主要实验是 200 场，双 LLM 是 100 场补充证据。
+- [ ] 已理解主要方法比较是 200 场，模型对规则基线是 200 场，双 LLM 是 100 场补充证据。
 - [ ] 已理解项目研究重点是 inspection 和 verification，不是模型排名。
 - [ ] 已理解不需要重新跑 GPU，除非出现规定的 reopening condition。
 - [ ] 已区分 GitHub 跟踪报告与本地大型原始归档。
@@ -598,4 +621,4 @@ rg -n "63|60|54|46|206,591|106,317" README.md docs reports
 
 ## 19. 可直接转发给接手人的短消息
 
-> 项目根目录是 `D:\PythonProject\lux_llm_agent`，GitHub 是 <https://github.com/zewang-liverpool/luxllm-agent-demo>。请先阅读 `docs/developer_handoff_20260814.md`、`docs/project_review_summary_20260814.md`、`README.md`、`docs/project_closeout_standard.md` 和 `docs/reproducibility_guide.md`。当前技术实现和 300 场正式/补充实验均已完成，主要任务是 CA2 和毕业论文收口。请从 GitHub 的 `codex/dissertation-final-closeout` 分支或其合并后的 `main` 开始，不要用清理命令覆盖现有工作。开始工作前先运行 `git status -sb`、`scripts/smoke_test.py`、`pytest -q` 和 `tools/validate_project_evidence.py`。没有测试失败、证据冲突、导师明确要求或提交阻断时，不要再增加 GPU 实验或扩展模型范围。
+> 项目根目录是 `D:\PythonProject\lux_llm_agent`，GitHub 是 <https://github.com/zewang-liverpool/luxllm-agent-demo>。请先阅读 `README.md`、`docs/README.md`、`docs/developer_handoff_20260814.md`、`docs/project_closeout_standard.md` 和 `docs/reproducibility_guide.md`。GitHub `main` 已包含当前技术实现、200 场 Direct Prompt–DTAV 主方法比较、200 场模型对规则基线和 100 场双 LLM 补充实验。主要任务是 CA2 和毕业论文人工收口。开始工作前先运行 `git status -sb`、`scripts/smoke_test.py`、`pytest -q` 和 `tools/validate_project_evidence.py`。没有测试失败、证据冲突、导师明确要求或提交阻断时，不要再增加 GPU 实验或扩展模型范围。

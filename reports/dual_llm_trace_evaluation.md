@@ -1,5 +1,11 @@
 # Decision-Trace and Action-Verification Evaluation
 
+> **Scope note (18 August 2026):** this is a supplementary two-LLM study. It
+> preserves the research framing used when the experiment was produced and
+> does not replace the canonical Direct Prompt–DTAV comparison. See
+> `docs/research_scope_20260814.md` and
+> `reports/direct_prompt_vs_dtav_trace_analysis.md` for the current scope.
+
 ## Research question
 
 > How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?

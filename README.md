@@ -328,6 +328,10 @@ Fallback decision-source rate ≈ 6.45%
 Main evidence files and directories:
 
 ```text
+reports/direct_prompt_vs_dtav_trace_analysis.md
+reports/direct_prompt_vs_dtav_trace_analysis.json
+reports/direct_prompt_vs_dtav_trace_metrics.csv
+reports/direct_prompt_vs_dtav_comparison.json
 docs/demo_evidence_index.md
 docs/demo_evidence/llm_model_comparison_summary.md
 reports/final_trace_evaluation.md
@@ -363,31 +367,51 @@ docs/demo_evidence/hpc_deepseek_r1_32b_50run/20260624_152843_deepseek_r1_32b_gpu
 
 ```text
 .
+├── .github/
+│   └── workflows/ci.yml
 ├── assets/
 │   └── luxllm_agent_final_demo_run008.gif
 ├── data/
 │   ├── isometric_replay_frames.json
 │   └── run008_decision_trace_overlay.json
 ├── docs/
+│   ├── README.md
 │   ├── analysis/
+│   ├── ca2/
 │   ├── demo_evidence/
 │   ├── dissertation/
 │   ├── technical/
 │   └── viewers/
 │       └── s3_isometric_battle_viewer_v09n12d_trace_overlay.html
-├── paper/
-├── reports/
+├── paper/                    # historical paper-format artifact
+├── reports/                  # compact tracked empirical evidence
+├── scripts/                  # setup, smoke, experiment, and Slurm entry points
 ├── src/
 │   ├── agent/
-│   ├── scripts/
 │   └── viewer_tools/
-├── tools/
-├── viewer/
+├── tests/                    # unit, consistency, and evidence tests
+├── tools/                    # analysis and result-validation utilities
+├── video/                    # local-video storage guidance
+├── viewer/                   # legacy June viewer prototype
+├── pyproject.toml
+├── requirements.txt
+├── requirements-dev.txt
 ├── LICENSE
 └── README.md
 ```
 
 Some generated or local-only folders may not be tracked in Git if they contain large raw logs, videos, temporary output, or generated PDFs.
+
+### Documentation map
+
+Use [`docs/README.md`](docs/README.md) as the navigation page for current
+scope, reproducibility, experiments, architecture, Viewer, CA2, dissertation,
+and explicitly historical material. The current review order is:
+
+1. this README and [`docs/research_scope_20260814.md`](docs/research_scope_20260814.md);
+2. [`docs/project_closeout_standard.md`](docs/project_closeout_standard.md) and the compact reports under `reports/`;
+3. the dissertation and CA2 indexes;
+4. dated or historical snapshots.
 
 ---
 

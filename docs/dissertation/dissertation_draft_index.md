@@ -20,19 +20,23 @@ The dissertation is positioned as an artefact-based computer science project. It
 
 ---
 
-## Sub-research Questions
+## Evaluation Focuses
 
-### RQ1: State Summarisation
+### Focus 1: Direct-prompt decision usability
 
-> How can raw Lux AI Season 3 observations be transformed into compact structured inputs for LLM-based strategic decision making?
+> How valid, current, and usable are directly prompted LLM decisions under the game's observation, coordination, horizon, and action constraints?
 
-### RQ2: Action Verification and Fallback
+### Focus 2: DTAV intervention behaviour
 
-> How can rule-based verification, fallback mechanisms, and strategy caching reduce invalid or unstable LLM-generated decisions?
+> When does DTAV normalise, reuse, filter, or replace an LLM proposal before legal action construction?
 
-### RQ3: Replay-grounded Evaluation
+### Focus 3: Controlled and replay-grounded comparison
 
-> How can replay-grounded decision traces help analyse the relationship between LLM strategy, decision source, action execution, and game outcome?
+> How do Direct Prompt and DTAV compare under matched model, seed, role, generation, and call-schedule controls, and how can their recorded decisions be linked to replay state and outcome?
+
+These are evaluation focuses tied to the three objectives, not additional
+competing research questions. The dissertation retains one central research
+question.
 
 ---
 

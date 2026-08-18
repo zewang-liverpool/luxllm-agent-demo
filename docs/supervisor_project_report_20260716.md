@@ -1,5 +1,11 @@
 # LuxLLM-Agent Overall Project Progress Report
 
+> **Dated report:** this document records the supervisor-facing state prepared
+> in July 2026. Later Direct Prompt–DTAV results and the revised research
+> question are authoritative in `README.md`,
+> `docs/research_scope_20260814.md`, and
+> `reports/direct_prompt_vs_dtav_trace_analysis.md`.
+
 - **Project title:** LuxLLM-Agent: A Decision-Trace and Action-Verification Framework for Inspecting and Evaluating LLM-based Agents in Lux AI Season 3
 - **Student:** Ze Wang
 - **Institution:** University of Liverpool

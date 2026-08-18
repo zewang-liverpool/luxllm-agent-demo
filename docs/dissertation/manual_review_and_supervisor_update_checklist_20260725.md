@@ -13,7 +13,7 @@ D:\PythonProject\lux_llm_agent
 当前论文收口分支：
 
 ```text
-codex/dissertation-final-closeout
+main
 ```
 
 人工查验标准：
@@ -41,7 +41,7 @@ codex/dissertation-final-closeout
 | ID | 检查内容 | 操作或本地地址 | 通过标准 | 状态 |
 | --- | --- | --- | --- | --- |
 | P1 | 确认项目目录 | `D:\PythonProject\lux_llm_agent` | 目录能够正常打开 | ☐ |
-| P2 | 确认当前分支 | 在项目目录执行 `git status -sb` | 显示 `codex/dissertation-final-closeout` | ☐ |
+| P2 | 确认当前分支 | 在项目目录执行 `git status -sb` | 显示 `main...origin/main` | ☐ |
 | P3 | 确认完整论文 | `D:\PythonProject\lux_llm_agent\docs\dissertation\full_dissertation_draft.md` | 文件能够打开，包含摘要、Chapter 1–7 和 References | ☐ |
 | P4 | 确认分章节文件 | `D:\PythonProject\lux_llm_agent\docs\dissertation` | Chapter 1–7 文件均存在 | ☐ |
 | P5 | 准备记录方式 | 本文件副本或单独的检查记录 | 每个 FAIL 都能记录具体位置 | ☐ |
