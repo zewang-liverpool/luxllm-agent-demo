@@ -20,7 +20,7 @@ The main research question was:
 
 > How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-The retained formal studies show how DTAV operates and provide evidence about validity, interventions, reliability, outcomes, and inspectability. They do not contain a direct-prompt control condition and therefore cannot, by themselves, estimate how much of the observed behaviour is caused by DTAV rather than the shared prompt and action adapter. The new matched direct-prompt versus DTAV runner and validation protocol address this design gap; the comparative conclusion must remain provisional until the formal paired run is completed.
+The formal studies now include a controlled scheduled direct-prompt baseline and DTAV comparison. Both conditions used Qwen3-32B, the same 50 matched seeds, role swapping, generation settings, compact observation, call schedule, parser, and minimum legal-action adapter. Direct prompting won 48 of 100 matches, whereas DTAV won 63. In the matched seed-role analysis, DTAV-only wins outnumbered direct-prompt-only wins 21 to 6; the McNemar exact p-value was 0.0059 and the paired-bootstrap interval placed the DTAV advantage between 6 and 25 percentage points under the recorded configuration.
 
 Within that boundary, the existing evidence shows that DTAV supports LLM-based agents in three main ways.
 
@@ -30,7 +30,7 @@ Second, rule-based action verification provides a controlled boundary between LL
 
 Third, replay-grounded inspection connects decision traces to visual game behaviour. The LLM Decision Trace Overlay allows replay frames to be inspected together with the corresponding decision source, objective, fallback status, risk posture, and unit intents. This makes evaluation more informative than using final score alone.
 
-Overall, the project demonstrates that the project-specific DTAV decision-trace approach and rule-based verification can make LLM-based game agents more stable, inspectable, and evaluable.
+Overall, the project demonstrates that the project-specific DTAV method can improve proposal usability, strategic continuity, controlled execution, inspectability, and observed match performance relative to the scheduled direct-prompt baseline under the tested configuration.
 
 ---
 
@@ -390,7 +390,9 @@ The primary evaluation showed that qwen3:32b and DeepSeek-R1-32B could both be i
 
 The supplementary direct LLM-versus-LLM experiment completed another 100 role-swapped matches while both players used the framework. Its 106,317 trace records were complete, all 4,676 fresh calls were valid after checks, and verifier interventions remained observable. The 54:46 outcome was not statistically significant, so this evidence strengthens the operational framework claim without changing the project into a model-ranking study.
 
-The existing evidence establishes that DTAV creates an observable and reliable execution path under the recorded configurations. A final claim about how effectively it addresses the limitations of direct prompting depends on the newly specified formal matched comparison. Rather than treating the LLM as a direct controller, LuxLLM-Agent treats the LLM as a strategic planner inside a controlled execution pipeline.
+The final matched comparison strengthens this conclusion. Direct prompting achieved 86.1% post-check structured-call validity and used the observable rule path on 95.5% of agent steps. DTAV achieved 99.9% post-check structured-call validity, reused accepted strategies on 89.8% of steps, used rule fallback on 5.6%, and recorded risk-filter changes on 11.2%. Both conditions retained complete traces, replay linkage, legal action-array shape, and zero observed timeout, API-error, or downstream action-fallback events. These results show how DTAV addressed the observed limitations while leaving the execution boundary inspectable.
+
+The comparison evaluates DTAV as a complete method bundle and does not attribute the performance difference to an individual component. It also remains specific to the recorded Qwen3-32B, prompt, seeds, call schedule, software, and hardware. Rather than treating the LLM as a direct controller, LuxLLM-Agent treats it as a strategic planner inside a controlled and auditable execution pipeline.
 
 This makes the project more than a game-playing agent. It is a framework for understanding how LLM-based agents make decisions, how those decisions are verified, and how their behaviour can be evaluated through logs, metrics, and replay-grounded inspection.
 

@@ -3561,29 +3561,66 @@ the Lux runner cannot execute free-form model text. This shared boundary means
 the baseline is “direct prompting through the minimum executable interface,”
 not unrestricted text sent directly to the environment.
 
-Local acceptance testing has completed one mock-model seed pair with roles
-swapped. Both matches completed, the method label was present in environment,
-match, LLM-call, and agent-step records, and
-`tools/validate_paired_method_result.py` passed. These mock results validate the
-pipeline only and are not empirical evidence about LLM game-playing quality.
+The formal comparison was completed on Barkla2 from source commit
+`354c30beb1a179904fc52b53a577fe09c0fbfdf1`. Each condition used Qwen3-32B,
+50 matched environment seeds, role swapping, temperature 0, a generation
+budget of 384 tokens, JSON mode, and the same scheduled LLM-call policy. This
+produced 100 completed matches per method. Both result directories passed
+`tools/validate_paired_method_result.py`, including the 50 proper role-swapped
+seed pairs and method-labelled match, LLM-call, and agent-step records.
 
-The formal comparison remains to be run on Barkla2 with 50 matched seed pairs
-for each condition from the same source commit. Until those results are
-validated and inserted here, the retained 300 formal matches demonstrate DTAV
-operation, model support, and intervention observability, but they do not by
-themselves estimate the difference between direct prompting and DTAV. No
-comparative performance or reliability claim should be made before that run.
+| Outcome metric | Direct prompt | DTAV |
+| --- | ---: | ---: |
+| Completed matches | 100 | 100 |
+| Wins / losses / draws | 48 / 52 / 0 | 63 / 37 / 0 |
+| Win rate | 48% | 63% |
+| Wilson 95% interval | 38.5%-57.7% | 53.2%-71.8% |
+| Win rate as player 0 | 54% | 62% |
+| Win rate as player 1 | 42% | 64% |
 
-The planned comparison reports:
+The primary comparison uses the matched seed-role strata rather than treating
+the two win rates as unrelated samples. Direct prompting won while DTAV lost in
+6 strata; DTAV won while direct prompting lost in 21. The McNemar exact
+two-sided p-value was `0.0059`. The mean outcome-score difference, expressed as
+direct prompt minus DTAV, was `-0.15`, with a paired-bootstrap 95% interval of
+`[-0.25, -0.06]`. Equivalently, the estimated DTAV advantage was 15 percentage
+points with an interval of 6 to 25 percentage points under the recorded setup.
 
-| Metric family | Measures |
-| --- | --- |
-| Proposal quality | raw-schema validity, recognised-intent validity, incomplete/invalid calls |
-| Reliability | completed matches, timeout/error rate, fallback rate, action-shape validity |
-| DTAV intervention | normalisation, strategy-reuse, and risk-filter event counts |
-| Efficiency | fresh-call count and latency distribution |
-| Gameplay | paired win/loss outcomes, role effects, confidence interval |
-| Inspectability | method-labelled trace completeness and replay linkage |
+| Process and inspection metric | Direct prompt | DTAV |
+| --- | ---: | ---: |
+| LLM calls | 2,284 | 2,325 |
+| Post-check structured-valid calls | 1,966 (86.1%) | 2,323 (99.9%) |
+| Raw schema-valid calls | 1,969 (86.2%) | 1,767 (76.0%) |
+| Normalisation interventions | 315 (13.8%) | 558 (24.0%) |
+| Cached-decision steps | 0 | 45,645 (89.8%) |
+| Observable rule-fallback steps | 48,576 (95.5%) | 2,833 (5.6%) |
+| Risk-filter changed steps | 0 | 5,706 (11.2%) |
+| Risk-filter changed targets | 0 | 29,741 |
+| Agent-step and LLM-call trace completeness | 100% | 100% |
+| Replay-linkage coverage | 100% | 100% |
+| Legal action-array shape | 100% | 100% |
+| LLM timeouts / errors / action fallbacks | 0 / 0 / 0 | 0 / 0 / 0 |
+| Median fresh-call latency | 3,448.1 ms | 3,389.8 ms |
+| P95 fresh-call latency | 6,353.6 ms | 6,369.0 ms |
+
+The 95.5% rule-fallback-step rate in the direct-prompt condition does not mean
+that 95.5% of its fresh calls failed. Both methods used the same scheduled call
+policy. With strategy reuse disabled, direct prompting used the observable rule
+path between fresh calls; DTAV instead reused an accepted cached strategy on
+most intervening steps. The comparison therefore evaluates a controlled
+scheduled direct-prompt baseline against the complete DTAV method bundle. It
+does not isolate the causal contribution of normalisation, caching, or risk
+filtering individually.
+
+The result directly addresses the revised research question. Direct prompting
+remained executable through the minimum shared parser and legal-action adapter,
+but it produced fewer usable structured calls and depended far more heavily on
+the rule path. DTAV improved post-check proposal usability and strategy
+continuity while retaining complete, replay-linked evidence of every decision
+source and verifier intervention. The statistically supported gameplay
+difference is consistent with those operational improvements, but the result
+is bounded to the recorded model, prompt, seed, role, software, and hardware
+configuration.
 
 ---
 
@@ -3764,7 +3801,7 @@ The main research question was:
 
 > How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-The retained formal studies show how DTAV operates and provide evidence about validity, interventions, reliability, outcomes, and inspectability. They do not contain a direct-prompt control condition and therefore cannot, by themselves, estimate how much of the observed behaviour is caused by DTAV rather than the shared prompt and action adapter. The new matched direct-prompt versus DTAV runner and validation protocol address this design gap; the comparative conclusion must remain provisional until the formal paired run is completed.
+The formal studies now include a controlled scheduled direct-prompt baseline and DTAV comparison. Both conditions used Qwen3-32B, the same 50 matched seeds, role swapping, generation settings, compact observation, call schedule, parser, and minimum legal-action adapter. Direct prompting won 48 of 100 matches, whereas DTAV won 63. In the matched seed-role analysis, DTAV-only wins outnumbered direct-prompt-only wins 21 to 6; the McNemar exact p-value was 0.0059 and the paired-bootstrap interval placed the DTAV advantage between 6 and 25 percentage points under the recorded configuration.
 
 Within that boundary, the existing evidence shows that DTAV supports LLM-based agents in three main ways.
 
@@ -3774,7 +3811,7 @@ Second, rule-based action verification provides a controlled boundary between LL
 
 Third, replay-grounded inspection connects decision traces to visual game behaviour. The LLM Decision Trace Overlay allows replay frames to be inspected together with the corresponding decision source, objective, fallback status, risk posture, and unit intents. This makes evaluation more informative than using final score alone.
 
-Overall, the project demonstrates that the project-specific DTAV decision-trace approach and rule-based verification can make LLM-based game agents more stable, inspectable, and evaluable.
+Overall, the project demonstrates that the project-specific DTAV method can improve proposal usability, strategic continuity, controlled execution, inspectability, and observed match performance relative to the scheduled direct-prompt baseline under the tested configuration.
 
 ---
 
@@ -4134,7 +4171,9 @@ The primary evaluation showed that qwen3:32b and DeepSeek-R1-32B could both be i
 
 The supplementary direct LLM-versus-LLM experiment completed another 100 role-swapped matches while both players used the framework. Its 106,317 trace records were complete, all 4,676 fresh calls were valid after checks, and verifier interventions remained observable. The 54:46 outcome was not statistically significant, so this evidence strengthens the operational framework claim without changing the project into a model-ranking study.
 
-The existing evidence establishes that DTAV creates an observable and reliable execution path under the recorded configurations. A final claim about how effectively it addresses the limitations of direct prompting depends on the newly specified formal matched comparison. Rather than treating the LLM as a direct controller, LuxLLM-Agent treats the LLM as a strategic planner inside a controlled execution pipeline.
+The final matched comparison strengthens this conclusion. Direct prompting achieved 86.1% post-check structured-call validity and used the observable rule path on 95.5% of agent steps. DTAV achieved 99.9% post-check structured-call validity, reused accepted strategies on 89.8% of steps, used rule fallback on 5.6%, and recorded risk-filter changes on 11.2%. Both conditions retained complete traces, replay linkage, legal action-array shape, and zero observed timeout, API-error, or downstream action-fallback events. These results show how DTAV addressed the observed limitations while leaving the execution boundary inspectable.
+
+The comparison evaluates DTAV as a complete method bundle and does not attribute the performance difference to an individual component. It also remains specific to the recorded Qwen3-32B, prompt, seeds, call schedule, software, and hardware. Rather than treating the LLM as a direct controller, LuxLLM-Agent treats it as a strategic planner inside a controlled and auditable execution pipeline.
 
 This makes the project more than a game-playing agent. It is a framework for understanding how LLM-based agents make decisions, how those decisions are verified, and how their behaviour can be evaluated through logs, metrics, and replay-grounded inspection.
 

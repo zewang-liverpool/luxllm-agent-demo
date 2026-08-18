@@ -6,7 +6,7 @@ The project combines a Lux AI Season 3 agent, compact game-state summarisation, 
 
 The project is designed for an MSc dissertation and research-demo style artifact. Its main goal is to test how effectively directly prompted LLMs can make decisions in this type of game and whether the project-specific Decision-Trace and Action-Verification (DTAV) method addresses the observed limitations.
 
-> **Project status:** the earlier controlled studies and dual-LLM supplementary study are complete. Following supervisor feedback on 14 August 2026, a controlled direct-prompting baseline has been added for the final DTAV comparison. Its local mock validation is part of the repository; formal GPU results must be reported only after that comparison has been run and validated.
+> **Project status:** the controlled studies, dual-LLM supplementary study, and supervisor-requested direct-prompt-versus-DTAV comparison are complete. The final comparison used 50 matched seeds with role swapping for each condition (100 matches per method) and passed the repository validator.
 
 ---
 
@@ -25,6 +25,12 @@ The investigation has three objectives:
 3. Compare direct prompting and DTAV using validity, fallback/intervention rates, reliability, latency, match outcomes, and replay-linked inspection.
 
 “DTAV” names the method developed in this project. Its decision trace is a predefined operational audit record, not the model's hidden chain of thought. The canonical scope is recorded in [`docs/research_scope_20260814.md`](docs/research_scope_20260814.md).
+
+### Final controlled method comparison
+
+Under the recorded Qwen3-32B configuration, the scheduled direct-prompt baseline won 48 of 100 matches and DTAV won 63 of 100. Across the 100 matched seed-role strata, DTAV-only wins outnumbered direct-prompt-only wins 21 to 6 (McNemar exact `p = 0.0059`). The estimated DTAV advantage was 15 percentage points, with a paired-bootstrap 95% interval of 6 to 25 percentage points. This is evidence for the recorded model, prompt, seed, role, software, and hardware settings rather than a universal performance claim.
+
+The process evidence also exposed the mechanism boundary: post-check structured-call validity was 86.1% for direct prompting and 99.9% for DTAV; observable rule-fallback steps were 95.5% and 5.6%, respectively; and DTAV reused a cached accepted strategy on 89.8% of agent steps and changed proposed targets through its risk filter on 11.2%. Both conditions retained 100% trace completeness, replay linkage, and legal action-array shape, with no recorded LLM timeout, API error, or downstream action fallback. The compact reports are in [`reports/direct_prompt_vs_dtav_trace_analysis.md`](reports/direct_prompt_vs_dtav_trace_analysis.md) and [`reports/direct_prompt_vs_dtav_comparison.json`](reports/direct_prompt_vs_dtav_comparison.json).
 
 ---
 
@@ -561,14 +567,14 @@ The strongest dissertation angle is:
     <tr><td align="center">Automated tests and GitHub Actions CI</td><td align="center">Complete</td></tr>
     <tr><td align="center">Rule-only end-to-end smoke test</td><td align="center">Complete</td></tr>
     <tr><td align="center">Matched-seed role-swap experiment pipeline</td><td align="center">Complete</td></tr>
-    <tr><td align="center">Direct-prompt versus DTAV comparison pipeline</td><td align="center">Implemented; formal GPU comparison pending</td></tr>
+    <tr><td align="center">Direct-prompt versus DTAV comparison</td><td align="center">Complete: 200 matches, validated</td></tr>
     <tr><td align="center">Qwen3 paired 100-match evidence</td><td align="center">Complete</td></tr>
     <tr><td align="center">DeepSeek-R1 paired 100-match evidence</td><td align="center">Complete</td></tr>
     <tr><td align="center">Combined decision-trace/action-verification audit</td><td align="center">Complete</td></tr>
     <tr><td align="center">Historical confidence intervals and exact tests</td><td align="center">Complete</td></tr>
     <tr><td align="center">Dissertation chapter drafts</td><td align="center">Complete</td></tr>
     <tr><td align="center">Final 75-second demo screencast</td><td align="center">Complete</td></tr>
-    <tr><td align="center">Supervisor feedback integration</td><td align="center">Pending</td></tr>
+    <tr><td align="center">Supervisor feedback integration</td><td align="center">Complete</td></tr>
     <tr><td align="center">Citation and bibliography review</td><td align="center">Pending</td></tr>
     <tr><td align="center">Final figures, tables, and format</td><td align="center">Pending</td></tr>
   </tbody>

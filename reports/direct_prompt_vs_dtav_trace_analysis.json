@@ -1,0 +1,280 @@
+{
+  "research_question": "How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?",
+  "analysis_commit": "354c30beb1a179904fc52b53a577fe09c0fbfdf1",
+  "experiments": [
+    {
+      "label": "direct_prompt",
+      "experiment_directory": "10247430_qwen3_32b_direct_prompt_paired",
+      "model": "qwen3:32b",
+      "source_commit": "354c30beb1a179904fc52b53a577fe09c0fbfdf1",
+      "completed_matches": 100,
+      "planned_matches": 100,
+      "match_completion_rate": 1.0,
+      "runs_with_trace": 100,
+      "trace_streams": 200,
+      "missing_trace_runs": [],
+      "match_trace_coverage": 1.0,
+      "trace_records": 104005,
+      "agent_step_trace_records": 101721,
+      "agent_step_trace_records_complete": 101721,
+      "agent_step_trace_completeness_rate": 1.0,
+      "decision_call_trace_records": 2284,
+      "decision_call_trace_records_complete": 2284,
+      "decision_call_trace_completeness_rate": 1.0,
+      "unknown_trace_records": 0,
+      "replay_linked_trace_records": 101721,
+      "replay_linkage_rate": 1.0,
+      "missing_trace_fields": {},
+      "llm_agent_trace_records": 50860,
+      "rule_player_trace_records": 50861,
+      "decision_source_counts": {
+        "rule_fallback": 101,
+        "rule_fallback_no_cache": 48475,
+        "llm_fresh": 2284
+      },
+      "llm_mode_counts": {
+        "skip_llm_rule_fallback:no_active_units": 101,
+        "skip_llm_no_cache_rule_fallback:no_trigger": 48475,
+        "fresh_llm_call:new_relic_discovered": 250,
+        "fresh_llm_call:periodic_interval": 1611,
+        "fresh_llm_call:new_match": 403,
+        "fresh_llm_call:score_diff_changed": 20
+      },
+      "llm_agent_fallback_steps": 48576,
+      "llm_agent_fallback_rate": 0.9550924105387337,
+      "fallback_reason_counts": {
+        "llm_not_called_no_valid_cache": 101,
+        "llm_not_called_cache_disabled": 48475
+      },
+      "cache_steps": 0,
+      "cache_step_rate": 0.0,
+      "trace_llm_calls": 2284,
+      "trace_valid_llm_calls": 1966,
+      "trace_llm_validity_rate": 0.8607705779334501,
+      "trace_timeouts": 0,
+      "trace_llm_errors": 0,
+      "decision_log_records": 2284,
+      "decision_log_calls": 2284,
+      "decision_log_valid_calls": 1966,
+      "decision_log_validity_rate": 0.8607705779334501,
+      "calls_by_player_and_model": {
+        "player_0|qwen3:32b": 1129,
+        "player_1|qwen3:32b": 1155
+      },
+      "valid_calls_by_player_and_model": {
+        "player_0|qwen3:32b": 1080,
+        "player_1|qwen3:32b": 886
+      },
+      "raw_json_parseable_calls": 2284,
+      "raw_json_parse_rate": 1.0,
+      "raw_schema_valid_calls": 1969,
+      "raw_schema_valid_rate": 0.8620840630472855,
+      "string_shorthand_normalizations": 315,
+      "prefixed_key_normalizations": 0,
+      "normalization_interventions": 315,
+      "normalization_intervention_rate": 0.13791593695271454,
+      "action_fallback_steps": 0,
+      "risk_filter_changed_steps": 0,
+      "risk_filter_changed_step_rate": 0.0,
+      "risk_filter_changed_targets": 0,
+      "risk_filter_events": 0,
+      "action_shape_valid_steps": 50860,
+      "action_shape_valid_rate": 1.0,
+      "active_action_steps": 37401,
+      "active_actions": 235696,
+      "llm_latency_ms_mean": 4089.7542552539403,
+      "llm_latency_ms_median": 3448.083,
+      "llm_latency_ms_p95": 6353.608,
+      "llm_latency_ms_max": 8493.084,
+      "llm_win_rate_secondary": 0.48,
+      "matched_seed_performance_secondary": {
+        "seeds_above_0_5": 3,
+        "seeds_equal_0_5": 42,
+        "seeds_below_0_5": 5,
+        "clustered_win_rate": 0.48,
+        "cluster_bootstrap_95_ci": [
+          0.42,
+          0.53
+        ],
+        "exact_sign_pvalue_vs_0_5": 0.7265625,
+        "bootstrap_iterations": 10000,
+        "bootstrap_seed": 42,
+        "independence_unit": "matched Lux environment seed"
+      },
+      "secondary_outcome": {
+        "model_a": null,
+        "model_b": null,
+        "model_a_wins": null,
+        "model_a_losses": null,
+        "draws": 0,
+        "model_a_win_rate": null,
+        "model_a_win_rate_wilson_95_ci": null,
+        "exact_binomial_pvalue_vs_0_5": 0.7643534344026668,
+        "by_model_a_role": null,
+        "matched_seed_performance": {
+          "seeds_above_0_5": 3,
+          "seeds_equal_0_5": 42,
+          "seeds_below_0_5": 5,
+          "clustered_win_rate": 0.48,
+          "cluster_bootstrap_95_ci": [
+            0.42,
+            0.53
+          ],
+          "exact_sign_pvalue_vs_0_5": 0.7265625,
+          "bootstrap_iterations": 10000,
+          "bootstrap_seed": 42,
+          "independence_unit": "matched Lux environment seed"
+        },
+        "matched_role_analysis": {
+          "player_0_only_wins": 24,
+          "player_1_only_wins": 18,
+          "mcnemar_exact_pvalue": 0.44079906734259566,
+          "mean_outcome_score_difference_player_0_minus_player_1": 0.12,
+          "paired_bootstrap_95_ci": [
+            -0.14,
+            0.36
+          ],
+          "bootstrap_iterations": 10000,
+          "bootstrap_seed": 42
+        }
+      }
+    },
+    {
+      "label": "dtav",
+      "experiment_directory": "10247431_qwen3_32b_dtav_paired",
+      "model": "qwen3:32b",
+      "source_commit": "354c30beb1a179904fc52b53a577fe09c0fbfdf1",
+      "completed_matches": 100,
+      "planned_matches": 100,
+      "match_completion_rate": 1.0,
+      "runs_with_trace": 100,
+      "trace_streams": 200,
+      "missing_trace_runs": [],
+      "match_trace_coverage": 1.0,
+      "trace_records": 103932,
+      "agent_step_trace_records": 101607,
+      "agent_step_trace_records_complete": 101607,
+      "agent_step_trace_completeness_rate": 1.0,
+      "decision_call_trace_records": 2325,
+      "decision_call_trace_records_complete": 2325,
+      "decision_call_trace_completeness_rate": 1.0,
+      "unknown_trace_records": 0,
+      "replay_linked_trace_records": 101607,
+      "replay_linkage_rate": 1.0,
+      "missing_trace_fields": {},
+      "llm_agent_trace_records": 50803,
+      "rule_player_trace_records": 50804,
+      "decision_source_counts": {
+        "rule_fallback": 2833,
+        "llm_fresh": 2325,
+        "cached_llm": 45645
+      },
+      "llm_mode_counts": {
+        "skip_llm_rule_fallback:no_active_units": 101,
+        "skip_llm_rule_fallback:no_trigger": 2732,
+        "fresh_llm_call:new_relic_discovered": 289,
+        "reuse_cached_llm_intents:no_trigger": 45645,
+        "fresh_llm_call:periodic_interval": 1610,
+        "fresh_llm_call:new_match": 402,
+        "fresh_llm_call:score_diff_changed": 24
+      },
+      "llm_agent_fallback_steps": 2833,
+      "llm_agent_fallback_rate": 0.05576442336082515,
+      "fallback_reason_counts": {
+        "llm_not_called_no_valid_cache": 2833
+      },
+      "cache_steps": 45645,
+      "cache_step_rate": 0.8984705627620416,
+      "trace_llm_calls": 2325,
+      "trace_valid_llm_calls": 2323,
+      "trace_llm_validity_rate": 0.9991397849462366,
+      "trace_timeouts": 0,
+      "trace_llm_errors": 0,
+      "decision_log_records": 2325,
+      "decision_log_calls": 2325,
+      "decision_log_valid_calls": 2323,
+      "decision_log_validity_rate": 0.9991397849462366,
+      "calls_by_player_and_model": {
+        "player_0|qwen3:32b": 1141,
+        "player_1|qwen3:32b": 1184
+      },
+      "valid_calls_by_player_and_model": {
+        "player_0|qwen3:32b": 1139,
+        "player_1|qwen3:32b": 1184
+      },
+      "raw_json_parseable_calls": 2325,
+      "raw_json_parse_rate": 1.0,
+      "raw_schema_valid_calls": 1767,
+      "raw_schema_valid_rate": 0.76,
+      "string_shorthand_normalizations": 558,
+      "prefixed_key_normalizations": 0,
+      "normalization_interventions": 558,
+      "normalization_intervention_rate": 0.24,
+      "action_fallback_steps": 0,
+      "risk_filter_changed_steps": 5706,
+      "risk_filter_changed_step_rate": 0.11231620179910635,
+      "risk_filter_changed_targets": 29741,
+      "risk_filter_events": 124020,
+      "action_shape_valid_steps": 50803,
+      "action_shape_valid_rate": 1.0,
+      "active_action_steps": 44726,
+      "active_actions": 283876,
+      "llm_latency_ms_mean": 4009.6349204301077,
+      "llm_latency_ms_median": 3389.814,
+      "llm_latency_ms_p95": 6368.995,
+      "llm_latency_ms_max": 7331.532,
+      "llm_win_rate_secondary": 0.63,
+      "matched_seed_performance_secondary": {
+        "seeds_above_0_5": 14,
+        "seeds_equal_0_5": 35,
+        "seeds_below_0_5": 1,
+        "clustered_win_rate": 0.63,
+        "cluster_bootstrap_95_ci": [
+          0.56,
+          0.7
+        ],
+        "exact_sign_pvalue_vs_0_5": 0.0009765625,
+        "bootstrap_iterations": 10000,
+        "bootstrap_seed": 42,
+        "independence_unit": "matched Lux environment seed"
+      },
+      "secondary_outcome": {
+        "model_a": null,
+        "model_b": null,
+        "model_a_wins": null,
+        "model_a_losses": null,
+        "draws": 0,
+        "model_a_win_rate": null,
+        "model_a_win_rate_wilson_95_ci": null,
+        "exact_binomial_pvalue_vs_0_5": 0.012032975725363477,
+        "by_model_a_role": null,
+        "matched_seed_performance": {
+          "seeds_above_0_5": 14,
+          "seeds_equal_0_5": 35,
+          "seeds_below_0_5": 1,
+          "clustered_win_rate": 0.63,
+          "cluster_bootstrap_95_ci": [
+            0.56,
+            0.7
+          ],
+          "exact_sign_pvalue_vs_0_5": 0.0009765625,
+          "bootstrap_iterations": 10000,
+          "bootstrap_seed": 42,
+          "independence_unit": "matched Lux environment seed"
+        },
+        "matched_role_analysis": {
+          "player_0_only_wins": 17,
+          "player_1_only_wins": 18,
+          "mcnemar_exact_pvalue": 1.0,
+          "mean_outcome_score_difference_player_0_minus_player_1": -0.02,
+          "paired_bootstrap_95_ci": [
+            -0.26,
+            0.22
+          ],
+          "bootstrap_iterations": 10000,
+          "bootstrap_seed": 42
+        }
+      }
+    }
+  ]
+}

@@ -6,35 +6,32 @@
 - **Email:** Z.Wang300@liverpool.ac.uk
 - **Supervisor:** Meng Fang
 - **Repository:** https://github.com/zewang-liverpool/luxllm-agent-demo
-- **Development branch:** `codex/dual-llm-supplementary`
-- **Report updated:** 20 July 2026
+- **Development branch:** `codex/dtav-direct-prompt-comparison`
+- **Report updated:** 18 August 2026
 
 ## 1. Executive Summary
 
 LuxLLM-Agent is an artefact-based MSc project investigating how an LLM can be integrated into a sequential game agent without allowing unconstrained model text to directly control executable actions. The project is organised around the following research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 The implemented system treats the LLM as a bounded strategic planner. Raw Lux observations are summarised, the model proposes structured unit intents, deterministic code parses and normalises the response, a rule-based verifier applies safety and risk checks, and an action planner constructs legal Lux action arrays. The system records decision provenance and links it to replay state for later inspection.
 
-The current technical scope is complete. The primary evaluation comprises two 32B-model-versus-rule-policy experiments with 200 completed matched-seed, role-swapped matches and 206,591 structured trace records. All 4,591 LLM calls were valid after deterministic checks. A supervisor-requested supplementary direct LLM-versus-LLM experiment adds 100 completed matches, 106,317 structured trace records, and 4,676/4,676 valid fresh calls while both players use the framework simultaneously. Across these formal runs, all recorded action arrays had the expected shape and no model timeout, API error, or downstream action fallback was observed.
+The current technical and experimental scope is complete. The final controlled method study compares a scheduled direct-prompt baseline with DTAV using Qwen3-32B, 50 matched seeds and role swapping for each condition. Direct prompting won 48 of 100 matches and DTAV won 63. The matched analysis estimated a 15-percentage-point DTAV advantage, with a paired-bootstrap 95% interval of 6-25 percentage points and a McNemar exact p-value of 0.0059. Both result directories passed automated completeness and provenance validation.
+
+Earlier evidence comprises two 32B-model-versus-rule-policy studies with 200 matches and a supervisor-requested direct LLM-versus-LLM study with 100 matches. Across all retained studies, the framework records proposal source, verifier intervention, action construction and replay linkage rather than relying on final score alone.
 
 The main result is not a universal ranking of Qwen and DeepSeek. The main result is that structured traces and deterministic verification make model proposals observable, auditable, and executable under the recorded experimental conditions.
 
 ## 2. Project Objectives
 
-The project has pursued eight objectives:
+The final study uses three research objectives:
 
-1. implement a working Lux AI Season 3 agent;
-2. transform raw observations into structured strategic summaries;
-3. integrate local LLM backends as high-level planners;
-4. verify, normalise, cache, repair, or replace model proposals before execution;
-5. record decision sources, verifier interventions, latency, errors, and outcomes;
-6. evaluate multiple backends using controlled seeds and swapped player roles;
-7. connect decision evidence to a visual replay interface.
-8. test whether two simultaneous LLM agents can use isolated trace streams and the same verification boundary in direct play.
+1. establish a controlled scheduled direct-prompt baseline with matched seeds, role swapping and fixed model settings;
+2. implement DTAV so proposals can be normalised, reused, checked, filtered or replaced before legal action construction;
+3. compare direct prompting and DTAV using proposal validity, fallback and intervention rates, reliability, latency, gameplay outcomes and replay-linked inspection.
 
-All eight objectives have an implemented and tested artefact.
+All three objectives now have implemented, tested and formally validated evidence.
 
 ## 3. System Design
 
@@ -178,7 +175,42 @@ Every affected step retained the recorded reason that the original target was in
 
 This demonstrates that the verifier was operational. It does not prove that every individual intervention improved the final score, and the project explicitly avoids that causal claim.
 
-## 9. Supervisor-requested Direct LLM-versus-LLM Experiment
+## 9. Controlled Direct-Prompt versus DTAV Comparison
+
+The final experiment used source commit
+`354c30beb1a179904fc52b53a577fe09c0fbfdf1`, Qwen3-32B, temperature 0,
+identical generation budgets, 50 matched seeds, role swapping and the same
+scheduled call policy. The direct-prompt condition disabled output
+normalisation, strategy reuse and risk-aware filtering; DTAV enabled them. Both
+retained the minimum parser and legal-action adapter required by Lux.
+
+| Metric | Direct prompt | DTAV |
+| --- | ---: | ---: |
+| Completed matches | 100 | 100 |
+| Wins / losses | 48 / 52 | 63 / 37 |
+| Win rate | 48% | 63% |
+| Post-check structured-call validity | 86.1% | 99.9% |
+| Observable rule-fallback steps | 95.5% | 5.6% |
+| Cached-decision steps | 0% | 89.8% |
+| Risk-filter changed steps | 0% | 11.2% |
+| Trace completeness / replay linkage | 100% / 100% | 100% / 100% |
+| Median fresh-call latency | 3,448.1 ms | 3,389.8 ms |
+
+Across the 100 matched seed-role strata, direct-prompt-only wins numbered 6
+and DTAV-only wins numbered 21. The McNemar exact p-value was 0.0059. The mean
+direct-prompt-minus-DTAV outcome difference was -0.15, with a paired-bootstrap
+95% interval of [-0.25, -0.06]. This supports a DTAV advantage under the
+recorded configuration. It does not isolate the contribution of individual
+DTAV components or establish universal superiority.
+
+Tracked reports:
+
+- `reports/direct_prompt_vs_dtav_comparison.json`;
+- `reports/direct_prompt_vs_dtav_trace_analysis.md`;
+- `reports/direct_prompt_vs_dtav_trace_analysis.json`;
+- `reports/direct_prompt_vs_dtav_trace_metrics.csv`.
+
+## 10. Supervisor-requested Direct LLM-versus-LLM Experiment
 
 The supplementary experiment places `qwen3:32b` and `deepseek-r1:32b` in the same Lux matches. Fifty environment seeds were each run twice, swapping which model controlled `player_0` and `player_1`. Both players used the same structured proposal, deterministic normalization, caching, risk filtering, and action-construction pipeline. Per-player log isolation prevented concurrent JSONL writers from corrupting trace evidence.
 
@@ -228,14 +260,14 @@ Local formal archive SHA-256:
 2B16B3C03EDA364F599F2EEF8884669124A1398D5BA1AAB7DE4709D9CF8A4EA7
 ```
 
-## 10. Reproducibility and Software Quality
+## 11. Reproducibility and Software Quality
 
 Previous reproducibility weaknesses have been addressed:
 
 - complete runtime source is tracked under `src/agent/`;
 - dependency files and a verified Windows lock file are included;
 - setup scripts can rebuild a stale `.venv` referencing a removed Python installation;
-- 28 automated tests pass;
+- 35 automated tests pass;
 - the dependency-free smoke runner compiles source, validates viewer data, checks evidence consistency, and runs the tests;
 - a real rule-only Lux match completes successfully at seed 42;
 - GitHub Actions tests Python 3.10 and 3.11;
@@ -254,9 +286,12 @@ DeepSeek SHA-256:
 
 Dual LLM SHA-256:
 2B16B3C03EDA364F599F2EEF8884669124A1398D5BA1AAB7DE4709D9CF8A4EA7
+
+Direct prompt versus DTAV SHA-256:
+EC891004FC499C32B068CAFC6AAC6581F2F00E041479C1D8F0F2D3E6F876319C
 ```
 
-## 11. Demonstration and Supporting Artefacts
+## 12. Demonstration and Supporting Artefacts
 
 The project provides:
 
@@ -272,7 +307,7 @@ The project provides:
 
 The formal 32B models do not need to be run live during a presentation. The viewer, recorded evidence, reports, and backup video provide a lower-risk demonstration path.
 
-## 12. Limitations
+## 13. Limitations
 
 The project retains several explicitly reported limitations:
 
@@ -287,7 +322,7 @@ The project retains several explicitly reported limitations:
 
 These limitations define the project scope and avoid overstating the results.
 
-## 13. Current Completion Status
+## 14. Current Completion Status
 
 The project has reached technical closeout for the agreed MSc scope:
 
@@ -304,7 +339,7 @@ The project has reached technical closeout for the agreed MSc scope:
 
 Further development is not planned unless a test fails, a factual inconsistency is identified, the supervisor requests a material correction, or a submission-blocking defect is discovered.
 
-## 14. Remaining Non-development Work
+## 15. Remaining Non-development Work
 
 The remaining work is review and presentation rather than feature development:
 
@@ -315,7 +350,7 @@ The remaining work is review and presentation rather than feature development:
 5. keep large raw runs and archives outside normal Git history;
 6. merge the supplementary branch after GitHub CI passes.
 
-## 15. Questions for Supervisor Feedback
+## 16. Questions for Supervisor Feedback
 
 The following points would benefit most from supervisor guidance:
 
@@ -325,7 +360,7 @@ The following points would benefit most from supervisor guidance:
 4. Should the historical fixed-role experiments remain as supporting development history, or be omitted from the final narrative?
 5. Is the current limitation discussion appropriately critical and proportionate?
 
-## 16. Conclusion
+## 17. Conclusion
 
 LuxLLM-Agent demonstrates a practical architecture for integrating local LLM planning into a sequential game agent while retaining deterministic control of executable actions. Its main contribution is a reproducible evidence framework: structured decision provenance makes behaviour inspectable, normalization exposes and repairs bounded output-format failures, risk-aware verification records changes to unsafe targets, and replay linkage connects decisions to game context.
 

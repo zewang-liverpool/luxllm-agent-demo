@@ -64,6 +64,17 @@ The project is considered technically closed when all of the following hold:
    - Development stops after the formal comparison is validated and integrated;
      extra models remain optional rather than required.
 
+## Closure determination: 18 August 2026
+
+The direct-prompt and DTAV formal jobs each completed 100 matches across 50
+matched role-swapped seeds from source commit
+`354c30beb1a179904fc52b53a577fe09c0fbfdf1`. Both result directories passed
+`tools/validate_paired_method_result.py`; the automated paired comparison and
+trace analysis completed; and the raw archive was transferred and verified by
+SHA-256. The bounded experimental requirement is therefore closed. No further
+GPU experiment is required for CA2 unless a retained result fails validation
+or a supervisor identifies a specific factual gap.
+
 ## Explicit non-requirements
 
 The following are not required to close the project:

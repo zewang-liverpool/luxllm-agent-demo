@@ -6,14 +6,14 @@ Slide 1
 - paper/main.tex, Ethics Statement: no personal data and no decisions about real users.
 
 Slide 2
-- docs/technical/system_architecture.md: project purpose, research question, and separation between LLM proposals and executable actions.
-- Current local Viewer screenshot captured on 14 August 2026: Lux AI Season 3 player view with the project-specific DTAV Inspector.
+- docs/research_scope_20260814.md: revised research question and project-specific DTAV framing.
+- Latest student-provided Viewer screenshot captured on 18 August 2026: Lux AI Season 3 Player View with map, current replay state and enlarged match metrics.
 
 Slide 3
 - docs/technical/system_architecture.md: state summarisation, LLM decision, structured parser, rule-based verifier, cache, fallback, risk filter, action planner, logging, and replay inspection.
 
 Slide 4
-- Current local Viewer screenshot captured on 14 August 2026: focused Proposal / Verification / Executed State inspection.
+- Latest student-provided Viewer screenshot captured on 18 August 2026: focused Proposal / Deterministic Checks / Executed State inspection.
 - docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html: current replay-grounded Viewer implementation.
 
 Slide 5
@@ -22,6 +22,6 @@ Slide 5
 - src/agent/agent.py: cache, verifier, risk-filter, fallback, and legal-action boundary.
 
 Slides 6 and 7
-- reports/final_trace_evaluation.md: 200 completed primary matches; 4,591 calls valid after checks; 520 Qwen normalisation interventions; 206,591 primary trace records.
-- reports/dual_llm_trace_evaluation.md: 100 completed direct model-versus-model matches; 4,676 valid calls after checks; 106,317 traces; 54:46 result and seed-level sign p-value 0.5034.
-- reports/verifier_intervention_audit.md and reports/dual_llm_verifier_audit.md: 28,401 risk-filter changed steps across the three formal studies.
+- reports/direct_prompt_vs_dtav_comparison.json: Qwen3-32B direct prompt won 48/100 matches; DTAV won 63/100; paired effect +15 percentage points for DTAV, 95% CI +6 to +25; McNemar p=0.0059.
+- reports/direct_prompt_vs_dtav_trace_analysis.json: post-check validity 86.1% versus 99.9%; rule-fallback steps 95.5% versus 5.6%; both conditions retain complete trace and replay linkage.
+- docs/dissertation/chapter_7_discussion_conclusion.md: bounded interpretation of the controlled method-bundle comparison.

@@ -1,0 +1,16 @@
+{
+  "left": "direct_prompt",
+  "right": "dtav",
+  "matched_seed_role_strata": 100,
+  "left_only_wins": 6,
+  "right_only_wins": 21,
+  "mcnemar_exact_pvalue": 0.005924612283706665,
+  "mean_outcome_score_difference_left_minus_right": -0.15,
+  "paired_bootstrap_95_ci": [
+    -0.25,
+    -0.06
+  ],
+  "bootstrap_iterations": 10000,
+  "bootstrap_seed": 42,
+  "interpretation": "A matched association under the recorded seed/role/model settings; not a hardware-independent causal model ranking."
+}
