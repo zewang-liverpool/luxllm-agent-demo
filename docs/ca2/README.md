@@ -8,7 +8,7 @@ This directory contains the working materials for the COMP702 second assessment 
 - `LuxLLM_Agent_CA2_PPT_Content_Manuscript_20260818.docx` — complete manual-build manuscript with exact slide copy, English narration, timing, Viewer/code actions, backup Q&A slides and final checks.
 - `CA2_PPT_MANUAL_BUILD_GUIDE_20260818.md` — compact text guide for rebuilding or manually editing the presentation.
 - `ppt_assets_20260818/` — current Player View and Inspector screenshots plus the final method-comparison charts and an asset manifest.
-- `LuxLLM_Agent_CA2_Presentation.pptx` — retained earlier deck for provenance; do not use it for the final recording.
+- `archive/LuxLLM_Agent_CA2_Presentation_20260814.pptx` — retained earlier deck for provenance; do not use it for the final recording.
 - `CA2_NARRATION_SCRIPT.md` — an English narration script targeting approximately 9 minutes 20 seconds, including screen actions.
 - `CA2_QA_PREPARATION.md` — concise answers to likely marker questions.
 - `CA2_RECORDING_AND_SUBMISSION_CHECKLIST.html` — a local interactive checklist whose ticked state is saved in the browser.

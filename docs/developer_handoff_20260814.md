@@ -425,7 +425,7 @@ CA2 根目录：`D:\PythonProject\lux_llm_agent\docs\ca2`
 
 | 文件 | 用途 |
 |---|---|
-| `LuxLLM_Agent_CA2_Presentation.pptx` | 七页最终 CA2 PPT，使用当前 Viewer 和正式实验数据 |
+| `LuxLLM_Agent_CA2_Presentation_20260818.pptx` | 七页最终 CA2 PPT，使用当前 Viewer 和正式 Direct Prompt–DTAV 实验数据 |
 | `CA2_NARRATION_SCRIPT.md` | 约 9 分 20 秒的英文旁白和屏幕操作脚本 |
 | `CA2_QA_PREPARATION.md` | 评审可能提问及短答案 |
 | `CA2_RECORDING_AND_SUBMISSION_CHECKLIST.html` | 可在浏览器勾选并保存状态的交互式人工清单 |
