@@ -1,5 +1,11 @@
 # EMNLP 2026 — System Demonstrations Track (Overleaf project)
 
+> **Historical artifact:** this directory preserves an earlier paper-format
+> snapshot for provenance. It is not the canonical description of the current
+> MSc project and is not an active submission plan. Use the repository
+> `README.md`, `docs/research_scope_20260814.md`, and the dissertation materials
+> for the current research question, terminology, results, and submission work.
+
 Ready-to-upload LaTeX project using the **official ACL style files**, set up
 for the EMNLP 2026 **System Demonstrations** track (single-blind review).
 

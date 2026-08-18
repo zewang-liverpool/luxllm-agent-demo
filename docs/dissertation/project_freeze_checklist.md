@@ -1,5 +1,11 @@
 # Project Freeze Checklist
 
+> **Historical checklist:** this file records the earlier submission-freeze
+> state and is retained for provenance. It is not the current status source.
+> Use `README.md`, `docs/project_closeout_standard.md`, and
+> `docs/dissertation/dissertation_draft_index.md` for current project and
+> dissertation status.
+
 ## 1. Purpose of This Document
 
 This document defines the freeze criteria for the LuxLLM-Agent COMP702 project.
