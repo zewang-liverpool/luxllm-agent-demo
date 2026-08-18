@@ -4,7 +4,7 @@ This document indexes the main experimental and demonstration evidence for **Lux
 
 The evidence is organised around the project's main research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in complex multi-agent game environments such as Lux AI Season 3?
+> How can the project-specific DTAV decision-trace approach and rule-based action verification support the inspection and evaluation of LLM-based agents in complex multi-agent game environments such as Lux AI Season 3?
 
 The evidence below supports the system implementation, controlled evaluation, LLM backend comparison, replay-grounded inspection, and thesis/demo documentation.
 
@@ -15,7 +15,7 @@ The evidence below supports the system implementation, controlled evaluation, LL
 **System name:** LuxLLM-Agent
 
 **Main focus:**  
-Structured decision tracing, rule-based action verification, replay-grounded inspection, and controlled-run evaluation for LLM-based game agents.
+The project-specific DTAV decision-trace approach, rule-based action verification, replay-grounded inspection, and controlled-run evaluation for LLM-based game agents.
 
 **Environment:**  
 Lux AI Season 3

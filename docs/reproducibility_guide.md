@@ -61,7 +61,7 @@ The smoke test compiles every tracked Python utility without creating
 Expected result:
 
 ```text
-28 tests passed
+35 tests passed
 ```
 
 GitHub Actions runs the same checks on Python 3.10 and 3.11 for pushes and pull
@@ -182,6 +182,14 @@ environment first, then submit from the repository root:
 sbatch --export=ALL,MODEL=qwen3:32b,PAIRS=50,SEED_START=20260701 \
   scripts/barkla_paired_experiment.sbatch
 ```
+
+The runner also supports the supervisor-requested method comparison. Set
+`METHOD=dtav` for the full project method or `METHOD=direct_prompt` for the
+controlled baseline. The direct condition disables output normalisation,
+strategy reuse, and risk-aware filtering while retaining the minimal legal
+action adapter and logged emergency fallback. Use the same source commit and
+seeds for both conditions. See
+`docs/direct_prompt_dtav_experiment_guide.md` for the complete protocol.
 
 If Python or Ollama is in a non-default location, additionally export
 `PYTHON_BIN` or `OLLAMA_BASE_URL`.

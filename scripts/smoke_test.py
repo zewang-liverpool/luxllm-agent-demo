@@ -45,10 +45,10 @@ def validate_demo_data() -> None:
         "isometric_replay_frames.json",
         "run008_decision_trace_overlay.json",
         "Lux AI Season 3",
-        "Presentation Mode",
-        "1 · Proposal Context",
-        "2 · Rule Verification",
-        "3 · Executed State",
+        "Inspection View",
+        "1 - LLM Proposal",
+        "2 - Deterministic Checks",
+        "3 - Executed State",
         "Replay score",
         "proposal rejected",
         "Primary matched-seed evaluation",
@@ -72,7 +72,9 @@ def validate_demo_data() -> None:
         raise SystemExit("Viewer board is not redrawn after a presentation-mode layout change")
     if ".presentation .controls {" in viewer:
         raise SystemExit("Viewer control bar position still changes in presentation mode")
-    if "Open Inspector (H)" not in viewer:
+    if "setPresentationMode(false)" not in viewer:
+        raise SystemExit("Viewer does not start in the player-focused default view")
+    if "Open DTAV Inspector (H)" not in viewer:
         raise SystemExit("Viewer does not provide a visible way to reopen the inspector")
     if 'byId("luxTraceToggleHint")?.addEventListener' not in viewer:
         raise SystemExit("Viewer inspector reopen control is not wired")

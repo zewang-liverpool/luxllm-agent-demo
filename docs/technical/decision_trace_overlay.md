@@ -8,7 +8,7 @@ Its purpose is to connect visual replay frames with structured decision-trace in
 
 The overlay supports the main research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 The overlay also directly supports the third sub-research question:
 
@@ -582,7 +582,7 @@ These improvements would make the viewer more useful as a general LLM-agent insp
 
 The LLM Decision Trace Overlay turns the Season 3 replay viewer into a replay-grounded decision inspection interface.
 
-It connects visual game state, LLM planning, decision source, fallback behaviour, risk filtering, score context, and unit-level intent. This directly supports the project's research focus on structured decision tracing and rule-based action verification.
+It connects visual game state, LLM planning, decision source, fallback behaviour, risk filtering, score context, and unit-level intent. This directly supports the project's research focus on the project-specific DTAV decision-trace approach and rule-based action verification.
 
 For the COMP702 dissertation, the overlay is strong evidence that the project goes beyond building an LLM game agent. It provides a tool for inspecting and evaluating how LLM-based agents make and execute decisions in a complex multi-agent environment.
 

@@ -7,6 +7,7 @@ from typing import Dict, List, Optional, Tuple
 import config
 from action_planner import build_actions_from_intents, make_empty_actions
 from game_memory import GameMemory
+from jsonl_io import append_jsonl_atomic
 from llm_decider import LLMDecider
 from rule_policy import build_rule_actions
 from state_summarizer import build_gameview
@@ -74,6 +75,10 @@ class Agent:
                 "event": "agent_initialized",
                 "version": config.AGENT_VERSION,
                 "experiment_tag": getattr(config, "EXPERIMENT_TAG", "unknown"),
+                "decision_method": getattr(config, "DECISION_METHOD", "dtav"),
+                "normalize_llm_output": bool(
+                    getattr(config, "NORMALIZE_LLM_OUTPUT", True)
+                ),
                 "player": self.player,
                 "team_id": self.team_id,
                 "env_cfg": self.env_cfg,
@@ -99,6 +104,7 @@ class Agent:
             f"[Lux LLM Agent {config.AGENT_VERSION}] "
             f"Agent initialized. player={self.player}, team_id={self.team_id}, "
             f"experiment_tag={getattr(config, 'EXPERIMENT_TAG', 'unknown')}, "
+            f"decision_method={getattr(config, 'DECISION_METHOD', 'dtav')}, "
             f"force_rule_only={config.FORCE_RULE_ONLY}, "
             f"force_fallback={getattr(config, 'FORCE_FALLBACK', False)}, "
             f"llm_enabled_for_this_player={self.llm_enabled_for_this_player}, "
@@ -455,17 +461,13 @@ class Agent:
 
     def _log_debug(self, data: Dict) -> None:
         try:
-            os.makedirs(self.log_dir, exist_ok=True)
-            with open(self.agent_debug_log, "a", encoding="utf-8") as f:
-                f.write(json.dumps(data, ensure_ascii=False) + "\n")
+            append_jsonl_atomic(self.agent_debug_log, data)
         except Exception:
             pass
 
     def _append_jsonl(self, path: str, data: Dict) -> None:
         try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(data, ensure_ascii=False) + "\n")
+            append_jsonl_atomic(path, data)
         except Exception:
             pass
 
@@ -550,6 +552,7 @@ class Agent:
             "event": "agent_step_trace",
             "agent_version": config.AGENT_VERSION,
             "experiment_tag": getattr(config, "EXPERIMENT_TAG", "unknown"),
+            "decision_method": getattr(config, "DECISION_METHOD", "dtav"),
             "step": int(step),
             "match_idx": int(match_context.get("match_idx", 0)),
             "step_in_match": int(match_context.get("step_in_match", 0)),
@@ -1059,8 +1062,7 @@ class Agent:
                 "elapsed_total": float(elapsed),
             }
 
-            with open(self.frame_log_path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(frame, ensure_ascii=False) + "\n")
+            append_jsonl_atomic(self.frame_log_path, frame)
 
         except Exception as exc:
             self._log_debug(

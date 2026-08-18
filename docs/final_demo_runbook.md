@@ -4,7 +4,7 @@
 
 This runbook provides a repeatable 7-10 minute demonstration that answers the project research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 The demonstration should foreground inspection, verification, and evidence. Match win rate is secondary.
 
@@ -86,7 +86,7 @@ Complete these checks at least 30 minutes before presenting:
 
 Say:
 
-> LuxLLM-Agent does not treat an LLM response as a directly executable game action. The project investigates how structured decision tracing and rule-based action verification make an LLM-assisted agent inspectable and evaluable in Lux AI Season 3.
+> LuxLLM-Agent does not treat an LLM response as a directly executable game action. The project investigates how the project-specific DTAV decision-trace approach and rule-based action verification make an LLM-assisted agent inspectable and evaluable in Lux AI Season 3.
 
 Explain that final win/loss alone cannot reveal whether the LLM was called, whether a cached decision was used, or whether a verifier changed a proposal.
 

@@ -8,7 +8,7 @@ The purpose is not only to show that the system can run successfully, but also t
 
 This supports the main research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 Failure-case analysis is important for the COMP702 dissertation because it demonstrates critical reflection. A strong dissertation should not only report successful runs and aggregate metrics, but should also analyse cases where the system behaves imperfectly, relies on fallback, reuses stale plans, or produces strategically weak outcomes.
 

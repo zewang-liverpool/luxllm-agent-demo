@@ -395,7 +395,7 @@ def write_markdown(path: Path, results: Sequence[Dict], analysis_commit: str) ->
         "",
         "## Research question",
         "",
-        "> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?",
+        "> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?",
         "",
         "This report treats backend win rate as a secondary outcome. The primary evidence concerns trace coverage, decision provenance, structured-output verification, safe action construction, fallback observability, and replay linkage.",
         "",
@@ -613,8 +613,10 @@ def main() -> int:
         path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "research_question": (
-            "How can structured decision tracing and rule-based action verification support "
-            "the inspection and evaluation of LLM-based agents in Lux AI Season 3?"
+            "How effectively can directly prompted LLMs make decisions in a partially "
+            "observable, multi-agent, long-horizon, and rule-constrained strategy game "
+            "such as Lux AI Season 3, and how can the project-specific Decision-Trace "
+            "and Action-Verification (DTAV) method address the observed limitations?"
         ),
         "analysis_commit": args.analysis_commit,
         "experiments": results,

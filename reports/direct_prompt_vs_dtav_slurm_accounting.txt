@@ -1,0 +1,8 @@
+JobID                         JobName  Partition      State ExitCode    Elapsed
+------------ ------------------------ ---------- ---------- -------- ----------
+10244116                luxllm-paired   gpu-l40s  COMPLETED      0:0   00:03:59
+10244119                luxllm-paired   gpu-l40s  COMPLETED      0:0   00:03:59
+10247429              lux-sanity-gate      short  COMPLETED      0:0   00:00:01
+10247439           lux-method-compare      short  COMPLETED      0:0   00:00:19
+10247431              lux-dtav-formal gpu-a100-+  COMPLETED      0:0   00:00:52
+10247430                lux-dp-formal gpu-a100-+  COMPLETED      0:0   00:00:39

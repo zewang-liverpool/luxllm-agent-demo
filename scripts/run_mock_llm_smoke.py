@@ -28,6 +28,8 @@ def main() -> int:
         command = [
             sys.executable,
             str(ROOT / "scripts" / "run_paired_experiment.py"),
+            "--method",
+            "dtav",
             "--model",
             "mock:latest",
             "--pairs",

@@ -12,23 +12,25 @@
 
 ## 1. Project focus
 
-**Title:** *LuxLLM-Agent: A Decision-Trace and Action-Verification Framework for Inspecting and Evaluating LLM-based Agents in Lux AI Season 3*
+**Title:** *LuxLLM-Agent: A Decision-Trace and Action-Verification Method for LLM Decision-Making in Lux AI Season 3*
 
 **Research question:**
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-The project is not intended to establish a general leaderboard for language models. Its contribution is an inspectable hybrid-agent framework in which an LLM proposes bounded strategic intents while deterministic code retains control of validation, risk filtering, fallback, legal action construction, and evidence logging.
+The project is not intended to establish a general leaderboard for language models. Lux AI Season 3 is an adversarial multi-agent strategy game with incomplete observations, multiple controlled units, long-horizon state, and strict action rules. The study first asks whether direct prompting can handle these properties, then evaluates the project-specific DTAV method.
 
 The three current research objectives are:
 
-1. Transform raw Lux observations and retained memory into compact, structured inputs suitable for bounded strategic proposals.
-2. Verify, normalise, cache, filter, or replace LLM proposals before constructing legal environment actions.
-3. Evaluate inspectability through complete decision traces, replay-grounded visualisation, verifier-intervention audits, and controlled matched-seed experiments.
+1. Establish a controlled direct-prompting baseline with matched seeds, role swapping, and the same model settings.
+2. Implement DTAV so LLM proposals can be normalised, reused, checked, filtered, or replaced before legal environment actions are constructed.
+3. Compare direct prompting and DTAV using action validity, fallback/intervention rates, reliability, latency, game outcomes, and replay-linked inspection.
+
+DTAV is the name of this project's method, not an established field term. Its trace is a predefined audit record and must not be described as access to hidden model reasoning.
 
 ## 2. Current completion status
 
-The working baseline, modification stage, formal experiments, evidence analysis, and reproducibility hardening are complete. The remaining work is primarily CA2 recording/Q&A and final human checking of the dissertation rather than further expansion of the core system.
+The working baseline, earlier formal studies, evidence analysis, and reproducibility hardening are complete. The direct-prompt-versus-DTAV pipeline requested on 14 August is implemented and locally validated, but its bounded formal GPU comparison is still pending. After that comparison is integrated, the remaining work is CA2 recording/Q&A and final human checking rather than further expansion of the core system.
 
 The repository currently contains:
 
@@ -38,7 +40,7 @@ The repository currently contains:
 - local and Barkla-compatible experiment scripts for single-LLM and direct dual-LLM evaluation;
 - matched-seed, role-swapped evaluation and uncertainty estimates;
 - automated unit, consistency, smoke, and evidence-validation checks;
-- a replay-grounded web Viewer with a Decision-to-Action Inspector;
+- a player-first replay Viewer with the project-specific DTAV Inspector;
 - dissertation drafts, evidence reports, reproducibility guidance, and CA2 preparation materials.
 
 ## 3. Earlier weaknesses and how they were addressed
@@ -50,7 +52,7 @@ The repository currently contains:
 | Complete runtime environment was difficult to reproduce | Added dependency files, setup instructions, environment documentation, locked Windows dependencies, and Barkla execution guidance | `requirements*.txt`, `environment.yml`, `scripts/setup.*`, and `docs/reproducibility_guide.md` |
 | GitHub originally contained an incomplete runnable snapshot | Added the missing agent modules, experiment runners, analysis tools, reports, tests, and operational documentation | Repository now contains the executable and analysis paths used for the retained evidence |
 | No simple reproduction entry point | Added setup, smoke-test, mock-LLM, single-LLM, dual-LLM, and result-validation entry points | Scripts are documented and covered by automated checks |
-| No automated test or CI coverage | Added unit tests, project-consistency checks, evidence validation, Viewer assertions, and GitHub Actions | 28 tests pass; smoke test and evidence validator pass on 14 August 2026 |
+| No automated test or CI coverage | Added unit tests, project-consistency checks, evidence validation, Viewer assertions, and GitHub Actions | 35 tests pass; smoke test and evidence validator pass on 17 August 2026 |
 | Random seed and player-role bias were insufficiently controlled | Used 50 matched environment seeds with role swapping in each formal study | 100 matches per study, with paired/clustered analyses and role-specific summaries |
 | Statistical reliability was weak | Added Wilson intervals, exact binomial/sign/McNemar tests, paired and seed-clustered bootstrap intervals | Statistics are generated by tested analysis code and retained in machine-readable reports |
 | Experimental evidence was too limited | Completed two 100-match model-versus-rule studies and one 100-match direct model-versus-model study | 300/300 formal matches completed |
@@ -58,7 +60,8 @@ The repository currently contains:
 | Rule-based verification was described but not quantified | Added offline verifier audits for target changes and their reasons | 28,401 risk-filter changed steps and 151,312 changed targets are recorded across all studies |
 | Win/loss alone did not explain behaviour | Added per-step provenance, verification, fallback, latency, score context, and replay linkage | 312,908 structured trace records with complete trace and replay-link coverage |
 | The direct LLM-versus-LLM question from the supervisor was unanswered | Added a supplementary Qwen3-32B versus DeepSeek-R1-32B experiment using matched seeds and role swaps | 100 matches; 4,676/4,676 calls valid after checks; complete two-sided traces |
-| The earlier Viewer was visually crowded and could misreport replay score/context | Reworked layout reservation, presentation mode, inspector reopening, current replay score, stage labels, status explanations, and automated Viewer checks | Current Viewer separates proposal, verification, and executed state while preserving map visibility |
+| Direct prompting had not been isolated from the project method | Added explicit `direct_prompt` and `dtav` conditions, method-labelled logs, matched-role runners, validation, and local mock acceptance runs | Both local two-match paths pass; one same-commit formal GPU comparison remains pending |
+| The earlier Viewer was visually crowded and could misreport replay score/context | Reworked layout reservation, player-first and Inspection views, inspector reopening, current replay score, stage labels, status explanations, and automated Viewer checks | Current Viewer separates proposal, deterministic checks, and executed state while preserving map visibility |
 | Claims were sometimes stronger than the evidence | Revised the dissertation and reports to distinguish operational provenance from causal reasoning and to treat win rate as secondary | Reports explicitly avoid general model-ranking and universal-safety claims |
 | Large local experiment archives made file management unclear | Kept large raw archives and recordings outside Git tracking, retained checksums/provenance, and committed compact analysis outputs | GitHub remains reviewable while formal evidence can be traced to archived raw runs |
 
@@ -99,13 +102,13 @@ The 54:46 outcome is not statistically distinguishable from parity and is not us
 Local validation performed on 14 August 2026:
 
 ```text
-pytest: 28 passed
+pytest: 35 passed
 smoke test: passed
 project evidence validator: passed
-CA2 PowerPoint overflow test: passed
+existing CA2 PowerPoint: earlier layout check passed; content update required
 ```
 
-The formal GPU experiments were run on the University of Liverpool Barkla cluster with retained job identifiers, model/version metadata, matched seed ranges, environment information, result summaries, logs, and local SHA-256-checked archives. A new GPU run is not currently required unless a defect is found or an assessor requests a materially different experiment.
+The earlier formal GPU experiments were run on the University of Liverpool Barkla cluster with retained job identifiers, model/version metadata, matched seed ranges, environment information, result summaries, logs, and local SHA-256-checked archives. One new bounded GPU task remains: run `direct_prompt` and `dtav` from the same commit, model configuration, 50 matched seeds, and role-swap protocol. Additional models or repeated runs are optional unless validation exposes a defect.
 
 ## 6. Current Viewer and CA2 preparation
 
@@ -114,11 +117,11 @@ The Viewer now provides:
 - separate Proposal Attempt, Rule Verification, and Executed State sections;
 - replay-grounded score and frame context;
 - explicit proposal acceptance/rejection, fallback, and risk-filter status;
-- presentation mode with stable map/control placement;
+- an optional Inspection View with stable map/control placement;
 - a visible control for reopening the inspector after it is closed;
 - aggregate-evidence separation so the qualitative Run008 replay is not presented as formal valid-call evidence.
 
-The final seven-slide CA2 presentation uses current Viewer captures and current formal evidence. The narration, detailed recording guide, interactive manual checklist, and Q&A preparation are stored under `docs/ca2/`.
+The narration, detailed recording guide, interactive manual checklist, and Q&A preparation under `docs/ca2/` use the current scope. The editable seven-slide PowerPoint predates the 14 August research-question revision and must be regenerated or manually updated before final recording.
 
 ## 7. Remaining limitations
 
@@ -127,6 +130,7 @@ The final seven-slide CA2 presentation uses current Viewer captures and current 
 3. A zero downstream action-fallback count in the retained formal runs does not prove safety for every possible future proposal.
 4. Viewer inspection is qualitative evidence that complements, rather than replaces, quantitative evaluation.
 5. Reproducing the full formal studies requires a suitable GPU allocation and local Ollama models; CPU-only smoke and mock checks remain available for routine validation.
+6. The local mock runs establish pipeline correctness, not empirical superiority; comparative claims must wait for the formal direct-prompt-versus-DTAV result.
 
 ## 8. Defined stopping standard
 
@@ -138,7 +142,7 @@ Core development is considered sufficiently complete when:
 - reproducibility instructions and bounded limitations are documented;
 - no assessor-identified factual defect remains.
 
-These conditions are currently met. Further model additions or repeated 50/100-run experiments are not required for project completeness. The priority is now a clear CA2 demonstration, Q&A preparation, dissertation fact/citation/format checking, and final submission QA.
+The software and local acceptance conditions are currently met. Final technical closeout requires only the same-commit formal direct-prompt-versus-DTAV comparison and its evidence integration. After that point, further model additions or repeated 50/100-run experiments are not required. The priority then becomes a clear CA2 demonstration, Q&A preparation, dissertation fact/citation/format checking, and final submission QA.
 
 ## 9. Recommended files for reviewers
 

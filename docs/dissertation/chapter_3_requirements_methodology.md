@@ -6,9 +6,9 @@ This chapter presents the requirements and methodology of the LuxLLM-Agent proje
 
 The project investigates the following research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-To answer this question, the project develops a working system that integrates LLM-based strategic planning with rule-based action verification, fallback behaviour, strategy caching, decision trace logging, controlled-run evaluation, and replay-grounded visual inspection.
+To answer this question, the project first establishes a controlled direct-prompting condition and then compares it with DTAV, which integrates bounded LLM proposals with deterministic normalisation, action verification, fallback behaviour, strategy reuse, operational audit logging, controlled-run evaluation, and replay-grounded visual inspection.
 
 This chapter explains the requirements that guided the system, the methodology used to design and evaluate it, and the reasons for selecting Lux AI Season 3 as the experimental environment.
 
@@ -16,49 +16,43 @@ This chapter explains the requirements that guided the system, the methodology u
 
 ## 3.2 Project Aim
 
-The aim of the project is to design, implement, and evaluate a framework for inspecting and evaluating LLM-based agents in Lux AI Season 3.
+The aim of the project is to design and evaluate an LLM-based decision method for a partially observable, adversarial multi-agent, long-horizon, and rule-constrained strategy game.
 
 The project is not intended only to build a stronger competition bot. Instead, it focuses on how LLM-based agent decisions can be structured, verified, traced, and evaluated.
 
 The main project aim can be summarised as follows:
 
-> To develop a decision-trace and action-verification framework that allows LLM-based Lux AI Season 3 agents to be inspected and evaluated through structured logs, controlled experiments, and replay-grounded visualisation.
+> To evaluate whether DTAV addresses limitations observed in a controlled direct-prompting baseline while preserving an inspectable path from observation to executed action and outcome.
 
 This aim leads to three sub-objectives:
 
-1. Transform raw Lux AI Season 3 observations into structured state summaries suitable for LLM planning.
+1. Establish a controlled direct-prompting baseline using compact state, matched seeds, role swapping, and fixed model settings.
 
-2. Use rule-based verification, fallback, and caching to control LLM-generated strategic proposals before execution.
+2. Implement DTAV so LLM proposals can be normalised, reused, checked, filtered, or replaced before execution.
 
-3. Connect decision traces to evaluation metrics and replay visualisation so that agent behaviour can be inspected.
+3. Compare validity, fallback/intervention rates, reliability, latency, outcomes, and replay-linked inspection evidence.
 
 ---
 
-## 3.3 Research Questions
+## 3.3 Research Question and Evaluation Focuses
 
 The main research question is:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-This question is divided into three sub-research questions.
+The study retains one central research question. The following are evaluation focuses tied to the three objectives rather than additional research questions.
 
-### 3.3.1 RQ1: State summarisation
+### 3.3.1 Direct-prompt feasibility
 
-> How can raw Lux AI Season 3 observations be transformed into compact structured inputs for LLM-based strategic decision making?
+This focus measures whether a directly prompted LLM produces valid and usable decisions from the same compact game information supplied to DTAV.
 
-This question focuses on the state summarisation process. Raw game observations are complex and low-level, so the system must extract information that is useful for strategic planning.
+### 3.3.2 DTAV intervention behaviour
 
-### 3.3.2 RQ2: Action verification and fallback
+This focus measures proposal normalisation, strategy reuse, rule-based checks, risk filtering, and fallback. The LLM output is treated as a proposal rather than a directly executable action.
 
-> How can rule-based verification, fallback mechanisms, and strategy caching reduce invalid or unstable LLM-generated decisions?
+### 3.3.3 Controlled comparison and replay-grounded inspection
 
-This question focuses on the reliability of LLM-based agents. The LLM output is treated as a strategic proposal rather than a directly executable action.
-
-### 3.3.3 RQ3: Replay-grounded evaluation
-
-> How can replay-grounded decision traces help analyse the relationship between LLM strategy, decision source, action execution, and game outcome?
-
-This question focuses on evaluation and inspection. The system should allow the user to connect decisions to replay frames and evaluation metrics.
+This focus compares the two methods under matched controls and connects predefined audit records to replay frames and evaluation metrics. The records describe operational provenance, not hidden chain-of-thought reasoning.
 
 ---
 
@@ -108,9 +102,11 @@ LUX_LLM_MODEL
 
 LUX_EXPERIMENT_TAG
 
+LUX_DECISION_METHOD
+
 ```
 
-This allows the project to compare baseline rule-based behaviour with LLM-backed behaviour.
+This allows the project to compare rule-only behaviour, direct prompting, and the full DTAV method without maintaining separate agent implementations.
 
 ---
 
@@ -140,7 +136,7 @@ The summary should include information such as:
 
 * available strategic options.
 
-This requirement supports RQ1.
+This requirement supports the controlled direct-prompt baseline and DTAV conditions.
 
 ---
 
@@ -210,7 +206,7 @@ Verification should check whether:
 
 Only after verification should the system convert the strategy into executable Lux AI Season 3 actions.
 
-This requirement supports RQ2.
+This requirement supports the DTAV intervention objective.
 
 ---
 
@@ -346,7 +342,7 @@ The LLM Decision Trace Overlay should show:
 
 * unit intents.
 
-This requirement supports RQ3.
+This requirement supports the comparison and replay-inspection objective.
 
 ---
 
@@ -599,6 +595,24 @@ The primary experiment uses 50 matched Lux environment seeds per backend. For ea
 | deepseek-r1:32b | 50 | 100 | 50 | temperature 0.0 |
 
 The quantitative analysis reports completion, decision validity, trace coverage, replay linkage, verification interventions, Wilson confidence intervals, seed-clustered bootstrap intervals, role effects, and matched backend comparison. Gameplay outcomes are secondary evidence; the primary evaluation concerns inspectability and action-verification behaviour.
+
+Following the 14 August 2026 supervisor feedback, the same paired runner also
+implements a direct-prompt versus DTAV comparison. The conditions keep the
+compact observation, model, temperature, environment/LLM seed, player role,
+generation budget, and call schedule fixed.
+
+| Condition | Output normalisation | Strategy reuse | Risk-aware filtering | Minimal Lux action adapter and logged fallback |
+| --- | --- | --- | --- | --- |
+| `direct_prompt` | Disabled | Disabled | Disabled | Retained |
+| `dtav` | Enabled | Enabled | Enabled | Retained |
+
+The action adapter cannot be removed because the Lux runner accepts only a
+fixed-shape numeric action array. It is therefore treated as an implementation
+constraint shared by both conditions, while every fallback remains observable.
+The formal comparison uses the same source commit and 50 role-swapped seed
+pairs for both conditions. Method metadata is written to the environment,
+match, LLM-call, and agent-step records and checked by
+`tools/validate_paired_method_result.py`.
 
 A supplementary direct LLM-versus-LLM experiment uses the same 50-seed, two-role structure. In one match Qwen controls `player_0` and DeepSeek controls `player_1`; the assignment is reversed in the paired match. Both agents use the same tracing and verification framework, while per-player logs and model assignments remain isolated. This experiment answers a narrower operational question: whether the framework can inspect and verify two concurrent LLM-assisted agents. The analysis therefore reports trace completeness, call validity, verifier interventions, role balance, and seed-clustered uncertainty. The observed model outcome is treated as contextual evidence rather than as a new research question or a general model ranking.
 

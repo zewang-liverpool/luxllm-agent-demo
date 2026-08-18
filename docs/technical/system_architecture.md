@@ -6,7 +6,7 @@ LuxLLM-Agent is a decision-trace and action-verification framework for inspectin
 
 The system is designed around the following research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 The project is not only an LLM game-playing agent. It is a complete inspection and evaluation framework that connects:
 
@@ -645,5 +645,5 @@ The LuxLLM-Agent architecture separates strategic reasoning, action verification
 
 This separation is the main technical contribution of the project. It allows LLM-based agents to be inspected and evaluated in a complex multi-agent game setting without relying only on final match scores.
 
-For the COMP702 dissertation, this architecture supports the argument that structured decision tracing and rule-based action verification can make LLM-based game agents more reliable, inspectable, and evaluable.
+For the COMP702 dissertation, this architecture supports the argument that the project-specific DTAV decision-trace approach and rule-based action verification can make LLM-based game agents more reliable, inspectable, and evaluable.
 

@@ -8,7 +8,7 @@ The spoken text is written in natural presentation English. Text in square brack
 
 [Show slide 1.]
 
-Hello. My name is Ze Wang, and this is my COMP702 project, LuxLLM-Agent: a decision-trace and action-verification framework for inspecting and evaluating LLM-based agents in Lux AI Season 3. My supervisor is Dr Meng Fang.
+Hello. My name is Ze Wang, and this is my COMP702 project, LuxLLM-Agent: a Decision-Trace and Action-Verification method for LLM decision making in Lux AI Season 3. My supervisor is Dr Meng Fang.
 
 The project uses no human participants and no personal data. It runs only in a game-AI environment, and I have followed the University's ethical guidance. The confirmed data and participant category codes are shown on this title slide.
 
@@ -18,9 +18,9 @@ The project uses no human participants and no personal data. It runs only in a g
 
 Large language models can propose useful high-level game strategies, but a fluent proposal is not necessarily valid, current, safe to execute, or easy to inspect. A simple win rate cannot explain whether an action came from a fresh LLM response, a cached strategy, a deterministic fallback, or a verifier intervention.
 
-This motivated my main research question: How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+Lux AI Season 3 is a partially observable, adversarial multi-agent, long-horizon, and rule-constrained strategy game. This motivated my main research question: How effectively can directly prompted LLMs make decisions in this type of game, and how can my project-specific Decision-Trace and Action-Verification, or DTAV, method address the observed limitations?
 
-The central goal is therefore not to claim the strongest Lux game-playing bot or to rank general-purpose language models. It is to build an inspectable hybrid pipeline in which the LLM proposes strategy while deterministic code retains execution control and records evidence about what happened.
+The central goal is therefore not to claim the strongest Lux bot or to rank general-purpose language models. DTAV is the name of the method developed in this project, not an established field term. Its trace is a predefined operational audit record, not hidden chain of thought.
 
 ## 1:35–2:10 — Design and contribution
 
@@ -40,7 +40,7 @@ The Viewer presents the recorded path in three parts: the proposal context, the 
 
 [Switch to the replay viewer at `docs/viewers/s3_isometric_battle_viewer_v09n12d_trace_overlay.html`. Load the prepared replay if it is not already loaded.]
 
-This is the replay-grounded inspection interface. Presentation Mode removes file and timeline controls from the recording view, reserves the right column for the Decision-to-Action Inspector, and keeps the Lux AI Season 3 board visible. The three stages connect recorded decision context, deterministic verification, and the executed state.
+This is the replay interface in its default player view, where the board, match state, scores, units, timeline, and playback controls are primary. I will now open Inspection View. It removes secondary file controls, reserves the right column for the project-specific DTAV Inspector, and keeps the board visible. The three stages connect the recorded LLM proposal, deterministic checks, and the executed state.
 
 [Click **Proposal attempt**. Point to the red proposal-status badge, decision source, and fallback reason.]
 
@@ -82,11 +82,11 @@ The agent and action planner then apply rule checks, caching, risk filtering, an
 
 [Advance to slide 6.]
 
-I evaluated the framework in two controlled settings. In the primary evaluation, Qwen3-32B and DeepSeek-R1-32B each played 100 matches against the same rule-based opponent, using 50 matched seeds with the LLM role swapped. All 200 matches completed. The runs produced 206,591 structured trace records, with complete step traces, LLM-call traces, and replay linkage.
+The main experiment directly compares scheduled prompting with DTAV. Both conditions used Qwen3-32B, the same 50 seeds, role swapping, temperature, prompt budget, compact observation, and LLM-call schedule, producing 100 matches per method. Direct prompting won 48 matches and DTAV won 63. In the matched analysis, DTAV-only wins outnumbered direct-prompt-only wins 21 to 6. The McNemar exact p-value was 0.0059, and the paired-bootstrap interval estimated a DTAV advantage of 6 to 25 percentage points under this configuration.
 
-Across the primary runs, all 4,591 fresh calls were valid after the recorded checks. Qwen had 520 normalisation interventions, while DeepSeek had none. The risk filter changed proposed targets on 5,590 Qwen steps and 7,090 DeepSeek steps. There were no LLM timeouts, API errors, action fallbacks, or invalid action-array shapes in these formal runs. These results show that the framework can expose both successful proposal flow and deterministic interventions.
+The process evidence explains the observed limitation. Direct prompting produced usable structured calls 86.1% of the time and used the visible rule path on 95.5% of agent steps because strategy reuse was disabled. DTAV reached 99.9% post-check structured validity, reused an accepted strategy on 89.8% of steps, and recorded risk-filter changes on 11.2%. Both conditions retained complete traces and replay linkage, valid action-array shape, similar fresh-call latency, and no timeout, API error, or downstream action fallback.
 
-Following my supervisor's suggestion, I also ran direct model-versus-model matches as supplementary evidence. A Qwen-assisted agent and a DeepSeek-assisted agent played 100 matches over 50 matched seeds with roles swapped. Qwen won 54 and DeepSeek won 46; the seed-level sign-test p-value was approximately 0.503, so this is not evidence of a general model ranking. More importantly for the research question, all 4,676 fresh calls were valid after checks and the experiment produced 106,317 complete structured traces while both sides used the same tracing and verification framework.
+The baseline still includes the minimum parser and legal-action adapter required by Lux, so it is not unrestricted text sent directly to the game. The comparison evaluates DTAV as a complete method bundle; it does not prove which individual component caused the difference or that DTAV is universally superior. Earlier Qwen, DeepSeek, and direct model-versus-model studies remain supporting evidence that the same inspection framework operates across controlled backends and simultaneous LLM players.
 
 ## 8:25–9:20 — Limitations and conclusion
 
@@ -94,7 +94,7 @@ Following my supervisor's suggestion, I also ran direct model-versus-model match
 
 There are several limitations. Operational traces show recorded provenance and interventions, but they are not a complete causal explanation of model reasoning. Zero action fallback in these runs does not prove that every possible future proposal is safe. The experiments use two local 32-billion-parameter models and a controlled Lux setup, so their outcome cannot be generalised to all models, games, or hardware. Viewer inspection is also a qualitative complement to, rather than a replacement for, quantitative measures.
 
-In conclusion, LuxLLM-Agent answers the research question by combining three forms of evidence: structured per-step decision provenance, deterministic verification before execution, and replay-grounded inspection. This makes it possible to evaluate not only whether an LLM-based agent won, but how its proposals were checked, changed, reused, or replaced. Thank you.
+In conclusion, the matched comparison shows that directly prompted LLM decisions remain possible through the minimum executable interface, but they are less usable and depend more heavily on rule fallback. Under the recorded configuration, DTAV improved structured-call validity, strategy continuity, and match outcomes while preserving a complete, inspectable path from proposal to action. The evaluation therefore considers not only whether an agent won, but whether its proposals were valid and how they were checked, changed, reused, or replaced. Thank you.
 
 ## Rehearsal rule
 

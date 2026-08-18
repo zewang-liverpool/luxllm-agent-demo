@@ -1,4 +1,4 @@
-# LuxLLM-Agent: A Decision-Trace and Action-Verification Framework for Inspecting and Evaluating LLM-based Agents in Lux AI Season 3
+# LuxLLM-Agent: A Decision-Trace and Action-Verification Method for LLM Decision-Making in Lux AI Season 3
 
 **Author:** Ze Wang
 
@@ -18,7 +18,7 @@
 
 ## Abstract
 
-Large language models can provide high-level planning in sequential environments, but their outputs are not automatically valid, timely, or attributable to executable actions. This dissertation presents LuxLLM-Agent, a decision-trace and action-verification framework for inspecting and evaluating LLM-based agents in Lux AI Season 3. The framework converts raw observations into structured summaries, constrains model responses to bounded strategic intents, applies deterministic normalization and rule-based checks, constructs legal action arrays, records decision provenance, and links execution evidence to replay state.
+Large language models can provide high-level planning in sequential environments, but their outputs are not automatically valid, timely, or attributable to executable actions. This dissertation asks how effectively directly prompted LLMs can make decisions in Lux AI Season 3, a partially observable, adversarial multi-agent, long-horizon, and rule-constrained strategy game. It presents the project-specific Decision-Trace and Action-Verification (DTAV) method, which converts raw observations into compact summaries, constrains model responses to bounded strategic intents, applies deterministic normalisation and rule-based checks, constructs legal action arrays, records operational provenance, and links execution evidence to replay state. DTAV is a name introduced for the method in this project; its trace is a predefined audit record rather than hidden model chain of thought.
 
 The primary evaluation uses 50 matched Lux environment seeds with role swapping for each of two local 32B backends, Qwen3 and DeepSeek-R1, producing 200 completed matches. Across 206,591 structured trace records, agent-step and LLM-call field completeness, replay linkage, and action-array shape validity were all 100%. All 4,591 LLM calls were valid after deterministic checks; 520 Qwen responses required normalization. Risk filtering changed proposed targets on 5,590 Qwen steps and 7,090 DeepSeek steps. No LLM timeout, API error, or downstream action fallback was observed in the formal runs. Qwen won 63/100 matches and DeepSeek won 60/100, but their matched outcome difference was not statistically supported. A supplementary direct Qwen-versus-DeepSeek experiment completed a further 100 role-swapped matches while both players used the framework; its complete traces and observable verifier interventions demonstrate simultaneous two-sided inspection without turning the study into a model-ranking exercise.
 
@@ -36,11 +36,11 @@ The results show that structured traces make decision source and verifier interv
 
 Large language models have increasingly been explored as components of autonomous agents. Their ability to process structured information, generate plans, and produce natural-language explanations makes them attractive for complex decision-making tasks. However, using an LLM as part of an interactive agent is different from using it for static text generation. In a game or simulation environment, the agent must repeatedly observe the state, make decisions, produce valid actions, and adapt to changes over time.
 
-This project studies LLM-based agent design in the context of Lux AI Season 3. Lux AI Season 3 is a competitive multi-agent environment in which agents must make sequential decisions under uncertainty. The environment includes exploration, resource discovery, unit movement, hidden information, scoring opportunities, and interaction with an opponent. These properties make it a useful testbed for studying LLM-assisted decision making.
+This project studies LLM-based agent design in the context of Lux AI Season 3. Lux AI Season 3 is a partially observable, adversarial multi-agent, long-horizon, and rule-constrained strategy game. An agent must coordinate multiple units, retain useful information across a long sequence, explore hidden areas, discover scoring opportunities, react to an opponent, and continually produce actions in an exact environment schema. It is not a social-interaction task; its value as a test case comes from sequential uncertainty, multi-unit coordination, competition, and strict execution constraints.
 
-A direct LLM-based controller is difficult to use in this setting. An LLM may produce invalid actions, incomplete responses, unstable plans, or decisions that do not match the current game state. Large LLMs may also be too slow to call at every game step. Therefore, a practical LLM-based agent needs more than prompt design. It requires a structured system that can summarise the game state, request high-level plans from the LLM, verify those plans, fall back to rule-based behaviour when necessary, and record decision traces for later inspection.
+A directly prompted LLM is difficult to use in this setting. It may produce invalid or incomplete responses, lose relevant state, fail to coordinate units, propose stale plans, or violate the action schema. Large LLMs may also be too slow to call at every game step. This motivates a controlled comparison between direct prompting and a project-specific method that summarises state, requests bounded proposals, verifies those proposals, falls back to rule-based behaviour when necessary, and records an operational audit trail for later inspection.
 
-This dissertation presents LuxLLM-Agent, a decision-trace and action-verification framework for inspecting and evaluating LLM-based agents in Lux AI Season 3.
+This dissertation presents LuxLLM-Agent and the project-specific Decision-Trace and Action-Verification (DTAV) method for LLM decision making in Lux AI Season 3. DTAV is the name of the method developed in this project rather than an established term in the literature.
 
 ---
 
@@ -74,13 +74,13 @@ The project is also motivated by the need for inspectable evaluation. If an LLM-
 
 ## 1.3 Problem Statement
 
-The main problem addressed by this project is how to make LLM-based game-agent behaviour stable, inspectable, and evaluable in a complex sequential environment.
+The main problem addressed by this project is whether direct LLM prompting can support reliable decision making in this type of game and whether DTAV can address the limitations observed under controlled conditions.
 
 A simple LLM agent may directly ask the model for actions and execute the output. This approach is risky in Lux AI Season 3 because actions must be legal, timely, and consistent with the current game state. Invalid or delayed decisions can make the agent unreliable. At the same time, using only a final match score as evaluation hides important behaviour, such as fallback usage, cached decisions, and rule-based corrections.
 
 Therefore, the project addresses the following problem:
 
-> How can an LLM be integrated into a Lux AI Season 3 agent in a way that supports stable execution, rule-based action verification, decision traceability, controlled evaluation, and replay-grounded inspection?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific DTAV method address the observed limitations?
 
 This problem is both practical and research-oriented. It requires implementing a working agent system, but it also requires designing evaluation methods that reveal how the agent behaves internally.
 
@@ -90,21 +90,21 @@ This problem is both practical and research-oriented. It requires implementing a
 
 The aim of the project is:
 
-> To develop a decision-trace and action-verification framework that supports the inspection and evaluation of LLM-based agents in Lux AI Season 3.
+> To design and evaluate an LLM-based decision method that helps an agent operate reliably in Lux AI Season 3 while making the route from observation to proposal, verification, executed action, and replay outcome inspectable.
 
 To keep the investigation focused, this aim is divided into three objectives.
 
-### Objective 1: Structure game state for bounded LLM planning
+### Objective 1: Establish a direct-prompting baseline
 
-Implement a working Lux AI Season 3 agent that transforms raw observations into compact state summaries and uses them to request high-level strategic proposals from an LLM.
+Use compact Lux observations with fixed model settings, matched seeds, role swapping, and a minimal action adapter to measure how directly prompted LLM decisions behave.
 
-### Objective 2: Verify and control LLM-generated proposals
+### Objective 2: Implement the DTAV method
 
-Parse model output and apply deterministic normalization, rule-based verification, fallback, strategy caching, and risk-aware filtering before constructing executable actions.
+Apply deterministic normalisation, strategy reuse, rule-based checks, fallback, and risk-aware filtering to LLM proposals before constructing executable actions.
 
-### Objective 3: Trace, evaluate, and visually inspect agent behaviour
+### Objective 3: Compare reliability and inspectability
 
-Record decision provenance and evaluation metrics, compare multiple LLM backends under controlled conditions, and connect decision traces to replay frames for visual inspection.
+Compare direct prompting and DTAV using validity, fallback and intervention rates, reliability, latency, match outcomes, and replay-linked visual inspection.
 
 ---
 
@@ -112,27 +112,27 @@ Record decision provenance and evaluation metrics, compare multiple LLM backends
 
 The main research question is:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-This question is supported by three sub-research questions.
+The three objectives above operationalise this single research question. They are not presented as separate competing research questions.
 
-### RQ1: State summarisation
+### Evaluation focus 1: Direct-prompt feasibility
 
-> How can raw Lux AI Season 3 observations be transformed into compact structured inputs for LLM-based strategic decision making?
+Measure whether directly prompted model outputs remain valid, current, and usable under the game's observation, coordination, horizon, and action constraints.
 
-This question examines how the system prepares game-state information for LLM reasoning.
+This establishes the unassisted comparison point for the method evaluation.
 
-### RQ2: Action verification and fallback
+### Evaluation focus 2: DTAV interventions
 
-> How can rule-based verification, fallback mechanisms, and strategy caching reduce invalid or unstable LLM-generated decisions?
+Measure when DTAV normalises, reuses, filters, or replaces a proposal and distinguish proposal validity from the action that finally reaches the environment.
 
-This question examines how the system controls LLM output before execution.
+This identifies which limitations require deterministic intervention.
 
-### RQ3: Replay-grounded evaluation
+### Evaluation focus 3: Controlled comparison and inspection
 
-> How can replay-grounded decision traces help analyse the relationship between LLM strategy, decision source, action execution, and game outcome?
+Compare direct prompting and DTAV under the same model, seed, role, temperature, prompt-budget, and call-schedule controls, then link recorded events to replay states.
 
-This question examines how the system evaluates and visualises agent behaviour.
+This connects quantitative differences with inspectable examples.
 
 ---
 
@@ -140,9 +140,9 @@ This question examines how the system evaluates and visualises agent behaviour.
 
 This project makes several contributions.
 
-### 1.6.1 A structured LLM-assisted agent framework
+### 1.6.1 A project-specific LLM decision method
 
-The project implements a complete framework that connects state summarisation, LLM strategic planning, structured parsing, action verification, fallback, caching, action planning, logging, and visualisation.
+The project implements DTAV, which connects state summarisation, LLM strategic proposals, parsing, action verification, fallback, caching, action planning, logging, and visualisation.
 
 ### 1.6.2 Rule-based verification of LLM proposals
 
@@ -168,7 +168,7 @@ The project includes technical documentation, evaluation analysis, model compari
 
 ## 1.7 Project Scope
 
-The scope of the project is limited to Lux AI Season 3 and the implemented LuxLLM-Agent framework.
+The scope of the project is limited to Lux AI Season 3 and the implemented LuxLLM-Agent method.
 
 The project focuses on:
 
@@ -186,7 +186,7 @@ The project focuses on:
 
 The project does not claim to produce a leaderboard-winning Lux AI agent. It also does not claim that qwen3:32b is universally better than DeepSeek-R1-32B. The model comparison is specific to the current framework, prompt design, environment, and evaluation setup.
 
-The project is best understood as an artefact-based investigation into how LLM-based agents can be structured, verified, traced, and evaluated in a complex game environment.
+The project is best understood as an artefact-based investigation of direct LLM decision making and a project-specific method for addressing observable reliability and inspection limitations in a bounded game environment.
 
 ---
 
@@ -253,7 +253,7 @@ The next chapter introduces the background and related work needed to situate th
 
 This chapter establishes the academic context for LuxLLM-Agent and develops the argument for its three design priorities: bounded state representation, deterministic action verification, and replay-grounded decision tracing. The main research question is:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 The review is organised around the concepts needed to answer this question rather than around a chronological list of papers. It covers:
 
@@ -312,7 +312,7 @@ Embodied-agent research provides evidence that language-model plans become more 
 
 LuxLLM-Agent applies the interface principle at the input as well as the output. Its state summarizer converts environment observations and retained game knowledge into a compact schema containing strategically relevant fields. The aim is not to produce a lossless copy of the environment. It is to create a bounded interface between a numerical game state and a language model.
 
-This design supports RQ1, but it introduces an important trade-off. Compression improves prompt stability and inspectability, while omitted information may remove evidence required for a better strategy. The summarizer must therefore be evaluated as part of the agent rather than treated as a neutral preprocessing step. LuxLLM-Agent records prompt-related and state-related information so that later inspection can distinguish a poor proposal from a potentially incomplete representation.
+This design supports the first research objective, but it introduces an important trade-off. Compression improves prompt stability and inspectability, while omitted information may remove evidence required for a better strategy. The summarizer must therefore be evaluated as part of the agent rather than treated as a neutral preprocessing step. LuxLLM-Agent records prompt-related and state-related information so that later inspection can distinguish a poor proposal from a potentially incomplete representation.
 
 ---
 
@@ -407,7 +407,7 @@ Safe reinforcement learning via shielding provides a stronger formal example of 
 
 The analogy must not be overstated. LuxLLM-Agent's verifier is not a formally synthesised shield, and the project does not prove temporal-logic safety or global optimality. Its checks cover implemented schemas, identifiers, action construction, observable risks, and fallback conditions. The empirical question is whether these checks operate as documented and leave auditable evidence, not whether they guarantee every desirable property for every possible state.
 
-This distinction improves the precision of RQ2. The project evaluates:
+This distinction improves the precision of the DTAV intervention objective. The project evaluates:
 
 * whether model output satisfies the bounded schema;
 * whether deterministic normalization repairs specific deviations;
@@ -467,7 +467,7 @@ rule_player
 rule_only
 ```
 
-It also displays the proposal, verifier status, match phase, score context, unit intents, and executed state. This supports RQ3 by allowing an assessor to move from a quantitative summary to a specific replay step and inspect the recorded transformation chain.
+It also displays the proposal, verifier status, match phase, score context, unit intents, and executed state. This supports the comparison and inspection objective by allowing an assessor to move from a quantitative summary to a specific replay step and inspect the recorded transformation chain.
 
 ---
 
@@ -552,9 +552,9 @@ This gap defines the project's contribution. LuxLLM-Agent is not presented as a 
 
 | Research question | Main literature foundation | Project response |
 | --- | --- | --- |
-| RQ1: State summarisation | Partial observability; grounded environment interfaces (Kaelbling et al., 1998; Huang et al., 2022) | Compact structured summaries with retained strategic state |
-| RQ2: Verification and fallback | Affordance grounding, critical planning evidence, and shielding (Ahn et al., 2022; Valmeekam et al., 2023; Alshiekh et al., 2018) | Parsing, normalization, risk filtering, caching, fallback, and deterministic action construction |
-| RQ3: Replay-grounded evaluation | Interactive and trajectory-level agent evaluation; explanation limits (Liu et al., 2024; Ma et al., 2024; Turpin et al., 2023) | Provenance logs, verifier audits, controlled experiments, and a replay-linked trace overlay |
+| Objective 1: Direct-prompt baseline | Partial observability; grounded environment interfaces; limits of autonomous planning (Kaelbling et al., 1998; Huang et al., 2022; Valmeekam et al., 2023) | Same compact state and call schedule with DTAV interventions disabled |
+| Objective 2: DTAV interventions | Affordance grounding and shielding (Ahn et al., 2022; Alshiekh et al., 2018) | Parsing, normalisation, risk filtering, strategy reuse, fallback, and deterministic action construction |
+| Objective 3: Comparison and inspection | Interactive and trajectory-level evaluation; explanation limits (Liu et al., 2024; Ma et al., 2024; Turpin et al., 2023) | Matched method comparison, provenance logs, verifier audits, and a replay-linked audit overlay |
 
 This mapping ensures that the literature review motivates the actual methodology and evaluation rather than acting as a detached survey.
 
@@ -578,9 +578,9 @@ This chapter presents the requirements and methodology of the LuxLLM-Agent proje
 
 The project investigates the following research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-To answer this question, the project develops a working system that integrates LLM-based strategic planning with rule-based action verification, fallback behaviour, strategy caching, decision trace logging, controlled-run evaluation, and replay-grounded visual inspection.
+To answer this question, the project first establishes a controlled direct-prompting condition and then compares it with DTAV, which integrates bounded LLM proposals with deterministic normalisation, action verification, fallback behaviour, strategy reuse, operational audit logging, controlled-run evaluation, and replay-grounded visual inspection.
 
 This chapter explains the requirements that guided the system, the methodology used to design and evaluate it, and the reasons for selecting Lux AI Season 3 as the experimental environment.
 
@@ -588,49 +588,43 @@ This chapter explains the requirements that guided the system, the methodology u
 
 ## 3.2 Project Aim
 
-The aim of the project is to design, implement, and evaluate a framework for inspecting and evaluating LLM-based agents in Lux AI Season 3.
+The aim of the project is to design and evaluate an LLM-based decision method for a partially observable, adversarial multi-agent, long-horizon, and rule-constrained strategy game.
 
 The project is not intended only to build a stronger competition bot. Instead, it focuses on how LLM-based agent decisions can be structured, verified, traced, and evaluated.
 
 The main project aim can be summarised as follows:
 
-> To develop a decision-trace and action-verification framework that allows LLM-based Lux AI Season 3 agents to be inspected and evaluated through structured logs, controlled experiments, and replay-grounded visualisation.
+> To evaluate whether DTAV addresses limitations observed in a controlled direct-prompting baseline while preserving an inspectable path from observation to executed action and outcome.
 
 This aim leads to three sub-objectives:
 
-1. Transform raw Lux AI Season 3 observations into structured state summaries suitable for LLM planning.
+1. Establish a controlled direct-prompting baseline using compact state, matched seeds, role swapping, and fixed model settings.
 
-2. Use rule-based verification, fallback, and caching to control LLM-generated strategic proposals before execution.
+2. Implement DTAV so LLM proposals can be normalised, reused, checked, filtered, or replaced before execution.
 
-3. Connect decision traces to evaluation metrics and replay visualisation so that agent behaviour can be inspected.
+3. Compare validity, fallback/intervention rates, reliability, latency, outcomes, and replay-linked inspection evidence.
 
 ---
 
-## 3.3 Research Questions
+## 3.3 Research Question and Evaluation Focuses
 
 The main research question is:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-This question is divided into three sub-research questions.
+The study retains one central research question. The following are evaluation focuses tied to the three objectives rather than additional research questions.
 
-### 3.3.1 RQ1: State summarisation
+### 3.3.1 Direct-prompt feasibility
 
-> How can raw Lux AI Season 3 observations be transformed into compact structured inputs for LLM-based strategic decision making?
+This focus measures whether a directly prompted LLM produces valid and usable decisions from the same compact game information supplied to DTAV.
 
-This question focuses on the state summarisation process. Raw game observations are complex and low-level, so the system must extract information that is useful for strategic planning.
+### 3.3.2 DTAV intervention behaviour
 
-### 3.3.2 RQ2: Action verification and fallback
+This focus measures proposal normalisation, strategy reuse, rule-based checks, risk filtering, and fallback. The LLM output is treated as a proposal rather than a directly executable action.
 
-> How can rule-based verification, fallback mechanisms, and strategy caching reduce invalid or unstable LLM-generated decisions?
+### 3.3.3 Controlled comparison and replay-grounded inspection
 
-This question focuses on the reliability of LLM-based agents. The LLM output is treated as a strategic proposal rather than a directly executable action.
-
-### 3.3.3 RQ3: Replay-grounded evaluation
-
-> How can replay-grounded decision traces help analyse the relationship between LLM strategy, decision source, action execution, and game outcome?
-
-This question focuses on evaluation and inspection. The system should allow the user to connect decisions to replay frames and evaluation metrics.
+This focus compares the two methods under matched controls and connects predefined audit records to replay frames and evaluation metrics. The records describe operational provenance, not hidden chain-of-thought reasoning.
 
 ---
 
@@ -680,9 +674,11 @@ LUX_LLM_MODEL
 
 LUX_EXPERIMENT_TAG
 
+LUX_DECISION_METHOD
+
 ```
 
-This allows the project to compare baseline rule-based behaviour with LLM-backed behaviour.
+This allows the project to compare rule-only behaviour, direct prompting, and the full DTAV method without maintaining separate agent implementations.
 
 ---
 
@@ -712,7 +708,7 @@ The summary should include information such as:
 
 * available strategic options.
 
-This requirement supports RQ1.
+This requirement supports the controlled direct-prompt baseline and DTAV conditions.
 
 ---
 
@@ -782,7 +778,7 @@ Verification should check whether:
 
 Only after verification should the system convert the strategy into executable Lux AI Season 3 actions.
 
-This requirement supports RQ2.
+This requirement supports the DTAV intervention objective.
 
 ---
 
@@ -918,7 +914,7 @@ The LLM Decision Trace Overlay should show:
 
 * unit intents.
 
-This requirement supports RQ3.
+This requirement supports the comparison and replay-inspection objective.
 
 ---
 
@@ -1172,6 +1168,24 @@ The primary experiment uses 50 matched Lux environment seeds per backend. For ea
 
 The quantitative analysis reports completion, decision validity, trace coverage, replay linkage, verification interventions, Wilson confidence intervals, seed-clustered bootstrap intervals, role effects, and matched backend comparison. Gameplay outcomes are secondary evidence; the primary evaluation concerns inspectability and action-verification behaviour.
 
+Following the 14 August 2026 supervisor feedback, the same paired runner also
+implements a direct-prompt versus DTAV comparison. The conditions keep the
+compact observation, model, temperature, environment/LLM seed, player role,
+generation budget, and call schedule fixed.
+
+| Condition | Output normalisation | Strategy reuse | Risk-aware filtering | Minimal Lux action adapter and logged fallback |
+| --- | --- | --- | --- | --- |
+| `direct_prompt` | Disabled | Disabled | Disabled | Retained |
+| `dtav` | Enabled | Enabled | Enabled | Retained |
+
+The action adapter cannot be removed because the Lux runner accepts only a
+fixed-shape numeric action array. It is therefore treated as an implementation
+constraint shared by both conditions, while every fallback remains observable.
+The formal comparison uses the same source commit and 50 role-swapped seed
+pairs for both conditions. Method metadata is written to the environment,
+match, LLM-call, and agent-step records and checked by
+`tools/validate_paired_method_result.py`.
+
 A supplementary direct LLM-versus-LLM experiment uses the same 50-seed, two-role structure. In one match Qwen controls `player_0` and DeepSeek controls `player_1`; the assignment is reversed in the paired match. Both agents use the same tracing and verification framework, while per-player logs and model assignments remain isolated. This experiment answers a narrower operational question: whether the framework can inspect and verify two concurrent LLM-assisted agents. The analysis therefore reports trace completeness, call validity, verifier interventions, role balance, and seed-clustered uncertainty. The observed model outcome is treated as contextual evidence rather than as a new research question or a general model ranking.
 
 ---
@@ -1314,7 +1328,7 @@ This chapter presents the system design of LuxLLM-Agent, a decision-trace and ac
 
 The project is designed around the following research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 The system is not designed only as a game-playing agent. Instead, it is designed as a complete framework that connects LLM-based strategic decision making with deterministic action verification, fallback handling, controlled evaluation, logging, and replay-grounded visual inspection.
 
@@ -1911,7 +1925,7 @@ This supports the third sub-research question:
 
 > How can replay-grounded decision traces help analyse the relationship between LLM strategy, decision source, action execution, and game outcome?
 
-The overlay turns the viewer from a replay-only tool into a decision inspection interface. This is important for the dissertation because it provides visual evidence of the project's central contribution: structured decision tracing and replay-grounded evaluation.
+The overlay turns the viewer from a replay-only tool into a decision inspection interface. This is important for the dissertation because it provides visual evidence of the project's central contribution: the project-specific DTAV decision-trace approach and replay-grounded evaluation.
 
 ---
 
@@ -2942,11 +2956,11 @@ The next chapter evaluates the system using gameplay outcomes, LLM execution met
 
 ## 6.1 Introduction
 
-This chapter evaluates LuxLLM-Agent as a decision-trace and action-verification framework for LLM-based agents in Lux AI Season 3.
+This chapter evaluates the project-specific DTAV method for LLM decision making in Lux AI Season 3 and defines the controlled direct-prompting comparison required by the revised research question.
 
 The evaluation is guided by the main research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 The evaluation does not only consider whether the agent wins or loses. While gameplay outcome is important, final scores alone cannot explain how the agent behaved, whether the LLM was used, when fallback was required, whether cached decisions were reused, or whether the framework remained stable.
 
@@ -2970,13 +2984,13 @@ Therefore, this chapter evaluates the system across several dimensions:
 
 * limitations of the evaluation.
 
-This multi-dimensional evaluation is important because LuxLLM-Agent is not only a game-playing agent. It is designed as an inspection and evaluation framework for LLM-based decision making in a complex multi-agent game environment.
+This multi-dimensional evaluation is important because LuxLLM-Agent is not only a game-playing agent. The comparison must show both what a directly prompted LLM can do and which observable limitations are addressed by DTAV.
 
 ---
 
 ## 6.2 Evaluation Objectives
 
-The evaluation has four main objectives.
+The evaluation has four measurement dimensions, applied to the direct-prompt and DTAV conditions.
 
 ### 6.2.1 Evaluate gameplay outcome
 
@@ -3532,7 +3546,85 @@ The overlay is particularly useful because final match results cannot show wheth
 
 ---
 
-## 6.13 Supplementary Direct LLM-versus-LLM Evaluation
+## 6.13 Direct-Prompting versus DTAV Comparison
+
+The revised research question requires a method comparison rather than only
+model-versus-rule and model-versus-model studies. The repository now exposes
+`direct_prompt` and `dtav` through the same matched-seed, role-swapped runner.
+Both conditions use the same compact observation, LLM backend, temperature,
+seed, role assignment, generation budget, and LLM call schedule.
+
+The direct-prompt condition disables deterministic output normalisation,
+strategy reuse, and risk-aware target filtering. DTAV enables them. Both retain
+the minimal parser, legal-action adapter, and logged emergency fallback because
+the Lux runner cannot execute free-form model text. This shared boundary means
+the baseline is “direct prompting through the minimum executable interface,”
+not unrestricted text sent directly to the environment.
+
+The formal comparison was completed on Barkla2 from source commit
+`354c30beb1a179904fc52b53a577fe09c0fbfdf1`. Each condition used Qwen3-32B,
+50 matched environment seeds, role swapping, temperature 0, a generation
+budget of 384 tokens, JSON mode, and the same scheduled LLM-call policy. This
+produced 100 completed matches per method. Both result directories passed
+`tools/validate_paired_method_result.py`, including the 50 proper role-swapped
+seed pairs and method-labelled match, LLM-call, and agent-step records.
+
+| Outcome metric | Direct prompt | DTAV |
+| --- | ---: | ---: |
+| Completed matches | 100 | 100 |
+| Wins / losses / draws | 48 / 52 / 0 | 63 / 37 / 0 |
+| Win rate | 48% | 63% |
+| Wilson 95% interval | 38.5%-57.7% | 53.2%-71.8% |
+| Win rate as player 0 | 54% | 62% |
+| Win rate as player 1 | 42% | 64% |
+
+The primary comparison uses the matched seed-role strata rather than treating
+the two win rates as unrelated samples. Direct prompting won while DTAV lost in
+6 strata; DTAV won while direct prompting lost in 21. The McNemar exact
+two-sided p-value was `0.0059`. The mean outcome-score difference, expressed as
+direct prompt minus DTAV, was `-0.15`, with a paired-bootstrap 95% interval of
+`[-0.25, -0.06]`. Equivalently, the estimated DTAV advantage was 15 percentage
+points with an interval of 6 to 25 percentage points under the recorded setup.
+
+| Process and inspection metric | Direct prompt | DTAV |
+| --- | ---: | ---: |
+| LLM calls | 2,284 | 2,325 |
+| Post-check structured-valid calls | 1,966 (86.1%) | 2,323 (99.9%) |
+| Raw schema-valid calls | 1,969 (86.2%) | 1,767 (76.0%) |
+| Normalisation interventions | 315 (13.8%) | 558 (24.0%) |
+| Cached-decision steps | 0 | 45,645 (89.8%) |
+| Observable rule-fallback steps | 48,576 (95.5%) | 2,833 (5.6%) |
+| Risk-filter changed steps | 0 | 5,706 (11.2%) |
+| Risk-filter changed targets | 0 | 29,741 |
+| Agent-step and LLM-call trace completeness | 100% | 100% |
+| Replay-linkage coverage | 100% | 100% |
+| Legal action-array shape | 100% | 100% |
+| LLM timeouts / errors / action fallbacks | 0 / 0 / 0 | 0 / 0 / 0 |
+| Median fresh-call latency | 3,448.1 ms | 3,389.8 ms |
+| P95 fresh-call latency | 6,353.6 ms | 6,369.0 ms |
+
+The 95.5% rule-fallback-step rate in the direct-prompt condition does not mean
+that 95.5% of its fresh calls failed. Both methods used the same scheduled call
+policy. With strategy reuse disabled, direct prompting used the observable rule
+path between fresh calls; DTAV instead reused an accepted cached strategy on
+most intervening steps. The comparison therefore evaluates a controlled
+scheduled direct-prompt baseline against the complete DTAV method bundle. It
+does not isolate the causal contribution of normalisation, caching, or risk
+filtering individually.
+
+The result directly addresses the revised research question. Direct prompting
+remained executable through the minimum shared parser and legal-action adapter,
+but it produced fewer usable structured calls and depended far more heavily on
+the rule path. DTAV improved post-check proposal usability and strategy
+continuity while retaining complete, replay-linked evidence of every decision
+source and verifier intervention. The statistically supported gameplay
+difference is consistent with those operational improvements, but the result
+is bounded to the recorded model, prompt, seed, role, software, and hardware
+configuration.
+
+---
+
+## 6.14 Supplementary Direct LLM-versus-LLM Evaluation
 
 Following supervisor feedback, a supplementary experiment tested whether two LLM-assisted agents could play directly against each other while both remained inside the same decision-trace and rule-verification framework. The experiment used qwen3:32b and DeepSeek-R1-32B over 50 matched Lux environment seeds. Each seed was run twice with the model roles swapped, producing 100 completed matches.
 
@@ -3563,35 +3655,35 @@ This supplementary evidence strengthens the answer to the main research question
 
 ---
 
-## 6.14 Failure-case Analysis
+## 6.15 Failure-case Analysis
 
 The project includes failure-case analysis to avoid only reporting successful results.
 
 Representative failure and limitation cases include:
 
-### 6.14.1 Valid LLM plan but limited strategic impact
+### 6.15.1 Valid LLM plan but limited strategic impact
 
 An LLM may produce a valid plan such as exploring stale tiles or moving toward relic candidates. This output can be structurally valid and parseable, but it may still have limited strategic impact.
 
 This shows that LLM validity is not the same as strategic quality.
 
-### 6.14.2 Fallback replaces or supports LLM decision
+### 6.15.2 Fallback replaces or supports LLM decision
 
 Trace records may show that behaviour came from `rule_only`, `fallback`, or `rule_fallback`. This is useful for stability, but it means final actions cannot always be attributed directly to the LLM.
 
 This shows that fallback is both a strength and an evaluation complication.
 
-### 6.14.3 Cached plan may become stale
+### 6.15.3 Cached plan may become stale
 
 A frame may use a recent LLM plan rather than an exact fresh decision. This is necessary for efficiency, but the cached plan may become less suitable as the game state changes.
 
 This shows the trade-off between latency reduction and adaptiveness.
 
-### 6.14.4 Stable execution but different model outcomes
+### 6.15.4 Stable execution but different model outcomes
 
 Both qwen3:32b and DeepSeek-R1-32B completed the primary 100-match formal evaluation and the supplementary direct experiment with no recorded LLM error, but their observed outcomes still varied. This shows that execution stability does not imply equal strategic performance.
 
-### 6.14.5 Viewer trace alignment requires careful labelling
+### 6.15.5 Viewer trace alignment requires careful labelling
 
 The overlay aligns replay frames and trace logs by step. This is useful, but the dissertation should clearly label which replay and trace sources are used, especially if data comes from specific controlled runs.
 
@@ -3599,59 +3691,59 @@ These failure cases strengthen the evaluation because they demonstrate critical 
 
 ---
 
-## 6.15 Discussion of Results
+## 6.16 Discussion of Results
 
 The evaluation supports several findings.
 
-### 6.15.1 The framework supports multiple LLM backends
+### 6.16.1 The method supports multiple LLM backends
 
 Both qwen3:32b and DeepSeek-R1-32B completed the primary controlled runs and the direct dual-LLM supplementary runs without an observed LLM error. This suggests that the framework can integrate different reasoning-oriented LLMs on one or both sides of a match.
 
-### 6.15.2 Decision tracing improves interpretability
+### 6.16.2 Decision tracing improves interpretability
 
 Decision-source logs and the overlay make it possible to inspect whether actions come from fresh LLM decisions, cached plans, fallback, or rule-based logic.
 
-### 6.15.3 Rule-based verification improves stability
+### 6.16.3 Rule-based verification improves stability
 
 The verifier and fallback mechanisms prevent arbitrary LLM output from directly controlling actions. This supports stable execution.
 
-### 6.15.4 Caching is necessary for large LLMs
+### 6.16.4 Caching is necessary for large LLMs
 
 Latency evidence shows that large LLMs are too slow to call at every step. Strategy caching is therefore necessary for practical integration.
 
-### 6.15.5 Win rate is not sufficient for evaluation
+### 6.16.5 Win rate is not sufficient for evaluation
 
 Final outcome metrics are useful, but they must be interpreted together with decision-source, fallback, latency, and replay-grounded inspection metrics.
 
 ---
 
-## 6.16 Threats to Validity
+## 6.17 Threats to Validity
 
 The evaluation has several threats to validity.
 
-### 6.16.1 Limited number of LLM backends
+### 6.17.1 Limited number of LLM backends
 
 The evaluation compares qwen3:32b and DeepSeek-R1-32B. This is useful, but it does not cover all possible LLMs.
 
-### 6.16.2 Prompt sensitivity
+### 6.17.2 Prompt sensitivity
 
 Different models may respond differently to the same prompt. The current comparison uses the same framework, but model-specific prompt tuning could change the results.
 
-### 6.16.3 Hybrid system attribution
+### 6.17.3 Hybrid system attribution
 
 The final behaviour is produced by a hybrid system. It includes LLM planning, cached decisions, rule-based verification, fallback, and action planning. Therefore, final win rate cannot be attributed only to the LLM.
 
-### 6.16.4 Run-specific evidence
+### 6.17.4 Run-specific evidence
 
 Some evidence, such as the Run008 viewer and overlay, is based on specific replay and trace files. The dissertation should avoid generalising too strongly from a single replay.
 
-### 6.16.5 Gameplay performance is not leaderboard-level
+### 6.17.5 Gameplay performance is not leaderboard-level
 
 The system is designed for inspection and evaluation rather than maximum Lux AI leaderboard performance. This should be clearly stated.
 
 ---
 
-## 6.17 Limitations
+## 6.18 Limitations
 
 The current evaluation has several limitations.
 
@@ -3669,11 +3761,11 @@ Sixth, the replay overlay provides strong qualitative evidence, but it depends o
 
 Seventh, the current system evaluates framework stability and inspectability more strongly than optimal gameplay performance.
 
-These limitations should not be hidden. They help define the scope of the project and show that the system is a dissertation artefact focused on structured decision tracing and evaluation.
+These limitations should not be hidden. They help define the scope of the project and show that the system is a dissertation artefact focused on the project-specific DTAV decision-trace approach and evaluation.
 
 ---
 
-## 6.18 Summary
+## 6.19 Summary
 
 This chapter evaluated LuxLLM-Agent using gameplay outcomes, LLM execution metrics, decision-source analysis, fallback analysis, latency analysis, replay-grounded inspection, and failure-case analysis.
 
@@ -3683,7 +3775,7 @@ The supplementary direct LLM-versus-LLM experiment completed another 100 role-sw
 
 The evaluation shows that LuxLLM-Agent can support multiple LLM backends within the same structured decision-trace and rule-based action-verification framework. Decision-source metrics and the replay overlay show how the system makes agent behaviour more inspectable than a standard final-score evaluation.
 
-The main conclusion is that structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents by making decisions more stable, traceable, and replay-grounded.
+The main conclusion is that the project-specific DTAV decision-trace approach and rule-based action verification support the inspection and evaluation of LLM-based agents by making decisions more stable, traceable, and replay-grounded.
 
 ---
 
@@ -3695,9 +3787,9 @@ This chapter discusses the main findings, contributions, limitations, and future
 
 The project set out to investigate the following research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-The previous chapters presented the system design, implementation, and evaluation of LuxLLM-Agent. The system was developed as a decision-trace and action-verification framework rather than only as a game-playing agent. It combines structured state summarisation, LLM-based strategic planning, rule-based action verification, fallback behaviour, strategy caching, decision trace logging, controlled-run evaluation, and replay-grounded visual inspection.
+The previous chapters presented the system design, implementation, and evaluation of LuxLLM-Agent. The project developed DTAV as an LLM-based decision method rather than only building a game-playing agent. It combines compact state summarisation, LLM-based strategic proposals, deterministic action verification, fallback behaviour, strategy reuse, operational audit logging, controlled evaluation, and replay-grounded visual inspection.
 
 This chapter reflects on how well the project answered the research question, what the main findings were, what technical contributions were made, and what limitations remain.
 
@@ -3707,17 +3799,19 @@ This chapter reflects on how well the project answered the research question, wh
 
 The main research question was:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
-The project answers this question by showing that structured decision tracing and rule-based action verification can support LLM-based agents in three main ways.
+The formal studies now include a controlled scheduled direct-prompt baseline and DTAV comparison. Both conditions used Qwen3-32B, the same 50 matched seeds, role swapping, generation settings, compact observation, call schedule, parser, and minimum legal-action adapter. Direct prompting won 48 of 100 matches, whereas DTAV won 63. In the matched seed-role analysis, DTAV-only wins outnumbered direct-prompt-only wins 21 to 6; the McNemar exact p-value was 0.0059 and the paired-bootstrap interval placed the DTAV advantage between 6 and 25 percentage points under the recorded configuration.
 
-First, structured decision tracing makes agent behaviour more inspectable. Instead of only recording final match scores, LuxLLM-Agent records decision source, LLM mode, model name, fallback status, cached-plan usage, risk-filter behaviour, LLM errors, latency, unit intents, and score context. This allows the system to explain whether a decision came from a fresh LLM call, a cached LLM plan, fallback behaviour, rule fallback, or rule-based policy.
+Within that boundary, the existing evidence shows that DTAV supports LLM-based agents in three main ways.
+
+First, the project-specific DTAV decision-trace approach makes agent behaviour more inspectable. Instead of only recording final match scores, LuxLLM-Agent records decision source, LLM mode, model name, fallback status, cached-plan usage, risk-filter behaviour, LLM errors, latency, unit intents, and score context. This allows the system to explain whether a decision came from a fresh LLM call, a cached LLM plan, fallback behaviour, rule fallback, or rule-based policy.
 
 Second, rule-based action verification provides a controlled boundary between LLM reasoning and executable game actions. The LLM does not directly control Lux AI Season 3 units. Instead, it proposes high-level strategic intents, which are then parsed, checked, filtered, cached, repaired, or replaced before being converted into legal actions. This improves stability and reduces the risk of invalid LLM output affecting the environment.
 
 Third, replay-grounded inspection connects decision traces to visual game behaviour. The LLM Decision Trace Overlay allows replay frames to be inspected together with the corresponding decision source, objective, fallback status, risk posture, and unit intents. This makes evaluation more informative than using final score alone.
 
-Overall, the project demonstrates that structured decision tracing and rule-based verification can make LLM-based game agents more stable, inspectable, and evaluable.
+Overall, the project demonstrates that the project-specific DTAV method can improve proposal usability, strategic continuity, controlled execution, inspectability, and observed match performance relative to the scheduled direct-prompt baseline under the tested configuration.
 
 ---
 
@@ -4069,7 +4163,7 @@ Fourth, limitations are valuable. By analysing fallback, caching, latency, and t
 
 ## 7.9 Conclusion
 
-This dissertation presented LuxLLM-Agent, a decision-trace and action-verification framework for inspecting and evaluating LLM-based agents in Lux AI Season 3.
+This dissertation presented LuxLLM-Agent and the project-specific Decision-Trace and Action-Verification (DTAV) method for LLM decision making in Lux AI Season 3.
 
 The system integrates LLM-based strategic planning with structured state summarisation, plan parsing, rule-based action verification, fallback behaviour, strategy caching, risk-aware filtering, decision trace logging, controlled-run evaluation, and replay-grounded visual inspection.
 
@@ -4077,7 +4171,9 @@ The primary evaluation showed that qwen3:32b and DeepSeek-R1-32B could both be i
 
 The supplementary direct LLM-versus-LLM experiment completed another 100 role-swapped matches while both players used the framework. Its 106,317 trace records were complete, all 4,676 fresh calls were valid after checks, and verifier interventions remained observable. The 54:46 outcome was not statistically significant, so this evidence strengthens the operational framework claim without changing the project into a model-ranking study.
 
-The key conclusion is that structured decision tracing and rule-based action verification can make LLM-based game agents more stable, inspectable, and evaluable. Rather than treating the LLM as a direct controller, LuxLLM-Agent treats the LLM as a strategic planner inside a controlled execution pipeline.
+The final matched comparison strengthens this conclusion. Direct prompting achieved 86.1% post-check structured-call validity and used the observable rule path on 95.5% of agent steps. DTAV achieved 99.9% post-check structured-call validity, reused accepted strategies on 89.8% of steps, used rule fallback on 5.6%, and recorded risk-filter changes on 11.2%. Both conditions retained complete traces, replay linkage, legal action-array shape, and zero observed timeout, API-error, or downstream action-fallback events. These results show how DTAV addressed the observed limitations while leaving the execution boundary inspectable.
+
+The comparison evaluates DTAV as a complete method bundle and does not attribute the performance difference to an individual component. It also remains specific to the recorded Qwen3-32B, prompt, seeds, call schedule, software, and hardware. Rather than treating the LLM as a direct controller, LuxLLM-Agent treats it as a strategic planner inside a controlled and auditable execution pipeline.
 
 This makes the project more than a game-playing agent. It is a framework for understanding how LLM-based agents make decisions, how those decisions are verified, and how their behaviour can be evaluated through logs, metrics, and replay-grounded inspection.
 

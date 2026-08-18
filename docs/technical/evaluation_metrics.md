@@ -24,7 +24,7 @@ Therefore, the project uses multiple categories of evaluation metrics:
 
 This supports the main research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 ---
 
@@ -313,7 +313,7 @@ Important comparison dimensions include:
 
 A strong dissertation interpretation is:
 
-> Both qwen3:32b and deepseek-r1:32b completed 50 controlled runs with zero LLM errors. This suggests that the LuxLLM-Agent framework can support different reasoning-oriented LLM backends while preserving stable execution through structured decision tracing, rule-based verification, fallback, and caching.
+> Both qwen3:32b and deepseek-r1:32b completed 50 controlled runs with zero LLM errors. This suggests that the LuxLLM-Agent framework can support different reasoning-oriented LLM backends while preserving stable execution through the project-specific DTAV decision-trace approach, rule-based verification, fallback, and caching.
 
 ---
 
@@ -415,5 +415,5 @@ The LuxLLM-Agent evaluation uses a multi-dimensional metric framework.
 
 It includes gameplay outcomes, LLM execution stability, decision provenance, fallback behaviour, risk filtering, latency, replay-grounded inspection, and qualitative failure analysis.
 
-This evaluation design supports the dissertation argument that LuxLLM-Agent is not merely an LLM game-playing agent. It is a framework for inspecting and evaluating LLM-based agents through structured decision tracing and rule-based action verification.
+This evaluation design supports the dissertation argument that LuxLLM-Agent is not merely an LLM game-playing agent. It is a framework for inspecting and evaluating LLM-based agents through the project-specific DTAV decision-trace approach and rule-based action verification.
 

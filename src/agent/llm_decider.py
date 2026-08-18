@@ -24,13 +24,22 @@ import urllib.request
 from typing import Dict, Optional
 
 import config
+from jsonl_io import append_jsonl_atomic
 from state_summarizer import gameview_to_prompt
 
 
+ALLOWED_INTENTS = {
+    "MOVE_TO_CONFIRMED_SCORE",
+    "MOVE_TO_RELIC_CANDIDATE",
+    "EXPLORE_STALE_TILE",
+    "HOLD_POSITION",
+    "RECOVER_ENERGY",
+    "CONTEST_RELIC_ZONE",
+}
+
+
 def append_jsonl(path: str, data: Dict) -> None:
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(data, ensure_ascii=False) + "\n")
+    append_jsonl_atomic(path, data)
 
 
 def extract_json_object(text: str) -> Dict:
@@ -143,12 +152,14 @@ def has_valid_strategy(parsed: Dict) -> bool:
     if not isinstance(unit_intents, dict):
         return False
 
-    for _, item in unit_intents.items():
+    for raw_key, item in unit_intents.items():
+        if not str(raw_key).isdigit():
+            continue
         if not isinstance(item, dict):
             continue
 
         intent = item.get("intent")
-        if isinstance(intent, str) and intent.strip():
+        if isinstance(intent, str) and intent.strip() in ALLOWED_INTENTS:
             return True
 
     return False
@@ -276,7 +287,9 @@ class LLMDecider:
             self.last_llm_called = True
             raw_text = self._call_ollama(prompt)
             self.last_raw_text = raw_text
-            parsed = normalize_unit_intent_keys(extract_json_object(raw_text))
+            parsed = extract_json_object(raw_text)
+            if bool(getattr(config, "NORMALIZE_LLM_OUTPUT", True)):
+                parsed = normalize_unit_intent_keys(parsed)
 
         except Exception as exc:
             error_text = str(exc)
@@ -294,6 +307,7 @@ class LLMDecider:
                     "time": time.time(),
                     "event": "llm_error",
                     "experiment_tag": config.EXPERIMENT_TAG,
+                    "decision_method": getattr(config, "DECISION_METHOD", "dtav"),
                     "step": step,
                     "match": match,
                     "player": self.player,
@@ -386,6 +400,10 @@ class LLMDecider:
             "time": time.time(),
             "event": "llm_decision",
             "experiment_tag": config.EXPERIMENT_TAG,
+            "decision_method": getattr(config, "DECISION_METHOD", "dtav"),
+            "output_normalization_enabled": bool(
+                getattr(config, "NORMALIZE_LLM_OUTPUT", True)
+            ),
             "step": step,
             "match": match,
             "player": self.player,
@@ -409,6 +427,7 @@ class LLMDecider:
             "time": time.time(),
             "event": "llm_decision",
             "experiment_tag": config.EXPERIMENT_TAG,
+            "decision_method": getattr(config, "DECISION_METHOD", "dtav"),
             "step": step,
             "match_idx": match.get("match_idx"),
             "step_in_match": match.get("step_in_match"),
@@ -434,6 +453,7 @@ class LLMDecider:
             "time": time.time(),
             "event": "decision_trace",
             "experiment_tag": config.EXPERIMENT_TAG,
+            "decision_method": getattr(config, "DECISION_METHOD", "dtav"),
             "step": step,
             "match_idx": match.get("match_idx"),
             "step_in_match": match.get("step_in_match"),

@@ -12,7 +12,7 @@ This means that the LLM does not directly control Lux AI Season 3 units. Instead
 
 This design supports the main research question:
 
-> How can structured decision tracing and rule-based action verification support the inspection and evaluation of LLM-based agents in Lux AI Season 3?
+> How effectively can directly prompted LLMs make decisions in a partially observable, multi-agent, long-horizon, and rule-constrained strategy game such as Lux AI Season 3, and how can the project-specific Decision-Trace and Action-Verification (DTAV) method address the observed limitations?
 
 It also directly supports the second sub-research question:
 
@@ -552,5 +552,5 @@ Action verification and fallback are core components of LuxLLM-Agent.
 
 They make it possible to use LLMs as strategic planners without allowing them to directly execute arbitrary game actions. The rule-based verifier, fallback policy, strategy cache, and risk-aware filter create a controlled boundary between LLM reasoning and Lux AI action execution.
 
-This design supports the project's main contribution: making LLM-based game-agent behaviour more inspectable, stable, and evaluable through structured decision tracing and rule-based action verification.
+This design supports the project's main contribution: making LLM-based game-agent behaviour more inspectable, stable, and evaluable through the project-specific DTAV decision-trace approach and rule-based action verification.
 
